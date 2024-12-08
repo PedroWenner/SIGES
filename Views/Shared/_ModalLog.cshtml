@@ -1,0 +1,35 @@
+﻿<!-- Modal log -->
+<div id="modal-log" class="modal fade modal-log" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Registro de alterações</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="tabela-log">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Data</th>
+                            <th>Campo</th>
+                            <th>Como Era</th>
+                            <th>Como Ficou</th>
+                            <th>Tipo da Operação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-body">
+                        <!-- Os logs serão carregados aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="display:flex;justify-content: center">
+                <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                    <span class="button__icon">
+                        <i class="bx bx-x"></i>
+                    </span><span class="button__text2">Fechar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

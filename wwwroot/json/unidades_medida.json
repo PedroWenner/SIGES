@@ -1,0 +1,84 @@
+{
+  "medidas": [
+    {
+      "display": "Quilograma",
+      "code": "kg"
+    },
+    {
+      "display": "Grama",
+      "code": "g"
+    },
+    {
+      "display": "Tonelada",
+      "code": "t"
+    },
+    {
+      "display": "Litro",
+      "code": "l"
+    },
+    {
+      "display": "Mililitro",
+      "code": "ml"
+    },
+    {
+      "display": "Metro",
+      "code": "m"
+    },
+    {
+      "display": "Centímetro",
+      "code": "cm"
+    },
+    {
+      "display": "Milímetro",
+      "code": "mm"
+    },
+    {
+      "display": "Metro quadrado",
+      "code": "m²"
+    },
+    {
+      "display": "Centímetro quadrado",
+      "code": "cm²"
+    },
+    {
+      "display": "Metro cúbico",
+      "code": "m³"
+    },
+    {
+      "display": "Centímetro cúbico",
+      "code": "cm³"
+    },
+    {
+      "display": "Unidade",
+      "code": "un"
+    },
+    {
+      "display": "Dúzia",
+      "code": "dz"
+    },
+    {
+      "display": "Par",
+      "code": "pr"
+    },
+    {
+      "display": "Pacote",
+      "code": "pct"
+    },
+    {
+      "display": "Caixa",
+      "code": "cx"
+    },
+    {
+      "display": "Litro por metro cúbico",
+      "code": "l/m³"
+    },
+    {
+      "display": "Quilograma por metro cúbico",
+      "code": "kg/m³"
+    },
+    {
+      "display": "Jarro",
+      "code": "jr"
+    }
+  ]
+}

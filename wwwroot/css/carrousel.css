@@ -1,0 +1,118 @@
+﻿.carousel-container {
+    position: relative;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.carousel {
+    display: flex;
+    overflow: hidden;
+    scroll-behavior: smooth;
+}
+
+.categorias {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 10px;
+    padding: 10px 0;
+}
+/* Estilo das categorias */
+.categoria {
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    width: 120px;
+    padding: 10px 0;
+}
+
+.categoria img {
+    width: 100px;
+    height: 60px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.categoria p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+}
+
+.categoria:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px);
+}
+
+.banners {
+    display: flex;
+    gap: 10px;
+    padding: 20px 0;
+    overflow-x: hidden;
+}
+
+.banner {
+    cursor: pointer;
+    flex: 0 0 auto;
+    width: 300px;
+    height: 150px;
+    background-color: #f0f0f0;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease;
+}
+
+.banner:hover {
+    transform: scale(1.05); /* Leve efeito de zoom */
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(200, 200, 200, 0.7);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.6);
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    z-index: 1;
+}
+
+.carousel-button.left {
+    left: 0;
+}
+
+.carousel-button.right {
+    right: 0;
+}
+
+.carousel-button:hover:not(.disabled) {
+    background-color: rgba(74, 74, 74, 0.9);
+}
+
+.carousel-button:active:not(.disabled) {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Estilo para botão desabilitado */
+.carousel-button.disabled {
+    cursor: default;
+    background-color: rgba(200, 200, 200, 0.4); /* Mais claro para mostrar que está inativo */
+    box-shadow: none; /* Remove a sombra para parecer desativado */
+}

@@ -1,0 +1,84 @@
+﻿<!-- Top Header Menu -->
+<div class="navebarn">
+    <div id="user-nav" class="navbar navbar-expand-lg navbar-inverse">
+        <div class="container-fluid">
+            <!-- User Navigation -->
+            <ul class="navbar-nav ms-auto">
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bx-user-circle iconN"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#" target="_blank" title="Área do cliente">Área do cliente</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" title="Meu perfil">Meu perfil</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="@Url.Action("Logout", "Login")" title="Sair do sistema">
+                                <i class="bx bx-log-out-circle"></i>Sair do sistema
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Relatórios Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bx-pie-chart-alt-2 iconN"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
+                        <li><a class="dropdown-item" href="@Url.Content("/Relatorios/RelClientes?handler=GeneratePdf")" target="_blank">Clientes</a></li>
+                        <li><a class="dropdown-item" href="@Url.Content("/dashboard/produtos")">Produtos</a></li>
+                        <li><a class="dropdown-item" href="#">Pedidos</a></li>
+                    </ul>
+                </li>
+
+                <!-- Configurações Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bx bx-cog iconN"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                        <li><a class="dropdown-item" asp-controller="Categoria" asp-action="Index">Categorias</a></li>
+                        <li><a class="dropdown-item" href="@Url.Content("/dashboard/usuarios")">Usuários</a></li>
+                        <li><a class="dropdown-item" href="@Url.Content("/dashboard/permissoes")">Permissões</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- User Section -->
+    <div id="userr" style="padding-right:45px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;">
+        <div class="user-names userT0">
+            @ViewBag.Saudacao,
+        </div>
+        <div class="userT">
+            @ViewBag.NomeUsuario
+        </div>
+
+        <section style="display:block;position:absolute;right:10px">
+            <div class="profile">
+                <div class="profile-img">
+                    <a href="#"><img src="" alt=""></a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div id="search" class="d-none">
+    <form class="d-flex p-2 border">
+        <input class="form-control" type="text" name="termo" placeholder="Pesquisar..." aria-label="Pesquisar">
+        <button class="btn btn-outline-secondary" type="submit" title="Pesquisar">
+            <i class="fas fa-search"></i>
+        </button>
+    </form>
+</div>

@@ -1,0 +1,277 @@
+﻿@using SIGES.ViewModel
+@model UsuarioViewModel
+@{
+    ViewData["Titulo"] = "Adicionar usuário";
+}
+<script src="~/js/funcoes.js"></script>
+<script src="~/js/jquery.mask.min.js"></script>
+
+<style>
+    #imgSenha {
+        width: 18px;
+        cursor: pointer;
+    }
+
+    .nopadding {
+        padding: 0 20px !important;
+        margin-right: 20px;
+    }
+
+    input.is-invalid::placeholder {
+        color: #dc3545; /* Vermelho para erro */
+        opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
+        font-size: 12px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastro de usuário</h5>
+        </div>
+
+        <div class="card-body">
+            <form id="formUsuario" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row">
+                    <!-- Nome -->
+                    <div class="col-md-8 mb-3">
+                        <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                        <input id="nome" type="text" asp-for="Usuario.Nome" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- RG -->
+                    <div class="col-md-2 mb-3">
+                        <label for="rg" class="form-label">RG <span class="text-danger">*</span></label>
+                        <input id="rg" type="text" asp-for="Usuario.RgNumero" required>
+                    </div>
+
+                    <!-- CPF -->
+                    <div class="col-md-2 mb-3">
+                        <label for="cpfUser" class="form-label">CPF <span class="text-danger">*</span></label>
+                        <input id="cpfUser" type="text" asp-for="Usuario.Cpf" required>
+                    </div>
+
+                    <!-- Celular -->
+                    <div class="col-md-2 mb-3">
+                        <label for="celular" class="form-label">Celular</label>
+                        <input id="celular" type="text" asp-for="Usuario.Telefone">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Email -->
+                    <div class="col-md-8 mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input id="email" type="text" asp-for="Usuario.Email" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- CEP -->
+                    <div class="col-md-2 mb-3">
+                        <label for="cep" class="form-label">CEP <span class="text-danger">*</span></label>
+                        <input id="cep" type="text" asp-for="Usuario.Cep" required>
+                    </div>
+
+                    <!-- Rua -->
+                    <div class="col-md-6 mb-3">
+                        <label for="rua" class="form-label">Rua <span class="text-danger">*</span></label>
+                        <input id="rua" type="text" asp-for="Usuario.Rua" required>
+                    </div>
+
+                    <!-- Número -->
+                    <div class="col-md-2 mb-3">
+                        <label for="numero" class="form-label">Número <span class="text-danger">*</span></label>
+                        <input id="numero" type="text" asp-for="Usuario.NumeroRua" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Bairro -->
+                    <div class="col-md-2 mb-3">
+                        <label for="bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
+                        <input id="bairro" type="text" asp-for="Usuario.Bairro" required>
+                    </div>
+
+                    <!-- Cidade -->
+                    <div class="col-md-2 mb-3">
+                        <label for="cidade" class="form-label">Cidade <span class="text-danger">*</span></label>
+                        <input id="cidade" type="text" asp-for="Usuario.Cidade" required>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-2 mb-3">
+                        <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                        <input id="estado" type="text" asp-for="Usuario.Estado" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Senha -->
+                    <div class="col-md-2 mb-3 position-relative">
+                        <label for="senha" class="form-label">Senha</label>
+                        <input id="senha" type="password" asp-for="Usuario.Senha">
+                        <img id="imgSenha" src="@Url.Content("~/img/eye.svg")" alt="Mostrar Senha" class="position-absolute top-50 end-0 translate-middle-y me-3 mt-3">
+                        <span asp-validation-for="Usuario.Senha" class="help-block"></span>
+                    </div>
+
+                    <!-- Data de Expiração -->
+                    <div class="col-md-2 mb-3">
+                        <label for="dataExpiracao" class="form-label">Expira em <span class="text-danger">*</span></label>
+                        <input id="dataExpiracao" type="date" asp-for="Usuario.DataExpiracao" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Situação -->
+                    <div class="col-md-2 mb-3">
+                        <label for="situacao" class="form-label">Situação <span class="text-danger">*</span></label>
+                        <select asp-for="Usuario.Situacao" id="situacao" style="width: auto!important;">
+                            <option value="1">Ativo</option>
+                            <option value="0">Inativo</option>
+                        </select>
+                    </div>
+
+                    <!-- Permissões -->
+                    <div class="col-md-2 mb-3">
+                        <label for="permissaoId" class="form-label">Permissões <span class="text-danger">*</span></label>
+                        <select asp-for="Usuario.PermissaoId" id="permissaoId" style="width: auto!important;">
+                            <option value="">Selecione</option>
+                            @foreach (var permissao in Model.Permissoes)
+                            {
+                                <option value="@permissao.Id">@permissao.Nome</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Imagem -->
+                    <div class="col-md-4 mb-3">
+                        <label for="imagem" class="form-label">Imagem*</label>
+                        <input type="file" id="imagem" name="imagemUsuario" accept="image/*" onchange="previewImage(event)" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            @if (Model.Usuario.ImagemBlob != null)
+                            {
+                                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Usuario.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do usuário" style="max-width: 200px;" />
+                            }
+                            else
+                            {
+                                <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Botões -->
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="button btn btn-mini btn-success">
+                            <span class="button__icon"><i class='bx bx-save'></i></span>
+                            <span class="button__text2">Adicionar</span>
+                        </button>
+                        <a title="Voltar" class="button btn btn-warning" asp-controller="Categoria" asp-action="Index">
+                            <span class="button__icon"><i class="bx bx-undo"></i></span>
+                            <span class="button__text2">Voltar</span>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script type="text/javascript">
+
+    function previewImage(event) {
+        const img = document.getElementById('previewImg');
+        if (event.target.files.length > 0) {
+            img.src = URL.createObjectURL(event.target.files[0]);
+            img.onload = () => {
+                URL.revokeObjectURL(img.src); // Libera memória
+                img.style.display = "block";
+            };
+        } else {
+            img.style.display = "none";
+        }
+    }
+
+    $(document).ready(function() {
+        $.validator.addMethod("extension", function (value, element, param) {
+            var extension = value.split('.').pop().toLowerCase();
+            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
+        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
+
+        let container = document.querySelector('div');
+        let input = document.querySelector('#senha');
+        let icon = document.querySelector('#imgSenha');
+
+        icon.addEventListener('click', function() {
+            container.classList.toggle('visible');
+            if (container.classList.contains('visible')) {
+                icon.src = '@Url.Content("~/img/eye-off.svg")'
+                input.type = 'text';
+            } else {
+                icon.src = '@Url.Content("~/img/eye.svg")'
+                input.type = 'password';
+            }
+        });
+
+        $('#formUsuario').validate({
+            rules: {
+                'Usuario.Nome': { required: true },
+                'Usuario.RgNumero': { required: true },
+                'Usuario.DataExpiracao': { required: true },
+                'Usuario.Cpf': { required: true },
+                'Usuario.Telefone': { required: true },
+                'Usuario.Email': { required: true },
+                'Usuario.Senha': { required: true },
+                'Usuario.Rua': { required: true },
+                'Usuario.NumeroRua': { required: true },
+                'Usuario.Bairro': { required: true },
+                'Usuario.Cidade': { required: true },
+                'Usuario.Estado': { required: true },
+                'Usuario.Cep': { required: true },
+                'Usuario.PermissaoId': { required: true },
+                'Usuario.Imagem': { extension: "jpg|jpeg|png|gif|bmp" }
+            },
+            messages: {
+                'Usuario.Nome': { required: 'Campo nome é obrigatório.' },
+                'Usuario.RgNumero': { required: 'Campo RG é obrigatório.' },
+                'Usuario.DataExpiracao': { required: 'Campo expira em é obrigatório.' },
+                'Usuario.Cpf': { required: 'Campo CPF é obrigatório.' },
+                'Usuario.Telefone': { required: 'Campo celular é obrigatório.' },
+                'Usuario.Email': { required: 'Campo e-mail é obrigatório.' },
+                'Usuario.Senha': { required: 'Campo senha é obrigatório.' },
+                'Usuario.Rua': { required: 'Campo rua é obrigatório.' },
+                'Usuario.NumeroRua': { required: 'Campo número é obrigatório.' },
+                'Usuario.Bairro': { required: 'Campo bairro é obrigatório.' },
+                'Usuario.Cidade': { required: 'Campo cidade é obrigatório.' },
+                'Usuario.Estado': { required: 'Campo estado é obrigatório.' },
+                'Usuario.Cep': { required: 'Campo CEP é obrigatório.' },
+                'Usuario.PermissaoId': { required: 'Campo permissão é obrigatório.' },
+                'Usuario.Imagem': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
+            },
+            errorPlacement: function (error, element) {
+                // Insere o texto do erro como placeholder dentro do input
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+
+                // Remove o placeholder ao corrigir o campo
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+</script>

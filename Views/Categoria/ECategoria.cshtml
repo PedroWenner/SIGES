@@ -1,0 +1,122 @@
+﻿@model CategoriaModel
+
+@{
+    ViewData["Titulo"] = "Editar categoria";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Editar categoria</h5>
+        </div>
+        <div class="card-body">
+            <form id="formCategoria" method="post" enctype="multipart/form-data" asp-controller="Categoria" asp-action="Editar">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Código -->
+                <div class="mb-3">
+                    <label for="codigo" class="form-label">Código</label>
+                    <input type="text" asp-for="Id" disabled />
+                    <input type="hidden" asp-for="Id" />
+                </div>
+
+                <!-- Descrição -->
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descrição <span class="text-danger">*</span></label>
+                    <input type="text" asp-for="Descricao" required />
+                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                </div>
+
+                <!-- Imagem -->
+                <div class="mb-3">
+                    <label for="imagem" class="form-label">Imagem</label>
+                    <input type="file" id="imagem" name="imagemCategoria" accept="image/*"
+                           data-imagem-cadastrada="@(Model.ImagemBlob != null)" onchange="previewImage(event)" />
+                    @if (Model.ImagemBlob != null)
+                    {
+                        <p class="mt-2">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>
+                    }
+                    else
+                    {
+                        <span class="text-danger mt-2">Nenhuma imagem cadastrada. É obrigatório adicionar uma imagem.</span>
+                    }
+                </div>
+
+                <!-- Pré-visualização da imagem -->
+                <div class="mb-3 text-center">
+                    @if (Model.ImagemBlob != null)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(Model.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem da categoria" style="max-width: 200px;" />
+                    }
+                    else
+                    {
+                        <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
+                    }
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Atualizar</span>
+                    </button>
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Categoria" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                        <span class="button__text2">Voltar</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script type="text/javascript">
+
+    function previewImage(event) {
+        const img = document.getElementById('previewImg');
+        if (event.target.files.length > 0) {
+            img.src = URL.createObjectURL(event.target.files[0]);
+            img.onload = () => {
+                URL.revokeObjectURL(img.src); // Libera memória
+                img.style.display = "block";
+            };
+        } else {
+            img.style.display = "none";
+        }
+    }
+
+    $(document).ready(function () {
+        $.validator.addMethod("extension", function (value, element, param) {
+            var extension = value.split('.').pop().toLowerCase();
+            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
+        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
+
+        $('#formCategoria').validate({
+            rules: {
+                'Descricao': { required: true },
+                'imagemCategoria': {
+                    required: function (element) {
+                        return $(element).data('imagem-cadastrada') === false;
+                    },
+                    extension: "jpg|jpeg|png|gif|bmp"
+                }
+            },
+            messages: {
+                'Descricao': { required: 'Campo descrição é obrigatório.' },
+                'imagemCategoria': {
+                    required: 'É obrigatório adicionar uma imagem.',
+                    extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
+                }
+            },
+            errorClass: "text-danger",
+            errorElement: "span",
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+            }
+        });
+    });
+</script>
