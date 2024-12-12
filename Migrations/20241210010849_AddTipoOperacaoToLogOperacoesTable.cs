@@ -10,12 +10,12 @@ namespace SIGES.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "TipoOperacao",
-                table: "LogsOperacoes",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
+            //migrationBuilder.AddColumn<string>(
+            //    name: "TipoOperacao",
+            //    table: "LogsOperacoes",
+            //    type: "nvarchar(max)",
+            //    nullable: false,
+            //    defaultValue: "");
         }
 
         /// <inheritdoc />

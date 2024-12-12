@@ -100,8 +100,18 @@ namespace SIGES.Controllers
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
+            // Carregar os dados para a View
+            var permissoes = _permissaoRepositorio.Listar().AsQueryable();
+
             // Busca pelo ID
             var usuario = await _usuarioRepositorio.ObterPorId(id);
+
+            // Montar um ViewModel para enviar os dados para a View
+            var usuarioViewModel = new UsuarioViewModel
+            {
+                Usuario = usuario,
+                Permissoes = permissoes.ToList()
+            };
 
             if (usuario == null)
             {
@@ -110,17 +120,12 @@ namespace SIGES.Controllers
             }
 
             // Retorna a View com o modelo populado
-            return View("EUsuario", usuario);
+            return View("EUsuario", usuarioViewModel);
         }
 
         [HttpPost("editar/{id}")]
         public async Task<IActionResult> Editar(int id, UsuarioModel usuario, IFormFile? imagemUsuario)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("EUsuario", usuario);
-            }
-
             // Busca a usuário existente
             var usuarioExistente = await _usuarioRepositorio.ObterPorId(id);
 
@@ -128,6 +133,35 @@ namespace SIGES.Controllers
             {
                 TempData["Error"] = "Usuário não encontrado.";
                 return RedirectToAction("Index");
+            }
+            
+            string senhaCript = string.Empty;
+            if (string.IsNullOrEmpty(usuario.Senha))
+            {
+                usuario.Senha = usuarioExistente.Senha;
+                senhaCript = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
+                usuario.Senha = senhaCript;
+            }
+            else
+            {
+                // Criptografa a senha antes de salvar
+                senhaCript = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
+                usuario.Senha = senhaCript;
+            }
+
+            // Carregar os dados para a View
+            var permissoes = _permissaoRepositorio.Listar().AsQueryable();
+
+            // Montar um ViewModel para enviar os dados para a View
+            var usuarioViewModel = new UsuarioViewModel
+            {
+                Usuario = usuario,
+                Permissoes = permissoes.ToList()
+            };
+
+            if (!ModelState.IsValid)
+            {
+                return View("EUsuario", usuarioViewModel);
             }
 
             // Recupera o nome do usuário da sessão
