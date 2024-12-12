@@ -1,13 +1,26 @@
-﻿namespace SIGES.Models
+﻿using SIGES.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace SIGES.Models
 {
     public class LogAlteracaoModel
     {
+        [IgnoreLog]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string Usuario { get; set; } // Usuário que fez a alteração
-        public DateTime DataAlteracao { get; set; } = DateTime.UtcNow; // Data da alteração
-        public string Entidade { get; set; } // Nome da entidade alterada
-        public int EntidadeId { get; set; } // ID da entidade alterada
-        public string Alteracoes { get; set; } // JSON com as alterações
+
+        public string Usuario { get; set; }
+
+        public DateTime DataAlteracao { get; set; } = DateTime.UtcNow;
+
+        public string Entidade { get; set; }
+
+        public int EntidadeId { get; set; }
+
+        public string Alteracoes { get; set; }
+
         public string TipoOperacao { get; set; }
     }
 }

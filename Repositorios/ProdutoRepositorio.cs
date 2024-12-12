@@ -51,7 +51,7 @@ namespace SIGES.Repositorios
                 produtoExistente.CategoriaId = produto.CategoriaId;
                 produtoExistente.Valor = produto.Valor;
                 produtoExistente.Observacao = produto.Observacao;
-                produtoExistente.CaminhoImagem = produto.CaminhoImagem;
+                produtoExistente.ImagemBlob = produto.ImagemBlob;
 
                 await _context.SaveChangesAsync();
             }

@@ -8,7 +8,6 @@ namespace SIGES.Config
         public static void RegistrarRepositorios(IServiceCollection services)
         {
             services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
-            services.AddScoped<ILancamentoRepositorio, LancamentoRepositorio>();
             services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
             services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
             //services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();

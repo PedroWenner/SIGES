@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using SIGES.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SIGES.Models
 {
     public class ProdutoModel
     {
+        [IgnoreLog]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
         public int Status { get; set; }
@@ -18,9 +23,11 @@ namespace SIGES.Models
         
         public string? UnidadeMedida { get; set; }
 
+        [IgnoreLog]
         [Required(ErrorMessage = "A categoria é obrigatória.")]
         public int CategoriaId { get; set; }
 
+        [IgnoreLog]
         [ValidateNever]
         public CategoriaModel Categoria { get; set; }
 
@@ -29,14 +36,11 @@ namespace SIGES.Models
         public decimal Valor { get; set; }
         
         public string? Observacao { get; set; }
-        
-        // Para a imagem do produto
-        public string? CaminhoImagem { get; set; }
 
-        public int UsuarioCadastro { get; set; } = 1;
+        [IgnoreLog]
+        public byte[]? ImagemBlob { get; set; }
 
-        public DateTime DataCadastro { get; set; } = DateTime.Now;
-
+        [IgnoreLog]
         [ValidateNever]
         public ICollection<PedidoModel> Pedidos { get; set; }
     }

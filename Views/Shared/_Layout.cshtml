@@ -108,6 +108,54 @@
         .dt-search {
             margin-bottom: 20px;
         }
+
+        .dt-length {
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <style>
+        .dt-paging {
+            display: flex;
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente, caso necessário */
+            margin-top: 1rem !important; /* Espaçamento superior opcional */
+        }
+
+        /* Estilo padrão dos botões de paginação */
+        .dt-paging .page-item .page-link {
+            color: #6c757d; /* Cor padrão do texto */
+            background-color: #ffffff; /* Fundo branco */
+            border: 1px solid #dee2e6; /* Borda leve */
+            padding: 0.15rem 0.45rem; /* Espaçamento maior */
+            border-radius: 5px; /* Borda arredondada */
+            transition: all 0.2s ease-in-out; /* Transição suave */
+        }
+
+        /* Estilo para o botão ativo */
+        .dt-paging .page-item.active .page-link {
+            background-color: #999; /* Fundo preto */
+            color: #ffffff; /* Texto branco */
+            border-color: #dee2e6; /* Borda preta */
+        }
+
+        /* Estilo no hover */
+        .dt-paging .page-item .page-link:hover {
+            background-color: #f8f9fa; /* Fundo cinza claro no hover */
+            color: #000000; /* Texto preto */
+            border-color: #dee2e6; /* Borda leve */
+        }
+
+        /* Botões "Primeiro" e "Último" com destaque */
+        .dt-paging .page-item:first-child .page-link,
+        .dt-paging .page-item:last-child .page-link {
+            font-weight: bold; /* Destaque para "Primeiro" e "Último" */
+        }
+
+        /* Espaçamento entre os botões */
+        .dt-paging .page-item {
+            margin: 0 5px; /* Espaçamento entre os botões */
+        }
     </style>
 </head>
 <body>

@@ -8,24 +8,22 @@ namespace SIGES.Models
     public class CategoriaModel
     {
         [IgnoreLog]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "A descrição é obrigatória.")]
         public string Descricao { get; set; }
 
         [IgnoreLog]
-        public byte[]? ImagemBlob { get; set; } // Campo para armazenar a imagem como blob
-
-        [IgnoreLog]
-        [ValidateNever]
-        public ICollection<LancamentoModel> Lancamentos { get; set; }
+        public byte[]? ImagemBlob { get; set; }
 
         [IgnoreLog]
         [ValidateNever]
         public ICollection<ProdutoModel> Produtos { get; set; }
 
         [IgnoreLog]
-        [NotMapped] // Campo não mapeado no banco
+        [NotMapped]
         public int ProximoCodigo { get; set; }
     }
 }

@@ -13,7 +13,6 @@ namespace SIGES.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
-        [StringLength(255)]
         public string Nome { get; set; }
 
         public string? RgNumero { get; set; }
@@ -23,30 +22,22 @@ namespace SIGES.Models
 
         public string? Telefone { get; set; }
 
-        [StringLength(80)]
         public string? Email { get; set; }
 
         [IgnoreLog]
         [SenhaObrigatoriaNoCadastro]
-        [MaxLength(255)]
         public string? Senha { get; set; }
 
-        [MaxLength(20)]
         public string? Cep { get; set; }
 
-        [MaxLength(70)]
         public string? Rua { get; set; }
 
-        [MaxLength(15)]
         public string? NumeroRua { get; set; }
 
-        [MaxLength(45)]
         public string? Bairro { get; set; }
 
-        [MaxLength(45)]
         public string? Cidade { get; set; }
 
-        [MaxLength(20)]
         public string? Estado { get; set; }
 
         public DateTime? DataExpiracao { get; set; }

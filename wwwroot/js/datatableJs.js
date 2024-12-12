@@ -1,13 +1,20 @@
 ﻿$('#tabela').DataTable({
     language: {
         url: '/json/datatable_pt-br.json',
+        emptyTable: "Nenhum registro encontrado"
     },
-    //ordering: true, ativa/desativa a ordenação
-    paging: false, // ativa/desativa a função de paginação
-    responsive: true,
-    searching: true, // ativa/desativa a função de pesquisa
-    info: false, // ativa/desativa a quantidade de registros por página
+    paging: true,           // Habilita paginação
+    searching: true,        // Habilita busca
+    ordering: true,         // Habilita ordenação
+    info: true,             // Habilita informações (ex.: "Mostrando X a Y de Z")
+    lengthChange: false,    // Remove o seletor de "quantos itens por página"
     columnDefs: [
         { orderable: false, targets: -1 } // Desativa ordenação na última coluna (Ação)
-    ]
+    ],
+    dom: 'lrtip',           // Configuração da estrutura (ajuste conforme necessário)
+    autoWidth: false,       // Evita larguras automáticas
+    pageLength: 20
 });
+
+// Desativa mensagens de erro do DataTables
+$.fn.dataTable.ext.errMode = 'none';

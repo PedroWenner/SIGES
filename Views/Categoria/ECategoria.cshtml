@@ -4,6 +4,14 @@
     ViewData["Titulo"] = "Editar categoria";
 }
 
+<style>
+    input.is-invalid::placeholder {
+        color: #dc3545; /* Vermelho para erro */
+        opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
+        font-size: 12px;
+    }
+</style>
+
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex align-items-center">
@@ -109,13 +117,18 @@
                     extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
                 }
             },
-            errorClass: "text-danger",
-            errorElement: "span",
+            errorPlacement: function (error, element) {
+                // Insere o texto do erro como placeholder dentro do input
+                element.attr("placeholder", error.text());
+            },
             highlight: function (element, errorClass, validClass) {
                 $(element).addClass("is-invalid").removeClass("is-valid");
             },
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass("is-invalid").addClass("is-valid");
+
+                // Remove o placeholder ao corrigir o campo
+                $(element).attr("placeholder", "");
             }
         });
     });
