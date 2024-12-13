@@ -38,7 +38,7 @@
                 <div class="row">
                     <!-- Nome -->
                     <div class="col-md-8 mb-3">
-                        <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                        <label for="nome" class="form-label">Nome</label>
                         <input id="nome" type="text" asp-for="Usuario.Nome" required>
                     </div>
                 </div>
@@ -46,27 +46,27 @@
                 <div class="row">
                     <!-- RG -->
                     <div class="col-md-2 mb-3">
-                        <label for="rg" class="form-label">RG <span class="text-danger">*</span></label>
+                        <label for="rg" class="form-label">RG</label>
                         <input id="rg" type="text" asp-for="Usuario.RgNumero" required>
                     </div>
 
                     <!-- CPF -->
                     <div class="col-md-2 mb-3">
-                        <label for="cpfUser" class="form-label">CPF <span class="text-danger">*</span></label>
+                        <label for="cpfUser" class="form-label">CPF</label>
                         <input id="cpfUser" type="text" asp-for="Usuario.Cpf" required>
                     </div>
 
                     <!-- Celular -->
                     <div class="col-md-2 mb-3">
                         <label for="celular" class="form-label">Celular</label>
-                        <input id="celular" type="text" asp-for="Usuario.Telefone">
+                        <input id="celular" type="text" asp-for="Usuario.Telefone" required>
                     </div>
                 </div>
 
                 <div class="row">
                     <!-- Email -->
                     <div class="col-md-8 mb-3">
-                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <label for="email" class="form-label">Email</label>
                         <input id="email" type="text" asp-for="Usuario.Email" required>
                     </div>
                 </div>
@@ -74,19 +74,19 @@
                 <div class="row">
                     <!-- CEP -->
                     <div class="col-md-2 mb-3">
-                        <label for="cep" class="form-label">CEP <span class="text-danger">*</span></label>
+                        <label for="cep" class="form-label">CEP</label>
                         <input id="cep" type="text" asp-for="Usuario.Cep" required>
                     </div>
 
                     <!-- Rua -->
                     <div class="col-md-6 mb-3">
-                        <label for="rua" class="form-label">Rua <span class="text-danger">*</span></label>
+                        <label for="rua" class="form-label">Rua</label>
                         <input id="rua" type="text" asp-for="Usuario.Rua" required>
                     </div>
 
                     <!-- Número -->
                     <div class="col-md-2 mb-3">
-                        <label for="numero" class="form-label">Número <span class="text-danger">*</span></label>
+                        <label for="numero" class="form-label">Número</label>
                         <input id="numero" type="text" asp-for="Usuario.NumeroRua" required>
                     </div>
                 </div>
@@ -94,19 +94,19 @@
                 <div class="row">
                     <!-- Bairro -->
                     <div class="col-md-2 mb-3">
-                        <label for="bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
+                        <label for="bairro" class="form-label">Bairro</label>
                         <input id="bairro" type="text" asp-for="Usuario.Bairro" required>
                     </div>
 
                     <!-- Cidade -->
                     <div class="col-md-2 mb-3">
-                        <label for="cidade" class="form-label">Cidade <span class="text-danger">*</span></label>
+                        <label for="cidade" class="form-label">Cidade</label>
                         <input id="cidade" type="text" asp-for="Usuario.Cidade" required>
                     </div>
 
                     <!-- Estado -->
                     <div class="col-md-2 mb-3">
-                        <label for="estado" class="form-label">Estado <span class="text-danger">*</span></label>
+                        <label for="estado" class="form-label">Estado</label>
                         <input id="estado" type="text" asp-for="Usuario.Estado" required>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
 
                     <!-- Data de Expiração -->
                     <div class="col-md-2 mb-3">
-                        <label for="dataExpiracao" class="form-label">Expira em <span class="text-danger">*</span></label>
+                        <label for="dataExpiracao" class="form-label">Expira em</label>
                         <input id="dataExpiracao" type="date" asp-for="Usuario.DataExpiracao" required>
                     </div>
                 </div>
@@ -130,8 +130,8 @@
                 <div class="row">
                     <!-- Situação -->
                     <div class="col-md-2 mb-3">
-                        <label for="situacao" class="form-label">Situação <span class="text-danger">*</span></label>
-                        <select asp-for="Usuario.Situacao" id="situacao" style="width: auto!important;">
+                        <label for="situacao" class="form-label">Situação</label>
+                        <select asp-for="Usuario.Situacao" id="situacao" required>
                             <option value="1">Ativo</option>
                             <option value="0">Inativo</option>
                         </select>
@@ -139,8 +139,8 @@
 
                     <!-- Permissões -->
                     <div class="col-md-2 mb-3">
-                        <label for="permissaoId" class="form-label">Permissões <span class="text-danger">*</span></label>
-                        <select asp-for="Usuario.PermissaoId" id="permissaoId" style="width: auto!important;">
+                        <label for="permissaoId" class="form-label">Permissões</label>
+                        <select asp-for="Usuario.PermissaoId" id="permissaoId" required>
                             <option value="">Selecione</option>
                             @foreach (var permissao in Model.Permissoes)
                             {
@@ -153,7 +153,7 @@
                 <div class="row">
                     <!-- Imagem -->
                     <div class="col-md-4 mb-3">
-                        <label for="imagem" class="form-label">Imagem*</label>
+                        <label for="imagem" class="form-label">Imagem</label>
                         <input type="file" id="imagem" name="imagemUsuario" accept="image/*" onchange="previewImage(event)" />
                         @if (Model.Usuario.ImagemBlob != null)
                         {
@@ -161,7 +161,7 @@
                         }
                         else
                         {
-                            <span class="text-danger mt-2">Nenhuma imagem cadastrada. É obrigatório adicionar uma imagem.</span>
+                            <span class="text-danger mt-2">Nenhuma imagem cadastrada.</span>
                         }
                     </div>
                     <div class="col-md-4 mb-3">

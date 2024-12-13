@@ -56,7 +56,7 @@
 
                 <!--Bloco de pedidos-->
                 <li class="@(routesPedidos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Pedidos">
-                    <a href="@Url.Content("/dashboard/pedidos")">
+                    <a href="#">
                         <i class='bx bx-bell iconX'></i>
                         <span class="title">Pedidos</span>
                         <span class="title-tooltip">Pedidos</span>
@@ -65,73 +65,36 @@
 
                 <!--Bloco de produtos-->
                 <li class="@(routesProdutos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Produtos">
-                    <a href="@Url.Content("/dashboard/produtos")">
+                    <a href="#">
                         <i class='bx bx-shape-square iconX'></i>
                         <span class="title">Produtos</span>
                         <span class="title-tooltip">Produtos</span>
                     </a>
                 </li>
 
-                <!--Bloco do catálogo online-->
-                <!--<li class="@(routesCatalogo.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Catálogo Online">
-                    <a href="@Url.Content("/dashboard/catalogo")">
-                        <i class='bx bx-cart iconX'></i>
-                        <span class="title">Catálogo Online</span>
-                        <span class="title-tooltip">Catálogo Online</span>
-                    </a>
-                </li>-->
-
                 <!--Bloco do clientes-->
                 <li class="@(routesClient.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Clientes">
-                    <a href="@Url.Content("/dashboard/clientes")">
+                    <a href="#">
                         <i class='bx bx-user iconX'></i>
                         <span class="title">Clientes</span>
                         <span class="title-tooltip">Clientes</span>
                     </a>
                 </li>
 
-                <!--Bloco do histórico-->
-                <!--<li class="@(routesHist.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Histórico">
-                    <a href="@Url.Content("/dashboard/historico")">
-                        <i class='bx bx-dollar-circle iconX'></i>
-                        <span class="title">Histórico</span>
-                        <span class="title-tooltip">Histórico</span>
-                    </a>
-                </li>-->
-
-                <!--Bloco do estatísticas-->
-                <!--<li class="@(routesStats.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Estatísticas">
-                    <a href="@Url.Content("/dashboard/estatistica")">
-                        <i class='bx bx-bar-chart-alt-2 iconX'></i>
-                        <span class="title">Estatísticas</span>
-                        <span class="title-tooltip">Estatísticas</span>
-                    </a>
-                </li>-->
-                
                 <!--Bloco do Usuários-->
                 <li class="@(routesUsers.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Usuários">
-                    <a href="@Url.Content("/dashboard/usuarios")">
+                    <a asp-controller="Usuario" asp-action="Index">
                         <i class='bx bx-group iconX'></i>
                         <span class="title">Usuários</span>
                         <span class="title-tooltip">Usuários</span>
                     </a>
                 </li>
-                
-                <!--Bloco do ajuda-->
-                <!--<li class="@(routesHelp.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Ajuda">
-                    <a href="@Url.Content("/dashboard/ajuda")">
-                        <i class='bx bx-help-circle iconX'></i>
-                        <span class="title">Ajuda</span>
-                        <span class="title-tooltip">Ajuda</span>
-                    </a>
-                </li>-->
-
             </ul>
         </div>
 
         <div class="botton-content">
             <li class="">
-                <a href="@Url.Action("Logout", "Login")">
+                <a asp-controller="Login" asp-action="Logout">
                     <i class='bx bx-log-out-circle iconX'></i>
                     <span class="title">Sair</span>
                     <span class="title-tooltip">Sair</span>

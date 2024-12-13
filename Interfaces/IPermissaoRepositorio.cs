@@ -13,5 +13,9 @@ namespace SIGES.Interfaces
         Task Atualizar(PermissaoModel permissao);
 
         Task Excluir(int id);
+
+        // Métodos relacionados a permissões do usuário
+        Task<List<PermissaoDetalheModel>> ObterPermissoesUsuario(int userId); // Obtém permissões de um usuário específico
+        Task<bool> VerificarPermissao(int userId, string permissao); // Verifica se o usuário possui uma permissão específica
     }
 }

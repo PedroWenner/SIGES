@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIGES.Attributes;
 using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
@@ -8,7 +9,7 @@ using SIGES.ViewModel;
 namespace SIGES.Controllers
 {
     [Authorize]
-    [Route("dashboard/usuarios")]
+    [Route("usuarios")]
     public class UsuarioController : Controller
     {
         private readonly IUsuarioRepositorio _usuarioRepositorio;
@@ -40,6 +41,7 @@ namespace SIGES.Controllers
             return View("LUsuario", usuarioViewModel);
         }
 
+        [Permissao("aUsuario")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SIGES.Config;
 using SIGES.Data;
+using SIGES.Middleware;
 using SIGES.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +64,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<PermissaoMiddleware>();
+
 
 app.MapControllerRoute(
     name: "default",
@@ -70,12 +73,12 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "categorias",
-    pattern: "dashboard/categorias/{action}/{id?}",
+    pattern: "categorias/{action}/{id?}",
     defaults: new { controller = "Categoria" });
 
 app.MapControllerRoute(
     name: "usuarios",
-    pattern: "dashboard/usuarios/{action}/{id?}",
+    pattern: "usuarios/{action}/{id?}",
     defaults: new { controller = "Usuario" });
 
 app.Run();

@@ -39,7 +39,7 @@
                 <div class="mb-3">
                     <label for="imagem" class="form-label">Imagem</label>
                     <input type="file" id="imagem" name="imagemCategoria" accept="image/*"
-                           data-imagem-cadastrada="@(Model.ImagemBlob != null)" onchange="previewImage(event)" />
+                           data-imagem-cadastrada="@(Model.ImagemBlob != null)" onchange="previewImage(event)" required />
                     @if (Model.ImagemBlob != null)
                     {
                         <p class="mt-2">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>

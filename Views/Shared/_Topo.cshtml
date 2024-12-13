@@ -20,7 +20,7 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a class="dropdown-item" href="@Url.Action("Logout", "Login")" title="Sair do sistema">
+                            <a class="dropdown-item" asp-controller="Login" asp-action="Logout" title="Sair do sistema">
                                 <i class="bx bx-log-out-circle"></i>Sair do sistema
                             </a>
                         </li>
@@ -46,8 +46,8 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
                         <li><a class="dropdown-item" asp-controller="Categoria" asp-action="Index">Categorias</a></li>
-                        <li><a class="dropdown-item" href="@Url.Content("/dashboard/usuarios")">Usuários</a></li>
-                        <li><a class="dropdown-item" href="@Url.Content("/dashboard/permissoes")">Permissões</a></li>
+                        <li><a class="dropdown-item"  asp-controller="Usuario" asp-action="Index">Usuários</a></li>
+                        <li><a class="dropdown-item" asp-controller="Permissao" asp-action="Index">Permissões</a></li>
                     </ul>
                 </li>
             </ul>

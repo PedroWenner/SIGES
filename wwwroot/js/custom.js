@@ -4,6 +4,7 @@
     $("input[type='file']").addClass("form-control form-control-sm");
     $("input[type='password']").addClass("form-control form-control-sm");
     $("input[type='date']").addClass("form-control form-control-sm");
+    $("select").addClass("form-select form-select-sm");
 
     $('.datetime').datepicker();
 
@@ -12,34 +13,16 @@
         element.classList.add('tip-bottom');
     });
 
-    $("select").each(function () {
-        var currentId = $(this).attr('multiple');
-        if ($(this).attr('id') != undefined) {
-            if (typeof currentId === 'undefined' && $(this).attr('id').indexOf('_list') == -1 && $(this).attr('id').indexOf('_lst') == -1 && $(this).attr('id').indexOf('_chklist') == -1) {
-                $(this).attr('data-plugin-selectTwo', 'data-plugin-selectTwo');
-                //$(this).addClass("form-control populate input-sm mb-md");
-            }
+    // Aqui será percorrido todos os inputs com required para atribuir o *
+    const requiredFields = document.querySelectorAll("[required]");
+    requiredFields.forEach((field) => {
+        const label = field.closest("form").querySelector(`label[for='${field.id}']`);
+        if (label && !label.innerHTML.includes("*")) {
+            label.innerHTML += ' <span class="text-danger">*</span>';
         }
     });
+    //
 
-    (function ($) {
-        'use strict';
-
-        if ($.isFunction($.fn['select2'])) {
-            $(function () {
-                $('[data-plugin-selectTwo]').each(function () {
-                    var $this = $(this),
-                        opts = {};
-
-                    var pluginOptions = $this.data('plugin-options');
-                    if (pluginOptions)
-                        opts = pluginOptions;
-
-                    $this.themePluginSelect2(opts);
-                });
-            });
-        }
-    }).apply(this, [jQuery]);
 }
 
 $(document).ready(function () {

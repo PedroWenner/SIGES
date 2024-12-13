@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIGES.Attributes;
 using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
@@ -9,16 +10,18 @@ using SIGES.ViewModel;
 namespace SIGES.Controllers
 {
     [Authorize]
-    [Route("dashboard/categorias")]
+    [Route("categorias")]
     public class CategoriaController : Controller
     {
         private readonly ICategoriaRepositorio _categoriaRepositorio;
         private readonly ILogService _logServiceRepositorio;
+        private readonly IPermissaoRepositorio _permissaoRepositorio;
 
-        public CategoriaController(ICategoriaRepositorio categoriaRepositorio, ILogService logServiceRepositorio)
+        public CategoriaController(ICategoriaRepositorio categoriaRepositorio, ILogService logServiceRepositorio, IPermissaoRepositorio permissaoRepositorio)
         {
             _categoriaRepositorio = categoriaRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
+            _permissaoRepositorio = permissaoRepositorio;
         }
 
         [HttpGet("")]
@@ -39,9 +42,16 @@ namespace SIGES.Controllers
             return View("LCategoria", categoriaViewModel);
         }
 
+        [Permissao("ACategoria")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
+            var userId = int.Parse(User.Claims.First(c => c.Type == "UserId").Value);
+            if (!await _permissaoRepositorio.VerificarPermissao(userId, "ACategoria"))
+            {
+                return Forbid(); // Retorna 403 (Proibido)
+            }
+
             // Obtém o próximo código
             var proximoCodigo = await _categoriaRepositorio.GetMaxId() + 1;
 

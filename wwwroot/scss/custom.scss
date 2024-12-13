@@ -1,0 +1,8 @@
+@import "../mdbBoostrap/src/scss/bootstrap/_functions.scss";
+@import "../mdbBoostrap/src/scss/bootstrap/_variables.scss";
+@import "../mdbBoostrap/src/scss/bootstrap/_mixins.scss";
+
+$enable-button-pointers: true; // Desativa pointer-events nos botões
+
+// Importa o restante do Bootstrap
+@import "../mdbBoostrap/src/scss/bootstrap/bootstrap.scss";

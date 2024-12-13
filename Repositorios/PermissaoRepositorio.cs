@@ -2,6 +2,7 @@
 using SIGES.Interfaces;
 using SIGES.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace SIGES.Repositorios
 {
@@ -46,6 +47,29 @@ namespace SIGES.Repositorios
                 _context.Permissoes.Remove(permissao);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        // Métodos para gerenciar permissões do usuário
+        public async Task<List<PermissaoDetalheModel>> ObterPermissoesUsuario(int userId)
+        {
+            var usuario = await _context.Usuarios
+                .Include(u => u.Permissao)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (usuario?.Permissao?.Permissoes == null)
+                return new List<PermissaoDetalheModel>();
+
+            // Desserializar o JSON para uma lista de PermissaoDetalheModel
+            return JsonConvert.DeserializeObject<List<PermissaoDetalheModel>>(usuario.Permissao.Permissoes) ?? new List<PermissaoDetalheModel>();
+        }
+
+        public async Task<bool> VerificarPermissao(int userId, string permissao)
+        {
+            var usuario = await _context.Usuarios
+                .Include(u => u.Permissao)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return usuario != null && usuario.Permissao != null && usuario.Permissao.Nome == permissao;
         }
     }
 }

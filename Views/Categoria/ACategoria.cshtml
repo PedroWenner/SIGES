@@ -3,13 +3,6 @@
 @{
     ViewData["Titulo"] = "Adicionar categoria";
 }
-<style>
-    input.is-invalid::placeholder {
-        color: #dc3545; /* Vermelho para erro */
-        opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
-        font-size: 12px;
-    }
-</style>
 
 <div class="container mt-4">
     <div class="card shadow-sm">
@@ -36,7 +29,7 @@
                 <!-- Imagem -->
                 <div class="mb-3">
                     <label for="imagem" class="form-label">Imagem</label>
-                    <input type="file" id="imagem" name="imagemCategoria" accept="image/*" onchange="previewImage(event)" />
+                    <input type="file" id="imagem" name="imagemCategoria" accept="image/*" onchange="previewImage(event)" required />
                 </div>
 
                 <!-- Pré-visualização da imagem -->
