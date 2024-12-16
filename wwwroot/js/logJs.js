@@ -57,7 +57,7 @@ $(document).on('click', '.btn-exibir-log', function (e) {
                     },
                     paging: true,
                     searching: false,
-                    ordering: true,
+                    ordering: false,
                     info: true,
                     lengthChange: false,
                     autoWidth: false,

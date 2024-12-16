@@ -76,17 +76,31 @@ namespace SIGES.Controllers
         [HttpPost("editar/{id}")]
         public async Task<IActionResult> Editar(int id, ClienteModel cliente)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("ECliente", cliente);
-            }
-
             var clienteExistente = await _clienteRepositorio.ObterPorId(id);
 
             if (clienteExistente == null)
             {
                 TempData["Error"] = "Cliente não encontrado.";
                 return RedirectToAction("Index");
+            }
+
+            string senhaCript = string.Empty;
+            if (string.IsNullOrEmpty(cliente.Senha))
+            {
+                cliente.Senha = clienteExistente.Senha;
+                senhaCript = BCrypt.Net.BCrypt.HashPassword(cliente.Senha);
+                cliente.Senha = senhaCript;
+            }
+            else
+            {
+                // Criptografa a senha antes de salvar
+                senhaCript = BCrypt.Net.BCrypt.HashPassword(cliente.Senha);
+                cliente.Senha = senhaCript;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("ECliente", cliente);
             }
 
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
@@ -108,6 +122,7 @@ namespace SIGES.Controllers
             clienteExistente.Bairro = cliente.Bairro;
             clienteExistente.Cidade = cliente.Cidade;
             clienteExistente.Estado = cliente.Estado;
+            clienteExistente.Senha = cliente.Senha;
 
             await _clienteRepositorio.Atualizar(clienteExistente);
 

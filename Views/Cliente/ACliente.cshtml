@@ -1,5 +1,239 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ClienteModel
+
 @{
+    ViewData["Titulo"] = "Adicionar cliente";
 }
+
+<script src="~/js/funcoes.js"></script>
+<script src="~/js/jquery.mask.min.js"></script>
+
+<style>
+    #imgSenha {
+        width: 18px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastrar cliente</h5>
+        </div>
+        <div class="card-body">
+            <form id="formCliente" method="post" asp-controller="Cliente" asp-action="Adicionar">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- CPF/CNPJ -->
+                        <div class="mb-3 col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="documento" class="form-label">CPF/CNPJ</label>
+                                    <input id="documento" type="text" asp-for="Documento" class="cpfcnpj" required />
+                                    <span asp-validation-for="Documento" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4 d-flex align-content-end flex-wrap">
+                                    <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nome/Razão Social -->
+                        <div class="mb-3 col-md-6">
+                            <label for="nome" class="form-label">Nome/Razão Social</label>
+                            <input id="nome" type="text" asp-for="Nome" required />
+                            <span asp-validation-for="Nome" class="text-danger"></span>
+                        </div>
+
+                        <!-- Telefone -->
+                        <div class="mb-3 col-md-6">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input id="telefone" type="text" asp-for="Telefone" />
+                            <span asp-validation-for="Telefone" class="text-danger"></span>
+                        </div>
+
+                        <!-- Celular -->
+                        <div class="mb-3 col-md-6">
+                            <label for="celular" class="form-label">Celular</label>
+                            <input id="celular" type="text" asp-for="Celular" />
+                            <span asp-validation-for="Celular" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3 col-md-6">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input id="email" type="text" asp-for="Email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Senha -->
+                        <div class="mb-3 col-md-4">
+                            <label for="senha" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <input id="senha" type="password" asp-for="Senha" required aria-describedby="imgSenha">
+                                <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+                                    <img id="imgSenha" src="@Url.Content("~/img/eye.svg")" alt="Mostrar Senha">
+                                </button>
+                            </div>
+                            <span asp-validation-for="Senha" class="help-block"></span>
+                        </div>
+
+                        <!-- Tipo de Cliente -->
+                        <div class="mb-3 col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="Fornecedor" value="0" id="fornecedor">
+                                <label class="form-check-label" for="fornecedor">
+                                    Fornecedor
+                                </label>
+                                <span asp-validation-for="Fornecedor" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <!-- CEP -->
+                        <div class="mb-3 col-md-4">
+                            <label for="cep" class="form-label">CEP</label>
+                            <input id="cep" type="text" asp-for="Cep" />
+                            <span asp-validation-for="Cep" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <!-- Rua -->
+                            <div class="mb-3 col-md-6">
+                                <label for="rua" class="form-label">Rua</label>
+                                <input id="rua" type="text" asp-for="Rua" />
+                                <span asp-validation-for="Rua" class="text-danger"></span>
+                            </div>
+
+                            <!-- Número -->
+                            <div class="mb-3 col-md-4">
+                                <label for="numeroRua" class="form-label">Número</label>
+                                <input id="numeroRua" type="text" asp-for="NumeroRua" />
+                                <span asp-validation-for="NumeroRua" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Complemento -->
+                        <div class="mb-3 col-md-6">
+                            <label for="complemento" class="form-label">Complemento</label>
+                            <input id="complemento" type="text" asp-for="Complemento" />
+                            <span asp-validation-for="Complemento" class="text-danger"></span>
+                        </div>
+
+                        <!-- Bairro -->
+                        <div class="mb-3 col-md-6">
+                            <label for="bairro" class="form-label">Bairro</label>
+                            <input id="bairro" type="text" asp-for="Bairro" />
+                            <span asp-validation-for="Bairro" class="text-danger"></span>
+                        </div>
+
+                        <!-- Cidade -->
+                        <div class="mb-3 col-md-6">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input id="cidade" type="text" asp-for="Cidade" />
+                            <span asp-validation-for="Cidade" class="text-danger"></span>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="mb-3 col-md-6">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select id="estado" asp-for="Estado">
+                                <option value="">Selecione...</option>
+                            </select>
+                            <span asp-validation-for="Estado" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-center mt-2">
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Adicionar</span>
+                    </button>
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Cliente" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                        <span class="button__text2">Voltar</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        let container = document.querySelector('div');
+        let input = document.querySelector('#senha');
+        let icon = document.querySelector('#imgSenha');
+
+        icon.addEventListener('click', function() {
+            container.classList.toggle('visible');
+            if (container.classList.contains('visible')) {
+                icon.src = '@Url.Content("~/img/eye-off.svg")'
+                input.type = 'text';
+            } else {
+                icon.src = '@Url.Content("~/img/eye.svg")'
+                input.type = 'password';
+            }
+        });
+
+        // Carrega os estados do arquivo JSON
+        $.getJSON('@Url.Content("~/json/estados.json")', function (data) {
+            if (data && data.estados && data.estados.length > 0) {
+                for (var i = 0; i < data.estados.length; i++) {
+                    $('#estado').append(new Option(data.estados[i].nome, data.estados[i].sigla));
+                }
+            } else {
+                console.error('Arquivo JSON não possui as medidas esperadas.');
+            }
+        });
+
+        $("#nomeCliente").focus();
+
+        $('#formCliente').validate({
+            rules: {
+                'Nome': {
+                    required: true
+                },
+                'Documento': {
+                    required: true
+                },
+                'Senha': {
+                    required: true
+                },
+            },
+            messages: {
+                'Nome': {
+                    required: 'Campo nome é obrigatório.'
+                },
+                'Documento': {
+                    required: 'Campo CPF/CNPJ é obrigatório.'
+                },
+                'Senha': {
+                    required: 'Campo senha é obrigatório.'
+                },
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+
+        $('#fornecedor').change(function () {
+            $(this).val(this.checked ? "1" : "0");
+        });
+    });
+</script>

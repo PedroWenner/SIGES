@@ -60,7 +60,7 @@
                 {
                     <!--Bloco do clientes-->
                     <li class="@(routesClient.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Clientes">
-                        <a href="#">
+                        <a asp-controller="Cliente" asp-action="Index">
                             <i class='bx bx-user iconX'></i>
                             <span class="title">Clientes / Fornecedor</span>
                             <span class="title-tooltip">Clientes</span>

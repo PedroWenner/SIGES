@@ -11,7 +11,6 @@
     columnDefs: [
         { orderable: false, targets: -1 } // Desativa ordenação na última coluna (Ação)
     ],
-    dom: 'lrtip',           // Configuração da estrutura (ajuste conforme necessário)
     autoWidth: false,       // Evita larguras automáticas
     pageLength: 20
 });
