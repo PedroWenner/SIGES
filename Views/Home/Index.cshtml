@@ -92,7 +92,7 @@
     <div class="Sspan12">
         <div class="widget-box2" style="height: 300px; overflow-x: auto;">
             <div>
-                <h5 class="cardHeader">Pedidos em aberto</h5>
+                <h5 class="cardHeader">OS em aberto</h5>
             </div>
             <div class="widget-content">
                 <table>
@@ -108,41 +108,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.Pedidos == null || !Model.Pedidos.Any(p => p.Status == 2))
+                        @if (Model.Os == null || Model.Os.Count == 0)
                         {
                             <tr>
-                                <td colspan="7">Nenhum pedido cadastrado</td>
+                                <td colspan="7">Nenhuma OS cadastrada</td>
                             </tr>
                         }
                         else
                         {
-                            @foreach (var pedido in Model.Pedidos.Where(x => x.Status == 0).OrderBy(p => p.Id))
+                            @foreach (var os in Model.Os)
                             {
-                                var status = string.Empty;
-                                var textoStatus = string.Empty;
-                                if (@pedido.Status.Equals(0))
-                                {
-                                    status = "situacao-ativo";
-                                    textoStatus = "Em aberto";
-                                }
-                                else if (@pedido.Status.Equals(1))
-                                {
-                                    status = "situacao-fazendo";
-                                    textoStatus = "Em andamento";
-                                }
-                                else if (@pedido.Status.Equals(2))
-                                {
-                                    status = "situacao-inativo";
-                                    textoStatus = "Entregue";
-                                }
-
                                 <tr>
-                                    <td style="width: 5%; text-align: center;">@pedido.Id</td>
-                                    <td style="width: 50%;">@pedido.Cliente.Nome</td>
-                                    <td style="width: 5%; text-align:center;">@pedido.Qtd</td>
-                                    <td style="width: 10%; text-align:center;">@pedido.Valor.ToString("C")</td>
-                                    <td style="width: 20%;">@pedido.DataPedido</td>
-                                    <td style="width: 10%;"><span class="badge @status">@textoStatus</span></td>
+                                    <td style="width: 5%; text-align: center;">@os.Id</td>
+                                    <td style="width: 50%;">@os.Cliente.Nome</td>
+                                    <td style="width: 10%;"><span class="badge">@os.Status</span></td>
                                     <td style="width: 10%;"></td>
                                 </tr>
                             }
@@ -176,7 +155,7 @@
                     <a href="#" class="card tip-top text-decoration-none" title="Adicionar pedido">
                         <div><i class='bx bxs-cart-alt iconBx5'></i></div>
                         <div>
-                            <div class="cardName2">@Model.Pedidos.Count()</div>
+                            <div class="cardName2">@Model.Os.Count()</div>
                             <div class="cardName">Pedidos</div>
                         </div>
                     </a>

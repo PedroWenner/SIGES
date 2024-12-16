@@ -5,6 +5,6 @@ namespace SIGES.ViewModel
 {
     public class CategoriaViewModel
     {
-        public Paginacao<CategoriaModel> Categorias { get; set; }
+        public IList<CategoriaModel> Categorias { get; set; } = new List<CategoriaModel>();
     }
 }

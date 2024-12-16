@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIGES.Attributes;
 using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
@@ -23,23 +24,22 @@ namespace SIGES.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> Index(int? pagina)
+        public async Task<IActionResult> Index()
         {
-            // Carregar os dados para a View
-            var permissoes = _permissaoRepositorio.Listar().AsQueryable();
-            int registrosPorPagina = 15;
-
-            var permissoesPaginadas = await Paginacao<PermissaoModel>.CreateAsync(permissoes, pagina ?? 1, registrosPorPagina);
-
-            // Montar um ViewModel para enviar os dados para a View
+            var permissoes = _permissaoRepositorio.Listar();
             var permissaoViewModel = new PermissaoViewModel
             {
-                Permissoes = permissoesPaginadas
+                Permissoes = permissoes.ToList(),
             };
+
+            // Obter permissões do usuário logado
+            var permissoesUsuario = HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
+            ViewData["PermissoesUsuario"] = permissoesUsuario;
 
             return View("LPermissao", permissaoViewModel);
         }
 
+        [Permissao("aPermissao")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
@@ -96,6 +96,7 @@ namespace SIGES.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permissao("ePermissao")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {

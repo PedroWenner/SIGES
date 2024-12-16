@@ -4,14 +4,14 @@ namespace SIGES.Interfaces
 {
     public interface IClienteRepositorio
     {
-        Task<List<ClienteModel>> ListarTodos();
-        
-        Task Adicionar(ClienteModel cliente);
+        IEnumerable<ClienteModel> Listar();
 
-        Task<ClienteModel> ObterClientePorId(int? id);
+        Task<ClienteModel?> ObterPorId(int id);
+
+        Task Adicionar(ClienteModel cliente);
 
         Task Atualizar(ClienteModel cliente);
 
-        Task<ClienteModel> Excluir(int id);
+        Task Excluir(int id);
     }
 }

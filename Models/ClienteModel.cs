@@ -55,7 +55,6 @@ namespace SIGES.Models
 
         [IgnoreLog]
         [ValidateNever]
-        public ICollection<PedidoModel> Pedidos { get; set; }
-
+        public ICollection<OsModel> Ordens { get; set; } = new List<OsModel>();
     }
 }

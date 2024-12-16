@@ -33,7 +33,13 @@ namespace SIGES.Controllers
             if (usuario == null || !_authService.VerificarSenha(usuario.Senha, senha))
             {
                 ViewBag.Error = "Os dados de acesso estão incorretos. Por favor, tente novamente.";
-                return View();
+                return View(usuario);
+            }
+
+            if (usuario.DataExpiracao < DateTime.Now)
+            {
+                ViewBag.Error = "O usuário que você está utilizando para acesso expirou. Contate seu superior.";
+                return View(usuario);
             }
 
             // Criação do cookie de autenticação

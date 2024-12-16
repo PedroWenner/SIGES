@@ -216,6 +216,21 @@
                         </script>
                     }
 
+                    @if (Context.Session.GetString("PermissaoMensagem") is string mensagem && !string.IsNullOrEmpty(mensagem))
+                    {
+                        <script type="text/javascript">
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'warning',
+                                text: '@Html.Raw(@mensagem)',
+                                showConfirmButton: true,
+                                timer: 4000
+                            });
+                        </script>
+                        
+                        Context.Session.Remove("PermissaoMensagem");
+                    }
+
                 </div>
             </div>
         </div>

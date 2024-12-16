@@ -14,16 +14,18 @@ namespace SIGES.Repositorios
             _context = context;
         }
 
-        public async Task<int> GetMaxCodigo()
+        public IEnumerable<ProdutoModel> Listar()
         {
-            return await _context.Produtos.MaxAsync(c => (int?)c.Codigo) ?? 0;
+            return _context.Produtos
+                .Include(p => p.Categoria)
+                .ToList();
         }
 
-        public async Task<IList<ProdutoModel>> Listar()
+        public async Task<ProdutoModel?> ObterPorId(int id)
         {
             return await _context.Produtos
-                .Include(p => p.Categoria) // Faz o join com a tabela de categorias
-                .ToListAsync();
+                .Include(p => p.Categoria)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task Adicionar(ProdutoModel produto)
@@ -32,48 +34,21 @@ namespace SIGES.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ProdutoModel> ObterProdutoPorId(int? id)
-        {
-            return await _context.Produtos.FindAsync(id);
-        }
-
         public async Task Atualizar(ProdutoModel produto)
         {
-            var produtoExistente = await _context.Produtos.FindAsync(produto.Id);
-
-            if (produtoExistente != null)
-            {
-                produtoExistente.Codigo = produto.Codigo;
-                produtoExistente.Status = produto.Status;
-                produtoExistente.Descricao = produto.Descricao;
-                produtoExistente.Peso = produto.Peso;
-                produtoExistente.UnidadeMedida = produto.UnidadeMedida;
-                produtoExistente.CategoriaId = produto.CategoriaId;
-                produtoExistente.Valor = produto.Valor;
-                produtoExistente.Observacao = produto.Observacao;
-                produtoExistente.ImagemBlob = produto.ImagemBlob;
-
-                await _context.SaveChangesAsync();
-            }
+            _context.Produtos.Update(produto);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<ProdutoModel> Excluir(int id)
+        public async Task Excluir(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await _context.Produtos.FirstOrDefaultAsync(c => c.Id == id);
+
             if (produto != null)
             {
                 _context.Produtos.Remove(produto);
                 await _context.SaveChangesAsync();
             }
-
-            return produto;
-        }
-
-        public async Task<IList<ProdutoModel>> ObterProdutosPorCategoriaId(int categoriaId)
-        {
-            return await _context.Produtos
-                .Where(p => p.CategoriaId == categoriaId)
-                .ToListAsync();
         }
     }
 }

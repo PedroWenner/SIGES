@@ -112,11 +112,14 @@
                 </div>
 
                 <div class="row">
-                    <!-- Senha -->
                     <div class="col-md-2 mb-3 position-relative">
                         <label for="senha" class="form-label">Senha</label>
-                        <input id="senha" type="password" asp-for="Usuario.Senha">
-                        <img id="imgSenha" src="@Url.Content("~/img/eye.svg")" alt="Mostrar Senha" class="position-absolute top-50 end-0 translate-middle-y me-3 mt-3">
+                        <div class="input-group">
+                            <input id="senha" type="password" asp-for="Usuario.Senha" aria-describedby="imgSenha">
+                            <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+                                <img id="imgSenha" src="@Url.Content("~/img/eye.svg")" alt="Mostrar Senha">
+                            </button>
+                        </div>
                         <span asp-validation-for="Usuario.Senha" class="help-block"></span>
                     </div>
 

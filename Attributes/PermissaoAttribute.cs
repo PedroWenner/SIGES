@@ -20,7 +20,7 @@ namespace SIGES.Attributes
 
             if (!int.TryParse(userIdClaim, out int userId))
             {
-                context.Result = new ForbidResult();
+                RedirecionarComMensagem(context, "Usuário não autenticado. Faça login novamente.");
                 return;
             }
 
@@ -28,10 +28,21 @@ namespace SIGES.Attributes
             var permissoes = context.HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
 
             // Verificar se o usuário possui a permissão necessária
-            if (permissoes == null || !permissoes.Any(p => p.NomePermissao == _permissao && p.Ativo == 1))
+            if (permissoes == null || !permissoes.Any(p => p.NomePermissao == _permissao))
             {
-                context.Result = new ForbidResult();
+                if (!permissoes.Any(p => p.Ativo == 1))
+                {
+                    RedirecionarComMensagem(context, "Permissão utilizada não está mais ativa.");
+                }
+
+                RedirecionarComMensagem(context, "Você não tem permissão para acessar esta funcionalidade.");
             }
+        }
+
+        private void RedirecionarComMensagem(AuthorizationFilterContext context, string mensagem)
+        {
+            context.HttpContext.Session.SetString("PermissaoMensagem", mensagem);
+            context.Result = new RedirectToActionResult("Index", "Home", null);
         }
     }
 }

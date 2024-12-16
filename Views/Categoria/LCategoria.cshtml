@@ -3,6 +3,8 @@
 
 @{
     ViewData["Titulo"] = "Categorias";
+    var permissoesUsuario = ViewData["PermissoesUsuario"] as List<PermissaoDetalheModel> ?? new List<PermissaoDetalheModel>();
+    Func<string, bool> temPermissao = (perm) => permissoesUsuario.Any(p => p.NomePermissao == perm && p.Ativo == 1);
 }
 
 <div class="new122">
@@ -14,14 +16,20 @@
     </div>
     <div class="span12" style="margin-left: 0">
         <div class="span3">
-            <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" data-toggle="modal" asp-controller="Categoria" asp-action="Adicionar">
-                <span class="button__icon">
-                    <i class='bx bx-plus-circle'></i>
-                </span>
-                <span class="button__text2">
-                    Categoria
-                </span>
-            </a>
+            @if (temPermissao("aCategoria"))
+            {
+                <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Categoria" asp-action="Adicionar">
+                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                    <span class="button__text2">Categoria</span>
+                </a>
+            }
+            else
+            {
+                <a role="button" class="button btn btn-mini btn-secondary disabled" style="max-width: 100px" title="Você não tem permissão para adicionar">
+                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                    <span class="button__text2">Categoria</span>
+                </a>
+            }
         </div>
     </div>
 
@@ -54,12 +62,30 @@
                                     <a href="#" data-entidade="CategoriaModel" data-id="@categoria.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
                                     </a>
-                                    <a asp-controller="Categoria" asp-action="Editar" asp-route-id="@categoria.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar categoria">
-                                        <i class="bx bx-edit bx-xs"></i>
-                                    </a>
-                                    <a href="#modal-excluir" data-id="@categoria.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir categoria">
-                                        <i class="bx bx-trash-alt bx-xs"></i>
-                                    </a>
+                                    @if (temPermissao("eCategoria"))
+                                    {
+                                        <a asp-controller="Categoria" asp-action="Editar" asp-route-id="@categoria.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar categoria">
+                                            <i class="bx bx-edit bx-xs"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para editar">
+                                            <i class="bx bx-edit bx-xs"></i>
+                                        </a>
+                                    }
+                                    @if (temPermissao("dCategoria"))
+                                    {
+                                        <a href="#modal-excluir" data-id="@categoria.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir categoria">
+                                            <i class="bx bx-trash-alt bx-xs"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para excluir">
+                                            <i class="bx bx-trash-alt bx-xs"></i>
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }

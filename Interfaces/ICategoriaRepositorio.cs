@@ -8,7 +8,7 @@ namespace SIGES.Interfaces
 
         Task Adicionar(CategoriaModel categoria);
 
-        IQueryable<CategoriaModel> Listar();
+        IEnumerable<CategoriaModel> Listar();
 
         Task<CategoriaModel?> ObterPorId(int id);
 

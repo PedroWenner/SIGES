@@ -15,10 +15,9 @@ namespace SIGES.Repositorios
             _context = context;
         }
 
-        public IQueryable<PermissaoModel> Listar()
+        public IEnumerable<PermissaoModel> Listar()
         {
-            return _context.Permissoes
-                .AsQueryable();
+            return _context.Permissoes.ToList();
         }
 
         public async Task<PermissaoModel?> ObterPorId(int id)

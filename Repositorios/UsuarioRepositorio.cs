@@ -14,11 +14,11 @@ namespace SIGES.Repositorios
             _context = context;
         }
 
-        public IQueryable<UsuarioModel> Listar()
+        public IEnumerable<UsuarioModel> Listar()
         {
             return _context.Usuarios
                 .Include(x => x.Permissao)
-                .AsQueryable();
+                .ToList();
         }
 
         public async Task<UsuarioModel?> ObterPorId(int id)

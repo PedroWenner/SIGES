@@ -24,19 +24,17 @@ namespace SIGES.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> Index(int? pagina)
+        public async Task<IActionResult> Index()
         {
-            // Carregar os dados para a View
-            var usuarios = _usuarioRepositorio.Listar().AsQueryable();
-            int registrosPorPagina = 15;
-
-            var usuarioPaginada = await Paginacao<UsuarioModel>.CreateAsync(usuarios, pagina ?? 1, registrosPorPagina);
-
-            // Montar um ViewModel para enviar os dados para a View
+            var usuarios = _usuarioRepositorio.Listar();
             var usuarioViewModel = new UsuarioViewModel
             {
-                Usuarios = usuarioPaginada
+                Usuarios = usuarios.ToList()
             };
+
+            // Obter permissões do usuário logado
+            var permissoesUsuario = HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
+            ViewData["PermissoesUsuario"] = permissoesUsuario;
 
             return View("LUsuario", usuarioViewModel);
         }
@@ -99,6 +97,7 @@ namespace SIGES.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permissao("eUsuario")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
@@ -187,6 +186,7 @@ namespace SIGES.Controllers
             usuarioExistente.DataExpiracao = usuario.DataExpiracao;
             usuarioExistente.Situacao = usuario.Situacao;
             usuarioExistente.PermissaoId = usuario.PermissaoId;
+            usuarioExistente.Senha = usuario.Senha;
 
             // Verifica se uma nova imagem foi enviada
             if (imagemUsuario != null)

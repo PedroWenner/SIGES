@@ -5,7 +5,7 @@ namespace SIGES.ViewModel
 {
     public class UsuarioViewModel
     {
-        public Paginacao<UsuarioModel> Usuarios { get; set; }
+        public IList<UsuarioModel> Usuarios { get; set; } = new List<UsuarioModel>();
         public IList<PermissaoModel> Permissoes { get; set; } = new List<PermissaoModel>();
         public UsuarioModel Usuario { get; set; }
     }

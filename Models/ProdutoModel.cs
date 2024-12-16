@@ -39,9 +39,5 @@ namespace SIGES.Models
 
         [IgnoreLog]
         public byte[]? ImagemBlob { get; set; }
-
-        [IgnoreLog]
-        [ValidateNever]
-        public ICollection<PedidoModel> Pedidos { get; set; }
     }
 }

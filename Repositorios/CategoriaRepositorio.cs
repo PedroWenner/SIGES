@@ -19,9 +19,10 @@ namespace SIGES.Repositorios
             return await _context.Categorias.MaxAsync(c => (int?)c.Id) ?? 0;
         }
 
-        public IQueryable<CategoriaModel> Listar()
+        public IEnumerable<CategoriaModel> Listar()
         {
-            return _context.Categorias.AsQueryable();
+            return _context.Categorias
+                .ToList();
         }
 
         public async Task<CategoriaModel?> ObterPorId(int id)

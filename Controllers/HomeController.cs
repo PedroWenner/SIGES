@@ -13,13 +13,13 @@ namespace SIGES.Controllers
     {
         private readonly IClienteRepositorio _clienteRepositorio;
         private readonly IProdutoRepositorio _produtoRepositorio;
-        private readonly IPedidoRepositorio _pedidoRepositorio;
+        private readonly IOs _osRepositorio;
 
-        public HomeController(IClienteRepositorio clienteRepositorio, IProdutoRepositorio produtoRepositorio, IPedidoRepositorio pedidoRepositorio)
+        public HomeController(IClienteRepositorio clienteRepositorio, IProdutoRepositorio produtoRepositorio, IOs osRepositorio)
         {
             _clienteRepositorio = clienteRepositorio;
             _produtoRepositorio = produtoRepositorio;
-            _pedidoRepositorio = pedidoRepositorio;
+            _osRepositorio = osRepositorio;
         }
 
         public async Task<IActionResult> Index()
@@ -28,16 +28,16 @@ namespace SIGES.Controllers
             ViewBag.NomeUsuario = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
 
             // Carregar os dados para a View
-            var clientes = await _clienteRepositorio.ListarTodos();
-            var produtos = await _produtoRepositorio.Listar();
-            var pedidos = await _pedidoRepositorio.ListarTodos();
+            var clientes = _clienteRepositorio.Listar();
+            var produtos = _produtoRepositorio.Listar();
+            var os = _osRepositorio.Listar();
 
             // Montar um ViewModel para enviar os dados para a View
             var homeViewModel = new HomeViewModel
             {
-                Clientes = clientes,
-                Produtos = produtos,
-                Pedidos = pedidos
+                Clientes = clientes.ToList(),
+                Produtos = produtos.ToList(),
+                Os = os.ToList()
             };
 
             return View(homeViewModel);

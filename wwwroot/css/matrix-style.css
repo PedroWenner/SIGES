@@ -1588,6 +1588,11 @@ section .profile .profile-img {
   text-shadow: 0 0 3px rgba(0, 255, 157, 0.8);
 }
 
+.btn-nwe3-disabled {
+    color: #585a5f;
+    text-shadow: 0 0 3px rgb(144 155 151 / 80%);
+}
+
 .btn-nwe4 {
   color      : #585a5f;
   text-shadow: 0 0 3px rgba(243, 11, 11, 0.8);

@@ -4,7 +4,7 @@ namespace SIGES.Interfaces
 {
     public interface IPermissaoRepositorio
     {
-        IQueryable<PermissaoModel> Listar();
+        IEnumerable<PermissaoModel> Listar();
 
         Task<PermissaoModel?> ObterPorId(int id);
 

@@ -53,5 +53,13 @@ namespace SIGES.Models
         [IgnoreLog]
         [ValidateNever]
         public PermissaoModel Permissao { get; set; }
+
+        [IgnoreLog]
+        [ValidateNever]
+        public string Master { get; set; } = "N";
+
+        [IgnoreLog]
+        [ValidateNever]
+        public ICollection<OsModel> Ordens { get; set; } = new List<OsModel>();
     }
 }

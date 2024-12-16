@@ -4,7 +4,7 @@ namespace SIGES.Interfaces
 {
     public interface IUsuarioRepositorio
     {
-        IQueryable<UsuarioModel> Listar();
+        IEnumerable<UsuarioModel> Listar();
         
         Task<UsuarioModel?> ObterPorId(int id);
         

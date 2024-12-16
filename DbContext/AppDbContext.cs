@@ -1,5 +1,8 @@
 ﻿using SIGES.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using SIGES.Interfaces;
+using SIGES.Seeders;
 
 namespace SIGES.Data
 {
@@ -11,39 +14,24 @@ namespace SIGES.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ProdutoModel>()
-                .HasOne(l => l.Categoria)
-                .WithMany(c => c.Produtos)
-                .HasForeignKey(l => l.CategoriaId);
+            // Aplica todas as configurações de entidades definidas no assembly atual
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            modelBuilder.Entity<UsuarioModel>()
-                .HasOne(l => l.Permissao)
-                .WithMany(c => c.Usuarios)
-                .HasForeignKey(l => l.PermissaoId);
+            // Aplica os seeders
+            AplicarSeeders(modelBuilder);
+        }
 
-            // Seed para a tabela de Permissões
-            modelBuilder.Entity<PermissaoModel>().HasData(
-                new PermissaoModel
-                {
-                    Id = 1,
-                    Nome = "Admin",
-                    Situacao = 1
-                }
-            );
+        private void AplicarSeeders(ModelBuilder modelBuilder)
+        {
+            var seeders = new ISeeder[]
+            {
+                new UsuarioSeeder()
+            };
 
-            // Seed para a tabela de Usuários (com senha hasheada)
-            modelBuilder.Entity<UsuarioModel>().HasData(
-                new UsuarioModel
-                {
-                    Id = 1,
-                    Nome = "Admin",
-                    Cpf = "000.000.000-00",
-                    Email = "teste@teste.com",
-                    Senha = BCrypt.Net.BCrypt.HashPassword("123"),
-                    Situacao = 1,
-                    PermissaoId = 1
-                }
-            );
+            foreach (var seeder in seeders)
+            {
+                seeder.Seed(modelBuilder);
+            }
         }
 
         public DbSet<CategoriaModel> Categorias { get; set; }
@@ -51,7 +39,8 @@ namespace SIGES.Data
         public DbSet<ClienteModel> Clientes { get; set; }
         public DbSet<PermissaoModel> Permissoes { get; set; }
         public DbSet<UsuarioModel> Usuarios { get; set; }
-        public DbSet<PedidoModel> Pedidos { get; set; }
         public DbSet<LogAlteracaoModel> LogsOperacoes { get; set; }
+        public DbSet<ServicoModel> Servicos { get; set; }
+        public DbSet<OsModel> Ordens { get; set; }
     }
 }

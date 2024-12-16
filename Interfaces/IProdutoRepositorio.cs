@@ -4,18 +4,14 @@ namespace SIGES.Interfaces
 {
     public interface IProdutoRepositorio
     {
-        Task<int> GetMaxCodigo();
+        IEnumerable<ProdutoModel> Listar();
 
-        Task<IList<ProdutoModel>> Listar();
-
-        Task<ProdutoModel> ObterProdutoPorId(int? id);
+        Task<ProdutoModel?> ObterPorId(int id);
 
         Task Adicionar(ProdutoModel produto);
 
         Task Atualizar(ProdutoModel produto);
 
-        Task<ProdutoModel> Excluir(int id);
-
-        Task<IList<ProdutoModel>> ObterProdutosPorCategoriaId(int categoriaId);
+        Task Excluir(int id);
     }
 }

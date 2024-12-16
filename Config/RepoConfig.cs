@@ -13,8 +13,9 @@ namespace SIGES.Config
             //services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();
             services.AddScoped<IPermissaoRepositorio, PermissaoRepositorio>();
             services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
-            services.AddScoped<IPedidoRepositorio, PedidoRepositorio>();
             services.AddScoped<ILogService, LogServiceRepositorio>();
+            services.AddScoped<IServico, ServicoRepositorio>();
+            services.AddScoped<IOs, OsRepositorio>();
         }
     }
 }

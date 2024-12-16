@@ -144,7 +144,7 @@ namespace SIGES.Migrations
                     b.ToTable("LogsOperacoes");
                 });
 
-            modelBuilder.Entity("SIGES.Models.PedidoModel", b =>
+            modelBuilder.Entity("SIGES.Models.OsModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,28 +155,28 @@ namespace SIGES.Migrations
                     b.Property<int>("ClienteId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DataPedido")
+                    b.Property<DateTime?>("DataFinal")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("ProdutoId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("DataInicial")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<int>("Qtd")
-                        .HasColumnType("int");
+                    b.Property<string>("Observacao")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("ProdutoId");
+                    b.HasIndex("UsuarioId");
 
-                    b.ToTable("Pedidos");
+                    b.ToTable("Ordens");
                 });
 
             modelBuilder.Entity("SIGES.Models.PermissaoModel", b =>
@@ -208,7 +208,7 @@ namespace SIGES.Migrations
                         new
                         {
                             Id = 1,
-                            Nome = "Admin",
+                            Nome = "Master",
                             Situacao = 1
                         });
                 });
@@ -256,6 +256,29 @@ namespace SIGES.Migrations
                     b.ToTable("Produtos");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ServicoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Servicos");
+                });
+
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
                     b.Property<int>("Id")
@@ -288,6 +311,10 @@ namespace SIGES.Migrations
 
                     b.Property<byte[]>("ImagemBlob")
                         .HasColumnType("longblob");
+
+                    b.Property<string>("Master")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -326,30 +353,31 @@ namespace SIGES.Migrations
                             Id = 1,
                             Cpf = "000.000.000-00",
                             Email = "teste@teste.com",
+                            Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$V4X9REBguspnpRrVHi08BOPcyRCPNAYf8VRhceEG4VDx3cvLq7Nrq",
+                            Senha = "$2a$11$ce.X2fy4GYdVy.5UZeUTOOOqkpMDaLUAbHyh0ndqnNiXIlqOZqOU2",
                             Situacao = 1
                         });
                 });
 
-            modelBuilder.Entity("SIGES.Models.PedidoModel", b =>
+            modelBuilder.Entity("SIGES.Models.OsModel", b =>
                 {
                     b.HasOne("SIGES.Models.ClienteModel", "Cliente")
-                        .WithMany("Pedidos")
+                        .WithMany("Ordens")
                         .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SIGES.Models.ProdutoModel", "Produto")
-                        .WithMany("Pedidos")
-                        .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
+                        .WithMany("Ordens")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cliente");
 
-                    b.Navigation("Produto");
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("SIGES.Models.ProdutoModel", b =>
@@ -357,7 +385,7 @@ namespace SIGES.Migrations
                     b.HasOne("SIGES.Models.CategoriaModel", "Categoria")
                         .WithMany("Produtos")
                         .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Categoria");
@@ -368,7 +396,7 @@ namespace SIGES.Migrations
                     b.HasOne("SIGES.Models.PermissaoModel", "Permissao")
                         .WithMany("Usuarios")
                         .HasForeignKey("PermissaoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Permissao");
@@ -381,7 +409,7 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.ClienteModel", b =>
                 {
-                    b.Navigation("Pedidos");
+                    b.Navigation("Ordens");
                 });
 
             modelBuilder.Entity("SIGES.Models.PermissaoModel", b =>
@@ -389,9 +417,9 @@ namespace SIGES.Migrations
                     b.Navigation("Usuarios");
                 });
 
-            modelBuilder.Entity("SIGES.Models.ProdutoModel", b =>
+            modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
-                    b.Navigation("Pedidos");
+                    b.Navigation("Ordens");
                 });
 #pragma warning restore 612, 618
         }
