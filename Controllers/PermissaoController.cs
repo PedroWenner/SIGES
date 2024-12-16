@@ -32,10 +32,6 @@ namespace SIGES.Controllers
                 Permissoes = permissoes.ToList(),
             };
 
-            // Obter permissões do usuário logado
-            var permissoesUsuario = HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
-            ViewData["PermissoesUsuario"] = permissoesUsuario;
-
             return View("LPermissao", permissaoViewModel);
         }
 

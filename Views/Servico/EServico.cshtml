@@ -1,0 +1,82 @@
+﻿@model ServicoModel
+
+@{
+    ViewData["Titulo"] = "Editar serviço";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastrar serviço</h5>
+        </div>
+        <div class="card-body">
+            <form id="formServico" method="post" asp-controller="Servico" asp-action="Editar">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <!-- Nome -->
+                    <div class="mb-3 col-md-4">
+                        <label for="nome" class="form-label">Nome</label>
+                        <input id="nome" type="text" asp-for="Nome" required />
+                        <span asp-validation-for="Nome" class="text-danger"></span>
+                    </div>
+
+                    <!-- Preço -->
+                    <div class="mb-3 col-md-2">
+                        <label for="valor" class="form-label">Valor</label>
+                        <input id="valor" type="text" asp-for="Valor" class="money" data-affixes-stay="true" data-thousands="." data-decimal="," required />
+                        <span asp-validation-for="Valor" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descricao</label>
+                    <input type="text" asp-for="Descricao" />
+                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Adicionar</span>
+                    </button>
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Servico" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                        <span class="button__text2">Voltar</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".money").maskMoney();
+        $('#formServico').validate({
+            rules: {
+                'Nome': { required: true },
+                'Valor': { required: true }
+            },
+            messages: {
+                'Descricao': { required: 'Campo nome é obrigatório.' },
+                'Valor': { required: 'Campo valor é obrigatório.' }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+</script>

@@ -19,10 +19,7 @@ namespace SIGES.Middleware
 
                 if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int userId))
                 {
-                    // Obter permissões do usuário
                     var permissoes = await permissaoRepositorio.ObterPermissoesUsuario(userId);
-
-                    // Armazenar as permissões como uma lista no contexto
                     context.Items["Permissoes"] = permissoes;
                 }
             }

@@ -16,30 +16,21 @@ namespace SIGES.Controllers
     {
         private readonly ICategoriaRepositorio _categoriaRepositorio;
         private readonly ILogService _logServiceRepositorio;
-        private readonly IPermissaoRepositorio _permissaoRepositorio;
 
-        public CategoriaController(ICategoriaRepositorio categoriaRepositorio, ILogService logServiceRepositorio, IPermissaoRepositorio permissaoRepositorio)
+        public CategoriaController(ICategoriaRepositorio categoriaRepositorio, ILogService logServiceRepositorio)
         {
             _categoriaRepositorio = categoriaRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
-            _permissaoRepositorio = permissaoRepositorio;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            // Carregar os dados para a View
             var categorias = _categoriaRepositorio.Listar();
-
-            // Montar um ViewModel para enviar os dados para a View
             var categoriaViewModel = new CategoriaViewModel
             {
                 Categorias = categorias.ToList(),
             };
-
-            // Obter permissões do usuário logado
-            var permissoesUsuario = HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
-            ViewData["PermissoesUsuario"] = permissoesUsuario;
 
             return View("LCategoria", categoriaViewModel);
         }
@@ -48,12 +39,6 @@ namespace SIGES.Controllers
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
-            var userId = int.Parse(User.Claims.First(c => c.Type == "UserId").Value);
-            if (!await _permissaoRepositorio.VerificarPermissao(userId, "ACategoria"))
-            {
-                return Forbid();
-            }
-
             // Obtém o próximo código
             var proximoCodigo = await _categoriaRepositorio.GetMaxId() + 1;
 

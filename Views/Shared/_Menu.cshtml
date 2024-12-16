@@ -1,11 +1,13 @@
-﻿<!--sidebar-menu-->
+﻿@using SIGES.Helpers
+
+<!--sidebar-menu-->
 <nav id="sidebar">
     <div id="newlog">
         <div class="icon2">
             <img src="">
         </div>
         <div class="title1">
-            
+
         </div>
     </div>
     <a href="#" class="visible-phone">
@@ -54,41 +56,65 @@
                     </a>
                 </li>
 
-                <!--Bloco de pedidos-->
-                <li class="@(routesPedidos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Pedidos">
-                    <a href="#">
-                        <i class='bx bx-bell iconX'></i>
-                        <span class="title">Pedidos</span>
-                        <span class="title-tooltip">Pedidos</span>
-                    </a>
-                </li>
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCliente"))
+                {
+                    <!--Bloco do clientes-->
+                    <li class="@(routesClient.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Clientes">
+                        <a href="#">
+                            <i class='bx bx-user iconX'></i>
+                            <span class="title">Clientes / Fornecedor</span>
+                            <span class="title-tooltip">Clientes</span>
+                        </a>
+                    </li>
+                }
 
-                <!--Bloco de produtos-->
-                <li class="@(routesProdutos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Produtos">
-                    <a href="#">
-                        <i class='bx bx-shape-square iconX'></i>
-                        <span class="title">Produtos</span>
-                        <span class="title-tooltip">Produtos</span>
-                    </a>
-                </li>
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vProduto"))
+                {
+                    <!--Bloco de produtos-->
+                    <li class="@(routesProdutos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Produtos">
+                        <a asp-controller="Produto" asp-action="Index">
+                            <i class='bx bx-basket iconX'></i>
+                            <span class="title">Produtos</span>
+                            <span class="title-tooltip">Produtos</span>
+                        </a>
+                    </li>
+                }
+                
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vServico"))
+                {
+                    <!--Bloco de serviços-->
+                    <li class="@(routesProdutos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Serviços">
+                        <a asp-controller="Servicos" asp-action="Index">
+                            <i class='bx bx-wrench iconX'></i>
+                            <span class="title">Serviços</span>
+                            <span class="title-tooltip">Serviços</span>
+                        </a>
+                    </li>
+                }
 
-                <!--Bloco do clientes-->
-                <li class="@(routesClient.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Clientes">
-                    <a href="#">
-                        <i class='bx bx-user iconX'></i>
-                        <span class="title">Clientes</span>
-                        <span class="title-tooltip">Clientes</span>
-                    </a>
-                </li>
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vOs"))
+                {
+                    <!--Bloco de OS-->
+                    <li class="@(routesPedidos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="OS">
+                        <a asp-controller="Ordem" asp-action="Index">
+                            <i class='bx bx-file iconX'></i>
+                            <span class="title">Ordens de serviço</span>
+                            <span class="title-tooltip">Ordens</span>
+                        </a>
+                    </li>
+                }
 
-                <!--Bloco do Usuários-->
-                <li class="@(routesUsers.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Usuários">
-                    <a asp-controller="Usuario" asp-action="Index">
-                        <i class='bx bx-group iconX'></i>
-                        <span class="title">Usuários</span>
-                        <span class="title-tooltip">Usuários</span>
-                    </a>
-                </li>
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vUsuario"))
+                {
+                    <!--Bloco do Usuários-->
+                    <li class="@(routesUsers.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Usuários">
+                        <a asp-controller="Usuario" asp-action="Index">
+                            <i class='bx bx-group iconX'></i>
+                            <span class="title">Usuários</span>
+                            <span class="title-tooltip">Usuários</span>
+                        </a>
+                    </li>
+                }
             </ul>
         </div>
 

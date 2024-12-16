@@ -32,10 +32,6 @@ namespace SIGES.Controllers
                 Servicos = servicos.ToList()
             };
 
-            // Obter permissões do usuário logado
-            var permissoesUsuario = HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
-            ViewData["PermissoesUsuario"] = permissoesUsuario;
-
             return View("LServico", viewModel);
         }
 
@@ -100,7 +96,9 @@ namespace SIGES.Controllers
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
             await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, servicoExistente, servico);
 
-            //servicoExistente.ImagemBlob = produto.ImagemBlob;
+            servicoExistente.Nome = servico.Nome;
+            servicoExistente.Valor = servico.Valor;
+            servicoExistente.Descricao = servico.Descricao;
 
             // Salva as alterações
             await _servicoRepositorio.Atualizar(servicoExistente);

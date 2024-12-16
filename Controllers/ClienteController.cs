@@ -32,9 +32,6 @@ namespace SIGES.Controllers
                 Clientes = clientes.ToList(),
             };
 
-            var permissoesUsuario = HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
-            ViewData["PermissoesUsuario"] = permissoesUsuario;
-
             return View("LCliente", viewModel);
         }
 

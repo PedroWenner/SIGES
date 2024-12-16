@@ -21,8 +21,6 @@
             label.innerHTML += ' <span class="text-danger">*</span>';
         }
     });
-    //
-
 }
 
 $(document).ready(function () {

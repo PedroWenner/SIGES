@@ -123,7 +123,7 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingProdutos">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProdutos" aria-expanded="false" aria-controls="collapseProdutos">
-                                <i class="bx bx-shape-square me-2"></i> Produtos
+                                <i class="bx bx-basket me-2"></i> Produtos
                             </button>
                         </h2>
                         <div id="collapseProdutos" class="accordion-collapse collapse" aria-labelledby="headingProdutos" data-bs-parent="#permissionsAccordion">
@@ -641,6 +641,124 @@
                                                         <text>checked</text>
                                                     }>
                                                     <label class="form-check-label">Excluir Categoria</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Serviços  -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingServicos">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseServicos" aria-expanded="false" aria-controls="collapseServicos">
+                                <i class='bx bx-wrench me-2'></i> Serviços
+                            </button>
+                        </h2>
+                        <div id="collapseServicos" class="accordion-collapse collapse" aria-labelledby="headingServicos" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="vServico" value="1"
+                                                    @if (ViewData["vServico"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Visualizar Serviço</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="aServico" value="1"
+                                                    @if (ViewData["aServico"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Adicionar Serviço</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="eServico" value="1"
+                                                    @if (ViewData["eServico"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Editar Serviço</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="dServico" value="1"
+                                                    @if (ViewData["dServico"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Excluir Serviço</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OS  -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOs">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOs" aria-expanded="false" aria-controls="collapseOs">
+                                <i class='bx bx-file me-2'></i> Ordem de serviço
+                            </button>
+                        </h2>
+                        <div id="collapseOs" class="accordion-collapse collapse" aria-labelledby="headingOs" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="vOs" value="1"
+                                                    @if (ViewData["vOs"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Visualizar OS</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="aOs" value="1"
+                                                    @if (ViewData["aOs"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Adicionar OS</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="eOs" value="1"
+                                                    @if (ViewData["eOs"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Editar OS</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="dOs" value="1"
+                                                    @if (ViewData["dOs"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Excluir OS</label>
                                                 </div>
                                             </td>
                                         </tr>
