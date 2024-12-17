@@ -19,10 +19,6 @@ namespace SIGES.Models
         public byte[]? ImagemBlob { get; set; }
 
         [IgnoreLog]
-        [ValidateNever]
-        public ICollection<ProdutoModel> Produtos { get; set; }
-
-        [IgnoreLog]
         [NotMapped]
         public int ProximoCodigo { get; set; }
     }

@@ -1,5 +1,193 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model ProdutoModel
+
 @{
+    ViewData["Titulo"] = "Adicionar produto";
 }
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastrar produto</h5>
+        </div>
+        <div class="card-body">
+            <form id="formProduto" method="post" enctype="multipart/form-data" asp-controller="Produto" asp-action="Adicionar">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Código de barra -->
+                <div class="mb-3 col-md-2">
+                    <label for="codigoBarras" class="form-label">Codigo de barra</label>
+                    <input id="codigoBarras" type="text" asp-for="CodigoBarras" />
+                    <span asp-validation-for="CodigoBarras" class="text-danger"></span>
+                </div>
+
+                <!-- Descricao -->
+                <div class="mb-3 col-md-2">
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <input id="descricao" type="text" asp-for="Descricao" required />
+                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                </div>
+
+                <!-- Tipo de Movimento -->
+                <div class="mb-3">
+                    <label for="tipoMovimento" class="form-label">Tipo movimento</label><br />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="TipoMovimento" id="entrada" value="1" checked>
+                        <label class="form-check-label" for="entrada">Entrada</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="TipoMovimento" id="saida" value="0">
+                        <label class="form-check-label" for="saida">Entrada</label>
+                    </div>
+                    <span asp-validation-for="TipoMovimento" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <!-- Preço de compra -->
+                    <div class="mb-3 col-md-2">
+                        <label for="precoCompra" class="form-label">Preço de compra</label>
+                        <input id="precoCompra" type="text" asp-for="PrecoCompra" class="money" data-affixes-stay="true" data-thousands="." data-decimal="," required />
+                        <span asp-validation-for="PrecoCompra" class="text-danger"></span>
+                    </div>
+
+                    <!-- Margem -->
+                    <div class="mb-3 col-1">
+                        <label for="margem" class="form-label">Margem</label>
+                        <input id="margem" type="text" asp-for="MargemLucro" placeholder="%" maxlength="3" size="2" onblur="calcLucro($('#precoCompra').val().replace('.', '').replace(',', '.'), $('#margem').val()); return false;" />
+                        <span asp-validation-for="MargemLucro" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 col-4 d-flex align-content-end flex-wrap">
+                        <strong>
+                            <span style="color: red" id="errorAlert"></span>
+                        </strong>
+                    </div>
+                </div>
+
+                <!-- Preço da venda -->
+                <div class="mb-3 col-md-2">
+                    <label for="precoVenda" class="form-label">Preço de venda</label>
+                    <input id="precoVenda" type="text" asp-for="PrecoVenda" class="money" data-affixes-stay="true" data-thousands="." data-decimal="," required />
+                    <span asp-validation-for="PrecoVenda" class="text-danger"></span>
+                </div>
+
+                <!-- Unidade -->
+                <div class="mb-3 col-md-2">
+                    <label for="unidade" class="form-label">Unidade</label>
+                    <select id="unidade" asp-for="UnidadeMedida" required>
+                        <option value="">Selecione</option>
+                    </select>
+                    <span asp-validation-for="UnidadeMedida" class="text-danger"></span>
+                </div>
+
+                <!-- Estoque -->
+                <div class="mb-3 col-md-2">
+                    <label for="estoque" class="form-label">Estoque</label>
+                    <input id="estoque" type="text" asp-for="Estoque" onkeypress="return somenteNumeros(this)" required />
+                    <span asp-validation-for="Estoque" class="text-danger"></span>
+                </div>
+
+                <!-- Estoque mínimo -->
+                <div class="mb-3 col-md-2">
+                    <label for="estoqueMin" class="form-label">Estoque mínimo</label>
+                    <input id="estoqueMin" type="text" asp-for="EstoqueMin" onkeypress="return somenteNumeros(this)" />
+                    <span asp-validation-for="EstoqueMin" class="text-danger"></span>
+                </div>
+
+                <!-- Imagem -->
+                <div class="mb-3 col-md-4">
+                    <label for="imagem" class="form-label">Imagem</label>
+                    <input type="file" id="imagem" name="imagemProduto" accept="image/*" />
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Adicionar</span>
+                    </button>
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Produto" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                        <span class="button__text2">Voltar</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script type="text/javascript">
+
+    function calcLucro(precoCompra, margemLucro) {
+        var precoVenda = (precoCompra * (1 + (margemLucro / 100))).toFixed(2);
+        $('#precoVenda').val(precoVenda);
+    }
+
+    $("#margem").keyup(function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+        if ($("#precoCompra").val() == null || $("#precoCompra").val() == '') {
+            $('#errorAlert').text('Preencher valor da compra primeiro.').css("display", "inline").fadeOut(5000);
+            $('#margem').val('');
+            $('#precoVenda').val('');
+            $("#precoCompra").focus();
+
+        } else if (Number($("#margem").val()) >= 0) {
+            //
+        } else {
+            $('#errorAlert').text('Não é permitido número negativo.').css("display", "inline").fadeOut(5000);
+            $('#margem').val('');
+            $('#precoVenda').val('');
+        }
+    });
+
+    $(document).ready(function () {
+        $(".money").maskMoney();
+
+        // Carrega as unidades de medida do arquivo JSON
+        $.getJSON('@Url.Content("~/json/unidades_medida.json")', function (data) {
+            if (data && data.medidas && data.medidas.length > 0) {
+                for (var i = 0; i < data.medidas.length; i++) {
+                    $('#unidade').append(new Option(data.medidas[i].display + ' (' + data.medidas[i].code + ')', data.medidas[i].code));
+                }
+            } else {
+                console.error('Arquivo JSON não possui as medidas esperadas.');
+            }
+        }).fail(function () {
+            console.error("Erro ao carregar o arquivo JSON.");
+        });
+
+        $.validator.addMethod("extension", function (value, element, param) {
+            var extension = value.split('.').pop().toLowerCase();
+            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
+        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
+
+        $('#formProduto').validate({
+            rules: {
+                'Descricao': { required: true },
+                'PrecoCompra': { required: true },
+                'PrecoVenda': { required: true },
+                'UnidadeMedida': { required: true },
+                'Estoque': { required: true },
+                'imagemCategoria': { extension: "jpg|jpeg|png|gif|bmp" }
+            },
+            messages: {
+                'Descricao': { required: 'Campo descrição é obrigatório.' },
+                'PrecoCompra': { required: 'Campo preço de compra é obrigatório.' },
+                'PrecoVenda': { required: 'Campo preço de venda é obrigatório.' },
+                'UnidadeMedida': { required: 'Unidade deve ser selecionado.' },
+                'Estoque': { required: 'Campo estoque é obrigatório.' },
+                'imagemCategoria': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+</script>

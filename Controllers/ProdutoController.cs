@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGES.Attributes;
-using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
 using SIGES.ViewModel;
-using System.Text.Json;
 
 namespace SIGES.Controllers
 {
@@ -35,7 +31,6 @@ namespace SIGES.Controllers
             return View("LProduto", viewModel);
         }
 
-        [Permissao("aProduto")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
@@ -43,55 +38,61 @@ namespace SIGES.Controllers
         }
 
         [HttpPost("adicionar")]
-        public async Task<IActionResult> Adicionar(ProdutoModel produto)
+        public async Task<IActionResult> Adicionar(ProdutoModel produto, IFormFile? imagemProduto)
         {
             if (!ModelState.IsValid)
             {
                 return View("AProduto", produto);
             }
 
-            // Salva no banco de dados
+            // Processar a imagem como blob
+            if (imagemProduto != null)
+            {
+                try
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await imagemProduto.CopyToAsync(memoryStream);
+                        produto.ImagemBlob = memoryStream.ToArray();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Erro ao processar a imagem: {ex.Message}");
+                    return View(produto);
+                }
+            }
+
             await _produtoRepositorio.Adicionar(produto);
-
-            // Recupera o nome do usuário da sessão
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-
-            // Registrar log de adição
             await _logServiceRepositorio.RegistrarAdicao(usuarioAtual, produto);
 
-            // Redireciona com mensagem de sucesso
             TempData["Success"] = "Produto cadastrado com sucesso!";
             return RedirectToAction("Index");
         }
 
-        [Permissao("eProduto")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
-            // Busca pelo ID
             var produto = await _produtoRepositorio.ObterPorId(id);
-
             if (produto == null)
             {
                 TempData["Error"] = "Produto não encontrado.";
                 return RedirectToAction("Index");
             }
 
-            // Retorna a View com o modelo populado
             return View("EProduto", produto);
         }
 
         [HttpPost("editar/{id}")]
-        public async Task<IActionResult> Editar(int id, ProdutoModel produto)
+        public async Task<IActionResult> Editar(int id, ProdutoModel produto, IFormFile? imagemProduto)
         {
             if (!ModelState.IsValid)
             {
                 return View("EProduto", produto);
             }
 
-            // Busca a categoria existente
             var produtoExistente = await _produtoRepositorio.ObterPorId(id);
-
             if (produtoExistente == null)
             {
                 TempData["Error"] = "Produto não encontrado.";
@@ -101,19 +102,33 @@ namespace SIGES.Controllers
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
             await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, produtoExistente, produto);
 
-            produtoExistente.Codigo = produto.Codigo;
-            produtoExistente.Status = produto.Status;
+            produtoExistente.CodigoBarras = produto.CodigoBarras;
             produtoExistente.Descricao = produto.Descricao;
-            produtoExistente.Peso = produto.Peso;
+            produtoExistente.TipoMovimento = produto.TipoMovimento;
+            produtoExistente.PrecoCompra = produto.PrecoCompra;
+            produtoExistente.MargemLucro = produto.MargemLucro;
+            produtoExistente.PrecoVenda = produto.PrecoVenda;
             produtoExistente.UnidadeMedida = produto.UnidadeMedida;
-            produtoExistente.CategoriaId = produto.CategoriaId;
-            produtoExistente.Valor = produto.Valor;
-            produtoExistente.Observacao = produto.Observacao;
-            produtoExistente.ImagemBlob = produto.ImagemBlob;
+            produtoExistente.Estoque = produto.Estoque;
+            produtoExistente.EstoqueMin = produto.EstoqueMin;
+            if (imagemProduto != null)
+            {
+                try
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await imagemProduto.CopyToAsync(memoryStream);
+                        produtoExistente.ImagemBlob = memoryStream.ToArray();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Erro ao processar a imagem: {ex.Message}");
+                    return View(produtoExistente);
+                }
+            }
 
-            // Salva as alterações
             await _produtoRepositorio.Atualizar(produtoExistente);
-
             TempData["Success"] = "Produto atualizado com sucesso!";
             return RedirectToAction("Index");
         }
@@ -121,9 +136,7 @@ namespace SIGES.Controllers
         [HttpPost("excluir")]
         public async Task<IActionResult> Excluir(int id)
         {
-            // Busca a categoria pelo ID
             var produto = await _produtoRepositorio.ObterPorId(id);
-
             if (produto == null)
             {
                 TempData["Error"] = "Produto não encontrado.";
@@ -135,7 +148,6 @@ namespace SIGES.Controllers
             await _produtoRepositorio.Excluir(id);
 
             TempData["Success"] = "Produto excluído com sucesso!";
-
             return RedirectToAction("Index");
         }
     }

@@ -10,7 +10,6 @@ namespace SIGES.Config
             services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
             services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
             services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
-            //services.AddScoped<IUnidadeMedidaService, UnidadeMedidaService>();
             services.AddScoped<IPermissaoRepositorio, PermissaoRepositorio>();
             services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
             services.AddScoped<ILogService, LogServiceRepositorio>();

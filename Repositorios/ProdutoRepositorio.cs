@@ -17,14 +17,12 @@ namespace SIGES.Repositorios
         public IEnumerable<ProdutoModel> Listar()
         {
             return _context.Produtos
-                .Include(p => p.Categoria)
                 .ToList();
         }
 
         public async Task<ProdutoModel?> ObterPorId(int id)
         {
             return await _context.Produtos
-                .Include(p => p.Categoria)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 

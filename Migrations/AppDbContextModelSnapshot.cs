@@ -221,37 +221,38 @@ namespace SIGES.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Codigo")
-                        .HasColumnType("int");
+                    b.Property<string>("CodigoBarras")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Estoque")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EstoqueMin")
+                        .HasColumnType("int");
+
                     b.Property<byte[]>("ImagemBlob")
                         .HasColumnType("longblob");
 
-                    b.Property<string>("Observacao")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal?>("Peso")
+                    b.Property<decimal?>("MargemLucro")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<int>("Status")
+                    b.Property<decimal>("PrecoCompra")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("PrecoVenda")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("TipoMovimento")
                         .HasColumnType("int");
 
                     b.Property<string>("UnidadeMedida")
                         .HasColumnType("longtext");
 
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(65,30)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoriaId");
 
                     b.ToTable("Produtos");
                 });
@@ -356,7 +357,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$ce.X2fy4GYdVy.5UZeUTOOOqkpMDaLUAbHyh0ndqnNiXIlqOZqOU2",
+                            Senha = "$2a$11$TikfO6OVJVgwOB8vlvFZKeJ4gs8WZgHWZdrmR/eCKzOse7LhQZkza",
                             Situacao = 1
                         });
                 });
@@ -380,17 +381,6 @@ namespace SIGES.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("SIGES.Models.ProdutoModel", b =>
-                {
-                    b.HasOne("SIGES.Models.CategoriaModel", "Categoria")
-                        .WithMany("Produtos")
-                        .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Categoria");
-                });
-
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
                     b.HasOne("SIGES.Models.PermissaoModel", "Permissao")
@@ -400,11 +390,6 @@ namespace SIGES.Migrations
                         .IsRequired();
 
                     b.Navigation("Permissao");
-                });
-
-            modelBuilder.Entity("SIGES.Models.CategoriaModel", b =>
-                {
-                    b.Navigation("Produtos");
                 });
 
             modelBuilder.Entity("SIGES.Models.ClienteModel", b =>

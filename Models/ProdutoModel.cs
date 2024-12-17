@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SIGES.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,30 +13,25 @@ namespace SIGES.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
-        public int Status { get; set; }
+        public string? CodigoBarras { get; set; }
 
-        public int? Codigo { get; set; }
-        
         [Required(ErrorMessage = "A descrição é obrigatória.")]
-        public string Descricao { get; set; }
-        
-        public decimal? Peso { get; set; }
-        
+        public string Descricao { get; set; } = string.Empty;
+
+        [Range(0, 1)]
+        public int TipoMovimento { get; set; }
+
+        public decimal PrecoCompra { get; set; }
+
+        public decimal? MargemLucro { get; set; }
+
+        public decimal PrecoVenda { get; set; }
+
         public string? UnidadeMedida { get; set; }
 
-        [IgnoreLog]
-        [Required(ErrorMessage = "A categoria é obrigatória.")]
-        public int CategoriaId { get; set; }
+        public int Estoque {  get; set; }
 
-        [IgnoreLog]
-        [ValidateNever]
-        public CategoriaModel Categoria { get; set; }
-
-        [Required(ErrorMessage = "O valor é obrigatório.")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "O valor deve ser maior que zero.")]
-        public decimal Valor { get; set; }
-        
-        public string? Observacao { get; set; }
+        public int? EstoqueMin {  get; set; }
 
         [IgnoreLog]
         public byte[]? ImagemBlob { get; set; }

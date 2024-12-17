@@ -23,6 +23,11 @@
     });
 }
 
+function somenteNumeros(num) {
+    var tecla = event.keyCode;
+    return (tecla > 47 && tecla < 58)
+}
+
 $(document).ready(function () {
     $.datepicker.regional['pt-BR'] = {
         closeText: 'Fechar',

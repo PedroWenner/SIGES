@@ -20,8 +20,8 @@
         }
 
         input.is-invalid::placeholder {
-            color: #dc3545; /* Vermelho para erro */
-            opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
+            color: #dc3545;
+            opacity: 0.8;
             font-size: 12px;
         }
     </style>
@@ -59,13 +59,13 @@
                                 <div id="mcell">
                                     <p class="text-white">Versão: 1.0</p>
                                 </div>
-                                <div class="input-field">
+                                <div class="input-field mb-2">
                                     <label class="fas fa-user" for="email"></label>
-                                    <input id="email" name="login" type="text" placeholder="Login ou E-mail" required />
+                                    <input id="email" name="login" type="text" class="form-control form-control-sm" placeholder="Login ou E-mail" required />
                                 </div>
                                 <div class="input-field">
                                     <label class="fas fa-lock" for="senha"></label>
-                                    <input id="senha" name="senha" type="password" placeholder="Senha" required />
+                                    <input id="senha" name="senha" type="password" class="form-control form-control-sm" placeholder="Senha" required />
                                 </div>
                                 <div class="center">
                                     <button id="btn-acessar" class="btn btn-primary" type="submit">Acessar</button>
