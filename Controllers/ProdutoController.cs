@@ -150,5 +150,25 @@ namespace SIGES.Controllers
             TempData["Success"] = "Produto excluído com sucesso!";
             return RedirectToAction("Index");
         }
+
+        [HttpPost("tualizarEstoque")]
+        public async Task<IActionResult> AtualizarEstoque(int id, ProdutoModel produto)
+        {
+            var produtoExistente = await _produtoRepositorio.ObterPorId(id);
+            if (produtoExistente == null)
+            {
+                TempData["Error"] = "Produto não encontrado.";
+                return RedirectToAction("Index");
+            }
+
+            var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+            await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, produtoExistente, produto);
+
+            produtoExistente.Estoque = produto.Estoque;
+            await _produtoRepositorio.Atualizar(produtoExistente);
+
+            TempData["Success"] = "Estoque atualizado com sucesso!";
+            return RedirectToAction("Index");
+        }
     }
 }
