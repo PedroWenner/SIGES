@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGES.Attributes;
-using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
 using SIGES.ViewModel;
-using System.Text.Json;
 
 namespace SIGES.Controllers
 {
@@ -35,7 +31,6 @@ namespace SIGES.Controllers
             return View("LCliente", viewModel);
         }
 
-        [Permissao("aCliente")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
@@ -58,7 +53,6 @@ namespace SIGES.Controllers
             return RedirectToAction("Index");
         }
 
-        [Permissao("eCliente")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
@@ -93,7 +87,6 @@ namespace SIGES.Controllers
             }
             else
             {
-                // Criptografa a senha antes de salvar
                 senhaCript = BCrypt.Net.BCrypt.HashPassword(cliente.Senha);
                 cliente.Senha = senhaCript;
             }

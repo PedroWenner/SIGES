@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGES.Attributes;
-using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
 using SIGES.ViewModel;
-using System.Text.Json;
 
 namespace SIGES.Controllers
 {
@@ -35,7 +31,6 @@ namespace SIGES.Controllers
             return View("LServico", viewModel);
         }
 
-        [Permissao("aServico")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
@@ -54,25 +49,20 @@ namespace SIGES.Controllers
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
             await _logServiceRepositorio.RegistrarAdicao(usuarioAtual, servico);
 
-            // Redireciona com mensagem de sucesso
             TempData["Success"] = "Serviço cadastrado com sucesso!";
             return RedirectToAction("Index");
         }
 
-        [Permissao("eServico")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
-            // Busca pelo ID
             var servico = await _servicoRepositorio.ObterPorId(id);
-
             if (servico == null)
             {
                 TempData["Error"] = "Serviço não encontrado.";
                 return RedirectToAction("Index");
             }
 
-            // Retorna a View com o modelo populado
             return View("EServico", servico);
         }
 
@@ -84,9 +74,7 @@ namespace SIGES.Controllers
                 return View("EServico", servico);
             }
 
-            // Busca a categoria existente
             var servicoExistente = await _servicoRepositorio.ObterPorId(id);
-
             if (servicoExistente == null)
             {
                 TempData["Error"] = "Serviço não encontrado.";
@@ -100,7 +88,6 @@ namespace SIGES.Controllers
             servicoExistente.Valor = servico.Valor;
             servicoExistente.Descricao = servico.Descricao;
 
-            // Salva as alterações
             await _servicoRepositorio.Atualizar(servicoExistente);
 
             TempData["Success"] = "Serviço atualizado com sucesso!";
@@ -110,9 +97,7 @@ namespace SIGES.Controllers
         [HttpPost("excluir")]
         public async Task<IActionResult> Excluir(int id)
         {
-            // Busca a categoria pelo ID
             var servico = await _servicoRepositorio.ObterPorId(id);
-
             if (servico == null)
             {
                 TempData["Error"] = "Serviço não encontrado.";

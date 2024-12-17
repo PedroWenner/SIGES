@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGES.Attributes;
-using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
 using SIGES.ViewModel;
@@ -35,14 +33,10 @@ namespace SIGES.Controllers
             return View("LUsuario", usuarioViewModel);
         }
 
-        [Permissao("aUsuario")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
-            // Carregar os dados para a View
             var permissoes = _permissaoRepositorio.Listar().AsQueryable();
-
-            // Montar um ViewModel para enviar os dados para a View
             var usuarioViewModel = new UsuarioViewModel
             {
                 Usuario = new UsuarioModel(),
@@ -57,11 +51,9 @@ namespace SIGES.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Recarrega o próximo código caso o ModelState falhe
                 return View("AUsuario");
             }
 
-            // Processar a imagem como blob
             if (imagemUsuario != null)
             {
                 try
@@ -69,7 +61,7 @@ namespace SIGES.Controllers
                     using (var memoryStream = new MemoryStream())
                     {
                         await imagemUsuario.CopyToAsync(memoryStream);
-                        usuario.ImagemBlob = memoryStream.ToArray(); // Salva o blob no modelo
+                        usuario.ImagemBlob = memoryStream.ToArray();
                     }
                 }
                 catch (Exception ex)
@@ -79,31 +71,19 @@ namespace SIGES.Controllers
                 }
             }
 
-            // Salva a categoria no banco de dados
             await _usuarioRepositorio.Adicionar(usuario);
-
-            // Recupera o nome do usuário da sessão
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-
-            // Registrar log de adição
             await _logServiceRepositorio.RegistrarAdicao(usuarioAtual, usuario);
 
-            // Redireciona com mensagem de sucesso
             TempData["Success"] = "Usuário cadastrada com sucesso!";
             return RedirectToAction("Index");
         }
 
-        [Permissao("eUsuario")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
-            // Carregar os dados para a View
             var permissoes = _permissaoRepositorio.Listar().AsQueryable();
-
-            // Busca pelo ID
             var usuario = await _usuarioRepositorio.ObterPorId(id);
-
-            // Montar um ViewModel para enviar os dados para a View
             var usuarioViewModel = new UsuarioViewModel
             {
                 Usuario = usuario,
@@ -116,16 +96,13 @@ namespace SIGES.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Retorna a View com o modelo populado
             return View("EUsuario", usuarioViewModel);
         }
 
         [HttpPost("editar/{id}")]
         public async Task<IActionResult> Editar(int id, UsuarioModel usuario, IFormFile? imagemUsuario)
         {
-            // Busca a usuário existente
             var usuarioExistente = await _usuarioRepositorio.ObterPorId(id);
-
             if (usuarioExistente == null)
             {
                 TempData["Error"] = "Usuário não encontrado.";
@@ -141,15 +118,11 @@ namespace SIGES.Controllers
             }
             else
             {
-                // Criptografa a senha antes de salvar
                 senhaCript = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
                 usuario.Senha = senhaCript;
             }
 
-            // Carregar os dados para a View
             var permissoes = _permissaoRepositorio.Listar().AsQueryable();
-
-            // Montar um ViewModel para enviar os dados para a View
             var usuarioViewModel = new UsuarioViewModel
             {
                 Usuario = usuario,
@@ -161,13 +134,9 @@ namespace SIGES.Controllers
                 return View("EUsuario", usuarioViewModel);
             }
 
-            // Recupera o nome do usuário da sessão
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-
-            // Registrar log de alterações
             await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, usuarioExistente, usuario);
 
-            // Atualiza os dados do usuário
             usuarioExistente.Nome = usuario.Nome;
             usuarioExistente.RgNumero = usuario.RgNumero;
             usuarioExistente.Cpf = usuario.Cpf;
@@ -184,7 +153,6 @@ namespace SIGES.Controllers
             usuarioExistente.PermissaoId = usuario.PermissaoId;
             usuarioExistente.Senha = usuario.Senha;
 
-            // Verifica se uma nova imagem foi enviada
             if (imagemUsuario != null)
             {
                 try
@@ -192,7 +160,7 @@ namespace SIGES.Controllers
                     using (var memoryStream = new MemoryStream())
                     {
                         await imagemUsuario.CopyToAsync(memoryStream);
-                        usuarioExistente.ImagemBlob = memoryStream.ToArray(); // Atualiza o blob
+                        usuarioExistente.ImagemBlob = memoryStream.ToArray();
                     }
                 }
                 catch (Exception ex)
@@ -202,7 +170,6 @@ namespace SIGES.Controllers
                 }
             }
 
-            // Salva as alterações
             await _usuarioRepositorio.Atualizar(usuarioExistente);
 
             TempData["Success"] = "Usuário atualizado com sucesso!";
@@ -212,32 +179,19 @@ namespace SIGES.Controllers
         [HttpPost("excluir")]
         public async Task<IActionResult> Excluir(int id)
         {
-            // Busca pelo ID
             var usuario = await _usuarioRepositorio.ObterPorId(id);
-
             if (usuario == null)
             {
                 TempData["Error"] = "Usuário não encontrada.";
                 return RedirectToAction("Index");
             }
 
-            try
-            {
-                var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+            var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+            await _logServiceRepositorio.RegistrarExclusao(usuarioAtual, usuario);
+            await _usuarioRepositorio.Excluir(id);
 
-                // Registrar log de exclusão
-                await _logServiceRepositorio.RegistrarExclusao(usuarioAtual, usuario);
-
-                // Remove do banco de dados
-                await _usuarioRepositorio.Excluir(id);
-
-                TempData["Success"] = "Usuário excluído com sucesso!";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Erro ao excluir a usuário: {ex.Message}";
-            }
-
+            TempData["Success"] = "Usuário excluído com sucesso!";
+            
             return RedirectToAction("Index");
         }
     }

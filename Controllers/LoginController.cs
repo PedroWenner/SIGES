@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SIGES.Data;
 using SIGES.Services;
 using System.Security.Claims;
@@ -28,7 +27,6 @@ namespace SIGES.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string login, string senha)
         {
-            // Busca o usuário pelo login (email ou nome)
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login || u.Nome == login);
             if (usuario == null || !_authService.VerificarSenha(usuario.Senha, senha))
             {

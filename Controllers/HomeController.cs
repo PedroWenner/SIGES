@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Helpers;
 using SIGES.Interfaces;
-using SIGES.Models;
-using System.Diagnostics;
 using SIGES.ViewModel;
 
 namespace SIGES.Controllers
@@ -27,12 +25,10 @@ namespace SIGES.Controllers
             ViewBag.Saudacao = SaudeHelper.ObterSaudacao();
             ViewBag.NomeUsuario = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
 
-            // Carregar os dados para a View
             var clientes = _clienteRepositorio.Listar();
             var produtos = _produtoRepositorio.Listar();
             var os = _osRepositorio.Listar();
 
-            // Montar um ViewModel para enviar os dados para a View
             var homeViewModel = new HomeViewModel
             {
                 Clientes = clientes.ToList(),

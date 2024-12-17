@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SIGES.Attributes;
-using SIGES.Classes;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
 using SIGES.ViewModel;
 using System.Text.Json;
 
@@ -35,7 +32,6 @@ namespace SIGES.Controllers
             return View("LPermissao", permissaoViewModel);
         }
 
-        [Permissao("aPermissao")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
@@ -78,27 +74,18 @@ namespace SIGES.Controllers
             permissao.Situacao = 1;
             permissao.Data = DateTime.Now;
 
-            // Salva no banco de dados
             await _permissaoRepositorio.Adicionar(permissao);
-
-            // Recupera o nome do usuário da sessão
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-
-            // Registrar log de adição
             await _logServiceRepositorio.RegistrarAdicao(usuarioAtual, permissao);
 
-            // Redireciona com mensagem de sucesso
             TempData["Success"] = "Permissão cadastrada com sucesso!";
             return RedirectToAction("Index");
         }
 
-        [Permissao("ePermissao")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
-            // Busca pelo ID
             var permissao = await _permissaoRepositorio.ObterPorId(id);
-
             if (permissao == null)
             {
                 TempData["Error"] = "Permissão não encontrada.";
@@ -114,7 +101,6 @@ namespace SIGES.Controllers
                 }
             }
 
-            // Retorna a View com o modelo populado
             return View("EPermissao", permissao);
         }
 
@@ -126,22 +112,16 @@ namespace SIGES.Controllers
                 return View("EPermissao", permissao);
             }
 
-            // Busca a categoria existente
             var permissaoExistente = await _permissaoRepositorio.ObterPorId(id);
-
             if (permissaoExistente == null)
             {
                 TempData["Error"] = "Permissão não encontrada.";
                 return RedirectToAction("Index");
             }
 
-            // Recupera o nome do usuário da sessão
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-
-            // Registrar log de alterações
             await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, permissaoExistente, permissao);
-
-            // Coleta os checkboxes selecionados
+            
             var permissoesDisponiveis = new List<string>();
             foreach (var key in Request.Form.Keys)
             {
@@ -151,7 +131,6 @@ namespace SIGES.Controllers
                 }
             }
 
-            // Cria uma lista de permissões atualizada
             var permissaoDetalhes = new List<PermissaoDetalheModel>();
             foreach (var permissaoNome in permissoesDisponiveis)
             {
@@ -163,12 +142,10 @@ namespace SIGES.Controllers
                 });
             }
 
-            // Atualiza os dados da categoria
             permissaoExistente.Nome = permissao.Nome;
             permissaoExistente.Permissoes = JsonSerializer.Serialize(permissaoDetalhes);
             permissaoExistente.Situacao = permissao.Situacao;
 
-            // Salva as alterações
             await _permissaoRepositorio.Atualizar(permissaoExistente);
 
             TempData["Success"] = "Permissão atualizada com sucesso!";
@@ -178,31 +155,18 @@ namespace SIGES.Controllers
         [HttpPost("excluir")]
         public async Task<IActionResult> Excluir(int id)
         {
-            // Busca a categoria pelo ID
             var permissao = await _permissaoRepositorio.ObterPorId(id);
-
             if (permissao == null)
             {
                 TempData["Error"] = "Permissão não encontrada.";
                 return RedirectToAction("Index");
             }
 
-            try
-            {
-                var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+            var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+            await _logServiceRepositorio.RegistrarExclusao(usuarioAtual, permissao);
+            await _permissaoRepositorio.Excluir(id);
 
-                // Registrar log de exclusão
-                await _logServiceRepositorio.RegistrarExclusao(usuarioAtual, permissao);
-
-                // Remove a permissão do banco de dados
-                await _permissaoRepositorio.Excluir(id);
-
-                TempData["Success"] = "Permissão excluída com sucesso!";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Erro ao excluir a permissão: {ex.Message}";
-            }
+            TempData["Success"] = "Permissão excluída com sucesso!";
 
             return RedirectToAction("Index");
         }
