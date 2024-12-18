@@ -417,7 +417,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$kZIc2o.Z5v4PDZEi7eduquIm2JxOC9dFZYzqbYkrVI/aYFu8.9j36",
+                            Senha = "$2a$11$jjiwE..uZlQVXSv28Jm0Cu0kzjGJAE8Dwv1UEV5QCUctsX/AV9dwC",
                             Situacao = 1
                         });
                 });
@@ -437,6 +437,9 @@ namespace SIGES.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("Faturado")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GarantiaDias")
                         .HasColumnType("int");
 
                     b.Property<int?>("LancamentoId")

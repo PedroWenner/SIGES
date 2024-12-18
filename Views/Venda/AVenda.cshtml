@@ -1,5 +1,125 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model VendaModel
+
 @{
+    ViewData["Titulo"] = "Adicionar venda";
 }
+
+<style>
+    .ck-editor__editable {
+        min-height: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 100%;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastrar venda</h5>
+        </div>
+        <div class="card-body">
+
+            <ul class="nav nav-tabs" id="myTabVendas" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="navLinkDetalheVenda" data-bs-toggle="tab" data-bs-target="#venda-tab-pane" type="button" role="tab" aria-controls="venda-tab-pane" aria-selected="true">Detalhes da venda</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navLinkProdutos" data-bs-toggle="tab" data-bs-target="#produto-tab-pane" type="button" role="tab" aria-controls="produto-tab-pane" aria-selected="false">Produtos</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="venda-tab-pane" role="tabpanel" aria-labelledby="navLinkDetalheVenda" tabindex="0">
+                    <form id="formVenda" method="post" asp-controller="Venda" asp-action="Adicionar">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-2">
+                                <label for="dataVenda" class="form-label">Data da venda</label>
+                                <input id="dataVenda" type="text" asp-for="DataVenda" class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
+                                <span asp-validation-for="DataVenda" class="text-danger"></span>
+                            </div>
+                            <div class="col-3">
+                                <label for="cliente" class="form-label">Cliente</label>
+                                <input id="cliente" type="text" asp-for="ClienteId" required />
+                                <span asp-validation-for="ClienteId" class="text-danger"></span>
+                            </div>
+                            <div class="col-3">
+                                <label for="vendedor" class="form-label">Vendedor</label>
+                                <input id="vendedor" type="text" asp-for="UsuarioId" required />
+                                <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                            </div>
+                            <div class="col-2">
+                                <label for="status" class="form-label">Status</label>
+                                <select asp-for="Status" id="status" required>
+                                    <option value="Orçamento">Orçamento</option>
+                                    <option value="Aberto">Aberto</option>
+                                    <option value="Faturado">Faturado</option>
+                                    <option value="Em Andamento">Em Andamento</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Aguardando Peças">Aguardando Peças</option>
+                                    <option value="Aprovado">Aprovado</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                            <div class="col-2">
+                                <label for="garantia" class="form-label">Garantia (dias)</label>
+                                <input id="garantia" type="text" asp-for="GarantiaDias" onkeypress="return somenteNumeros(this)" required />
+                                <span asp-validation-for="GarantiaDias" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <textarea asp-for="Observacao" id="observacao"></textarea>
+                            </div>
+                            <div class="col-6">
+                                <textarea asp-for="ObservacaoCliente" id="observacaoCliente"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-center">
+                            <a title="Voltar" class="button btn btn-warning" asp-controller="Venda" asp-action="Index">
+                                <span class="button__icon"><i class="bx bx-undo"></i></span>
+                                <span class="button__text2">Voltar</span>
+                            </a>
+                            <button type="submit" class="button btn btn-mini btn-success">
+                                <span class="button__icon"><i class='bx bx-save'></i></span>
+                                <span class="button__text2">Adicionar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="tab-pane fade" id="produto-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutos" tabindex="0">...</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#observacao'), {
+            language: 'pt-br',
+            toolbar: [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
+            ]
+        });
+
+    ClassicEditor
+        .create(document.querySelector('#observacaoCliente'), {
+            language: 'pt-br',
+            toolbar: [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
+            ]
+        });
+</script>

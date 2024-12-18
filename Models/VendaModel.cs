@@ -16,6 +16,8 @@ namespace SIGES.Models
 
         public string Status { get; set; }
 
+        public int? GarantiaDias { get; set; }
+
         [Column(TypeName = "decimal(15,2)")]
         public decimal? ValorTotal { get; set; }
 

@@ -17,6 +17,8 @@ namespace SIGES.Repositorios
         public IEnumerable<VendaModel> Listar()
         {
             return _context.Vendas
+                .Include(c => c.Cliente)
+                .Include(p => p.Usuario)
                 .ToList();
         }
 
