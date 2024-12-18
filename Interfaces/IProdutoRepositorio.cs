@@ -13,5 +13,7 @@ namespace SIGES.Interfaces
         Task Atualizar(ProdutoModel produto);
 
         Task Excluir(int id);
+
+        Task<List<ProdutoModel>> ObterPorIntervalo(int deId, int ateId);
     }
 }

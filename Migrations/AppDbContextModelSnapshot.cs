@@ -238,13 +238,16 @@ namespace SIGES.Migrations
                         .HasColumnType("longblob");
 
                     b.Property<decimal?>("MargemLucro")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
 
                     b.Property<decimal>("PrecoCompra")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
 
                     b.Property<decimal>("PrecoVenda")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
 
                     b.Property<int>("TipoMovimento")
                         .HasColumnType("int");
@@ -273,7 +276,8 @@ namespace SIGES.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(65,30)");
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
 
                     b.HasKey("Id");
 
@@ -357,7 +361,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$TikfO6OVJVgwOB8vlvFZKeJ4gs8WZgHWZdrmR/eCKzOse7LhQZkza",
+                            Senha = "$2a$11$NlEHbPxu/vrNcLylJ3lwyeC0mZzpLrDonA6hxMNhRtrWPDwPfinF6",
                             Situacao = 1
                         });
                 });

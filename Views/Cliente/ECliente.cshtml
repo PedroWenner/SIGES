@@ -156,14 +156,14 @@
 
                 <!-- Botões -->
                 <div class="d-flex justify-content-center mt-2">
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Atualizar</span>
-                    </button>
                     <a title="Voltar" class="button btn btn-warning" asp-controller="Cliente" asp-action="Index">
                         <span class="button__icon"><i class="bx bx-undo"></i></span>
                         <span class="button__text2">Voltar</span>
                     </a>
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Atualizar</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -189,11 +189,16 @@
             }
         });
 
+        var valorSelecionado = '@Model.Estado';
         // Carrega os estados do arquivo JSON
         $.getJSON('@Url.Content("~/json/estados.json")', function (data) {
             if (data && data.estados && data.estados.length > 0) {
                 for (var i = 0; i < data.estados.length; i++) {
                     $('#estado').append(new Option(data.estados[i].nome, data.estados[i].sigla));
+                }
+
+                if (valorSelecionado) {
+                    $('#estado').val(valorSelecionado);
                 }
             } else {
                 console.error('Arquivo JSON não possui as medidas esperadas.');

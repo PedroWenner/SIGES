@@ -1,4 +1,5 @@
-﻿@model SIGES.ViewModel.HomeViewModel;
+﻿@using SIGES.Helpers
+@model SIGES.ViewModel.HomeViewModel;
 @{
     ViewData["Titulo"] = "Home";
 }
@@ -21,69 +22,119 @@
 <!--Cards-->
 <ul class="row g-3 cardBox list-unstyled">
 
-    <li class="col-12 card">
-        <div class="grid-blak h-100">
-            <a href="#" class="text-decoration-none" title="Pedidos">
-                <div class="text-center">
-                    <div class="numbers N-tittle">Pedidos</div>
-                    <div class="cardName">F1</div>
-                </div>
-            </a>
-        </div>
-        <a href="#" class="text-decoration-none" title="Pedidos">
-            <div class="lord-icon01 p-3">
-                <i class="bx bx-bar-chart-alt-2 iconBx06"></i>
+    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCliente"))
+    {
+        <li class="col-12 card">
+            <div class="grid-blak h-100">
+                <a asp-controller="Cliente" asp-action="Index" class="text-decoration-none" title="Clientes">
+                    <div class="text-center">
+                        <div class="numbers N-tittle">Clientes</div>
+                        <div class="cardName">F1</div>
+                    </div>
+                </a>
             </div>
-        </a>
-    </li>
-
-    <li class="col-12 card">
-        <div class="grid-blak h-100">
-            <a asp-controller="Produto" asp-action="Index" class="text-decoration-none" title="Produtos">
-                <div class="text-center">
-                    <div class="numbers N-tittle">Produtos</div>
-                    <div class="cardName">F2</div>
-                </div>
-            </a>
-        </div>
-        <a asp-controller="Produto" asp-action="Index" class="text-decoration-none" title="Produtos">
-            <div class="lord-icon02 p-3">
-                <i class="bx bx-bar-chart-alt-2 iconBx02"></i>
-            </div>
-        </a>
-    </li>
-
-    <li class="col-12 card">
-        <div class="grid-blak h-100">
             <a asp-controller="Cliente" asp-action="Index" class="text-decoration-none" title="Clientes">
-                <div class="text-center">
-                    <div class="numbers N-tittle">Clientes</div>
-                    <div class="cardName">F3</div>
+                <div class="lord-icon01 p-3">
+                    <i class="bx bx-user iconBx02"></i>
                 </div>
             </a>
-        </div>
-        <a asp-controller="Cliente" asp-action="Index" class="text-decoration-none" title="Clientes">
-            <div class="lord-icon03 p-3">
-                <i class="bx bx-user iconBx03"></i>
-            </div>
-        </a>
-    </li>
+        </li>
+    }
 
-    <li class="col-12 card">
-        <div class="grid-blak h-100">
-            <a asp-controller="Usuario" asp-action="Index" class="text-decoration-none" title="Usuários">
-                <div class="text-center">
-                    <div class="numbers N-tittle">Usuários</div>
-                    <div class="cardName">F6</div>
+    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vProduto"))
+    {
+        <li class="col-12 card">
+            <div class="grid-blak h-100">
+                <a asp-controller="Produto" asp-action="Index" class="text-decoration-none" title="Produtos">
+                    <div class="text-center">
+                        <div class="numbers N-tittle">Produtos</div>
+                        <div class="cardName">F2</div>
+                    </div>
+                </a>
+            </div>
+            <a asp-controller="Produto" asp-action="Index" class="text-decoration-none" title="Produtos">
+                <div class="lord-icon02 p-3">
+                    <i class="bx bx-basket iconBx02"></i>
                 </div>
             </a>
-        </div>
-        <a asp-controller="Usuario" asp-action="Index" class="text-decoration-none" title="Usuários">
-            <div class="lord-icon05 p-3">
-                <i class="bx bx-group iconBx05"></i>
+        </li>
+    }
+
+    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vServico"))
+    {
+        <li class="col-12 card">
+            <div class="grid-blak h-100">
+                <a asp-controller="Servico" asp-action="Index" class="text-decoration-none" title="Serviços">
+                    <div class="text-center">
+                        <div class="numbers N-tittle">Serviços</div>
+                        <div class="cardName">F3</div>
+                    </div>
+                </a>
             </div>
-        </a>
-    </li>
+            <a asp-controller="Servico" asp-action="Index" class="text-decoration-none" title="Serviços">
+                <div class="lord-icon03 p-3">
+                    <i class="bx bx-wrench iconBx03"></i>
+                </div>
+            </a>
+        </li>
+    }
+
+    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vOs"))
+    {
+        <li class="col-12 card">
+            <div class="grid-blak h-100">
+                <a asp-controller="Os" asp-action="Index" class="text-decoration-none" title="Ordens">
+                    <div class="text-center">
+                        <div class="numbers N-tittle">Ordens</div>
+                        <div class="cardName">F4</div>
+                    </div>
+                </a>
+            </div>
+            <a asp-controller="Os" asp-action="Index" class="text-decoration-none" title="Ordens">
+                <div class="lord-icon04 p-3">
+                    <i class="bx bx-file iconBx04"></i>
+                </div>
+            </a>
+        </li>
+    }
+
+    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vVenda"))
+    {
+        <li class="col-12 card">
+            <div class="grid-blak h-100">
+                <a href="#" class="text-decoration-none" title="Vendas">
+                    <div class="text-center">
+                        <div class="numbers N-tittle">Vendas</div>
+                        <div class="cardName">F5</div>
+                    </div>
+                </a>
+            </div>
+            <a href="#" class="text-decoration-none" title="Vendas">
+                <div class="lord-icon05 p-3">
+                    <i class="bx bx-cart-alt iconBx05"></i>
+                </div>
+            </a>
+        </li>
+    }
+
+    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vLancamento"))
+    {
+        <li class="col-12 card">
+            <div class="grid-blak h-100">
+                <a href="#" class="text-decoration-none" title="Lançamentos">
+                    <div class="text-center">
+                        <div class="numbers N-tittle">Lançamentos</div>
+                        <div class="cardName">F6</div>
+                    </div>
+                </a>
+            </div>
+            <a href="#" class="text-decoration-none" title="Lançamentos">
+                <div class="lord-icon06 p-3">
+                    <i class="bx bx-bar-chart-alt-2 iconBx06"></i>
+                </div>
+            </a>
+        </li>
+    }
 
 </ul>
 <!--End Cards-->

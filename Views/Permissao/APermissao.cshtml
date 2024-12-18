@@ -557,18 +557,105 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Venda -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingVendas">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVendas" aria-expanded="false" aria-controls="collapseVendas">
+                                <i class='bx bx-cart-alt me-2'></i> Vendas
+                            </button>
+                        </h2>
+                        <div id="collapseVendas" class="accordion-collapse collapse" aria-labelledby="headingVendas" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="vVenda" value="1" checked>
+                                                    <label class="form-check-label">Visualizar vendas</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="aVenda" value="1">
+                                                    <label class="form-check-label">Adicionar venda</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="eVenda" value="1">
+                                                    <label class="form-check-label">Editar venda</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="dVenda" value="1">
+                                                    <label class="form-check-label">Excluir venda</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lançamento -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingLancamento">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLancamento" aria-expanded="false" aria-controls="collapseLancamento">
+                                <i class='bx bx-bar-chart-alt-2 me-2'></i> Lançamentos
+                            </button>
+                        </h2>
+                        <div id="collapseLancamento" class="accordion-collapse collapse" aria-labelledby="headingLancamento" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="vLancamento" value="1" checked>
+                                                    <label class="form-check-label">Visualizar lançamento</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="aLancamento" value="1">
+                                                    <label class="form-check-label">Adicionar lançamento</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="eLancamento" value="1">
+                                                    <label class="form-check-label">Editar lançamento</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="dLancamento" value="1">
+                                                    <label class="form-check-label">Excluir lançamento</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Botões -->
                 <div class="d-flex justify-content-center mt-4">
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Adicionar</span>
-                    </button>
                     <a title="Voltar" class="button btn btn-warning" asp-controller="Permissao" asp-action="Index">
                         <span class="button__icon"><i class="bx bx-undo"></i></span>
                         <span class="button__text2">Voltar</span>
                     </a>
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Adicionar</span>
+                    </button>
                 </div>
             </div>
         </div>

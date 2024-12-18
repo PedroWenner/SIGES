@@ -17,6 +17,7 @@ namespace SIGES.Models
         public string? Descricao { get; set; }
 
         [Required(ErrorMessage = "Valor é obrigatório.")]
+        [Column(TypeName = "decimal(15,2)")]
         public decimal Valor { get; set; }
     }
 }

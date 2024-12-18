@@ -13,14 +13,20 @@
         </span>
         <h5>Produtos</h5>
     </div>
-    <div class="span12" style="margin-left: 0">
-        <div class="span3">
+    <div class="col-lg-12" style="margin-left: 0">
+        <div class="col-lg-4">
             @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aProduto"))
             {
-                <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Produto" asp-action="Adicionar">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
-                    <span class="button__text2">Produto</span>
-                </a>
+                <div class="d-flex">
+                    <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Produto" asp-action="Adicionar">
+                        <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                        <span class="button__text2">Produto</span>
+                    </a>
+                    <a href="#modal-etiquetas" role="button" data-bs-target="#modal-etiquetas" data-bs-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 100px">
+                        <span class="button__icon"><i class='bx bx-barcode-reader'></i></span>
+                        <span class="button__text2">Gerar etiquetas</span>
+                    </a>
+                </div>
             }
             else
             {
@@ -38,11 +44,11 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th style="text-align: center;">Cód</th>
-                        <th>Cod. barra</th>
-                        <th>Nome</th>
-                        <th>Estoque</th>
-                        <th>Preço</th>
+                        <th style="text-align: left;">Cód</th>
+                        <th style="text-align: left;">Cod. barra</th>
+                        <th style="text-align: left;">Nome</th>
+                        <th style="text-align: left;">Estoque</th>
+                        <th style="text-align: left;">Preço</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -58,11 +64,11 @@
                         @foreach (var produto in Model.Produtos)
                         {
                             <tr>
-                                <td style="width: 5%; text-align: center;">@produto.Id</td>
-                                <td style="width: 20%;">@produto.CodigoBarras</td>
-                                <td style="width: 30%;">@produto.Descricao</td>
-                                <td style="width: 10%;">@produto.Estoque</td>
-                                <td style="width: 10%;">@produto.PrecoVenda.ToString("C")</td>
+                                <td style="width: 5%; text-align: left;">@produto.Id</td>
+                                <td style="width: 20%; text-align: left;">@produto.CodigoBarras</td>
+                                <td style="width: 30%; text-align: left;">@produto.Descricao</td>
+                                <td style="width: 10%; text-align: left;">@produto.Estoque</td>
+                                <td style="width: 10%; text-align: left;">@produto.PrecoVenda.ToString("C")</td>
                                 <td style="width: 15%;">
                                     <a href="#" data-entidade="ProdutoModel" data-id="@produto.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
@@ -171,13 +177,71 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
                     <button class="button btn btn-primary">
                         <span class="button__icon"><i class="bx bx-sync"></i></span>
                         <span class="button__text2">Atualizar</span>
                     </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Etiquetas -->
+<div id="modal-etiquetas" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="get" asp-controller="Relatorio" asp-action="ProdutosEtiquetas">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Gerar etiquetas com código de barras</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12 alert alert-info" role="alert" style="margin-left: 0"> Escolha o intervalo de produtos para gerar as etiquetas.</div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="de" class="form-label">De</label>
+                            <input id="de" type="text" name="deId" class="col-md-4" placeholder="ID do primeiro produto" onkeypress="return somenteNumeros(this)" />
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="ate" class="form-label">Até</label>
+                            <input id="ate" type="text" name="ateId" class="col-md-4" placeholder="ID do último produto" onkeypress="return somenteNumeros(this)" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-4 d-flex align-content-end flex-wrap">
+                            <input class="form-check-input" type="checkbox" value="true" id="qtdEstoque" name="qtdEtiqueta">
+                            <label class="form-check-label" for="qtdEstoque">
+                                Qtd. do estoque
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3 col-md-8">
+                            <label for="formatoEtiqueta" class="form-label">Formato etiqueta</label>
+                            <select id="formatoEtiqueta" class="col-md-6" name="etiquetaCode">
+                                <option value="EAN13">EAN-13</option>
+                                <option value="UPCA">UPCA</option>
+                                @* <option value="C93">CODE 93</option> *@
+                                <option value="C128A">CODE 128</option>
+                                <option value="CODABAR">CODABAR</option>
+                                <option value="QR">QR-CODE</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
                     <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                         <span class="button__icon"><i class="bx bx-x"></i></span>
                         <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button class="button btn btn-success">
+                        <span class="button__icon"><i class='bx bx-barcode'></i></span>
+                        <span class="button__text2">Gerar</span>
                     </button>
                 </div>
             </form>

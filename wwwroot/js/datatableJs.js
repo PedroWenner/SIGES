@@ -5,12 +5,12 @@
     },
     paging: true,           // Habilita paginação
     searching: true,        // Habilita busca
-    ordering: true,         // Habilita ordenação
+    ordering: false,        // Habilita ordenação
     info: true,             // Habilita informações (ex.: "Mostrando X a Y de Z")
     lengthChange: false,    // Remove o seletor de "quantos itens por página"
-    columnDefs: [
-        { orderable: false, targets: -1 } // Desativa ordenação na última coluna (Ação)
-    ],
+    //columnDefs: [
+    //    { orderable: false, targets: -1 } // Desativa ordenação na última coluna (Ação)
+    //],
     autoWidth: false,       // Evita larguras automáticas
     pageLength: 20
 });

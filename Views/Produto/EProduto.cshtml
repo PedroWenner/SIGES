@@ -54,14 +54,15 @@
                     <!-- Preço de compra -->
                     <div class="mb-3 col-md-2">
                         <label for="precoCompra" class="form-label">Preço de compra</label>
-                        <input id="precoCompra" type="text" asp-for="PrecoCompra" class="money" data-affixes-stay="true" data-thousands="." data-decimal="," required />
+                        <input id="precoCompra" type="text" asp-for="PrecoCompra" class="money" required />
                         <span asp-validation-for="PrecoCompra" class="text-danger"></span>
                     </div>
 
                     <!-- Margem -->
                     <div class="mb-3 col-1">
                         <label for="margem" class="form-label">Margem</label>
-                        <input id="margem" type="text" asp-for="MargemLucro" placeholder="%" maxlength="3" size="2" onblur="calcLucro($('#precoCompra').val().replace('.', '').replace(',', '.'), $('#margem').val()); return false;" />
+                        <input id="margem" type="text" asp-for="MargemLucro" placeholder="%"
+                               onblur="calcLucro($('#precoCompra').val().replace('.', '').replace(',', '.'), $('#margem').val().replace('.', '').replace(',', '.')); return false;" />
                         <span asp-validation-for="MargemLucro" class="text-danger"></span>
                     </div>
 
@@ -75,7 +76,7 @@
                 <!-- Preço da venda -->
                 <div class="mb-3 col-md-2">
                     <label for="precoVenda" class="form-label">Preço de venda</label>
-                    <input id="precoVenda" type="text" asp-for="PrecoVenda" class="money" data-affixes-stay="true" data-thousands="." data-decimal="," required />
+                    <input id="precoVenda" type="text" asp-for="PrecoVenda" class="money" required />
                     <span asp-validation-for="PrecoVenda" class="text-danger"></span>
                 </div>
 
@@ -129,14 +130,14 @@
 
                 <!-- Botões -->
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Atualizar</span>
-                    </button>
                     <a title="Voltar" class="button btn btn-warning" asp-controller="Produto" asp-action="Index">
                         <span class="button__icon"><i class="bx bx-undo"></i></span>
                         <span class="button__text2">Voltar</span>
                     </a>
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Atualizar</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -165,30 +166,29 @@
     }
 
     $("#margem").keyup(function() {
-        this.value = this.value.replace(/[^0-9.]/g, '');
         if ($("#precoCompra").val() == null || $("#precoCompra").val() == '') {
             $('#errorAlert').text('Preencher valor da compra primeiro.').css("display", "inline").fadeOut(5000);
             $('#margem').val('');
             $('#precoVenda').val('');
             $("#precoCompra").focus();
-
-        } else if (Number($("#margem").val()) >= 0) {
-            //
-        } else {
-            $('#errorAlert').text('Não é permitido número negativo.').css("display", "inline").fadeOut(5000);
-            $('#margem').val('');
-            $('#precoVenda').val('');
         }
     });
 
     $(document).ready(function () {
-        $(".money").maskMoney();
+        $(".money").mask("#.##0,00", {reverse: true});
+        $('#margem').mask('000,00', {reverse: true});
+
+        var valorSelecionado = '@Model.UnidadeMedida';
 
         // Carrega as unidades de medida do arquivo JSON
         $.getJSON('@Url.Content("~/json/unidades_medida.json")', function (data) {
             if (data && data.medidas && data.medidas.length > 0) {
                 for (var i = 0; i < data.medidas.length; i++) {
                     $('#unidade').append(new Option(data.medidas[i].display + ' (' + data.medidas[i].code + ')', data.medidas[i].code));
+                }
+
+                if (valorSelecionado) {
+                    $('#unidade').val(valorSelecionado);
                 }
             } else {
                 console.error('Arquivo JSON não possui as medidas esperadas.');

@@ -21,10 +21,13 @@ namespace SIGES.Models
         [Range(0, 1)]
         public int TipoMovimento { get; set; }
 
+        [Column(TypeName = "decimal(15,2)")]
         public decimal PrecoCompra { get; set; }
 
+        [Column(TypeName = "decimal(15,2)")]
         public decimal? MargemLucro { get; set; }
 
+        [Column(TypeName = "decimal(15,2)")]
         public decimal PrecoVenda { get; set; }
 
         public string? UnidadeMedida { get; set; }

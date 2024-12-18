@@ -48,5 +48,12 @@ namespace SIGES.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<ProdutoModel>> ObterPorIntervalo(int deId, int ateId)
+        {
+            return await _context.Produtos
+                .Where(p => p.Id >= deId && p.Id <= ateId)
+                .ToListAsync();
+        }
     }
 }

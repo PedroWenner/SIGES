@@ -162,7 +162,7 @@ namespace SIGES.Controllers
             }
 
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-            await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, produtoExistente, produto);
+            await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, produtoExistente, produto, new List<string> { "Estoque" });
 
             produtoExistente.Estoque = produto.Estoque;
             await _produtoRepositorio.Atualizar(produtoExistente);

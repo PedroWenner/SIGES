@@ -16,7 +16,7 @@ namespace SIGES.Repositorios
             _context = context;
         }
 
-            public async Task RegistrarAlteracoes<T>(string usuario, T original, T atualizado) where T : class
+            public async Task RegistrarAlteracoes<T>(string usuario, T original, T atualizado, List<string>? propriedadesFiltrar = null) where T : class
             {
                 var tipo = typeof(T).Name;
                 var id = GetIdValue(original);
@@ -28,6 +28,12 @@ namespace SIGES.Repositorios
                     if (prop.PropertyType == typeof(byte[]) || Attribute.IsDefined(prop, typeof(IgnoreLogAttribute)))
                     {
                         continue; // Pula esta propriedade
+                    }
+
+                    // Se uma lista de propriedades foi passada, só registra as especificadas
+                    if (propriedadesFiltrar != null && !propriedadesFiltrar.Contains(prop.Name))
+                    {
+                        continue;
                     }
 
                     var valorAntigo = prop.GetValue(original)?.ToString();
