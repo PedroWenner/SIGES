@@ -109,6 +109,62 @@ namespace SIGES.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnexoBlob")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("Baixado")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClienteFornecedor")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DataPagamento")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DataVencimento")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FormaPgto")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Tipo")
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("Valor")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
+
+                    b.Property<int?>("VendaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoriaId");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("VendaId");
+
+                    b.ToTable("Lancamentos");
+                });
+
             modelBuilder.Entity("SIGES.Models.LogAlteracaoModel", b =>
                 {
                     b.Property<int>("Id")
@@ -361,9 +417,85 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$NlEHbPxu/vrNcLylJ3lwyeC0mZzpLrDonA6hxMNhRtrWPDwPfinF6",
+                            Senha = "$2a$11$kZIc2o.Z5v4PDZEi7eduquIm2JxOC9dFZYzqbYkrVI/aYFu8.9j36",
                             Situacao = 1
                         });
+                });
+
+            modelBuilder.Entity("SIGES.Models.VendaModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataVenda")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("Faturado")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LancamentoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observacao")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ObservacaoCliente")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("ValorDesconto")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
+
+                    b.Property<decimal?>("ValorTotal")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("LancamentoId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
+                {
+                    b.HasOne("SIGES.Models.CategoriaModel", "Categoria")
+                        .WithMany("Lancamentos")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SIGES.Models.ClienteModel", "Cliente")
+                        .WithMany("Lancamentos")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SIGES.Models.VendaModel", "Venda")
+                        .WithMany("Lancamentos")
+                        .HasForeignKey("VendaId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Categoria");
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("SIGES.Models.OsModel", b =>
@@ -396,9 +528,49 @@ namespace SIGES.Migrations
                     b.Navigation("Permissao");
                 });
 
+            modelBuilder.Entity("SIGES.Models.VendaModel", b =>
+                {
+                    b.HasOne("SIGES.Models.ClienteModel", "Cliente")
+                        .WithMany("Vendas")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIGES.Models.LancamentoModel", "Lancamento")
+                        .WithMany("Vendas")
+                        .HasForeignKey("LancamentoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
+                        .WithMany("Vendas")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Lancamento");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("SIGES.Models.CategoriaModel", b =>
+                {
+                    b.Navigation("Lancamentos");
+                });
+
             modelBuilder.Entity("SIGES.Models.ClienteModel", b =>
                 {
+                    b.Navigation("Lancamentos");
+
                     b.Navigation("Ordens");
+
+                    b.Navigation("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
+                {
+                    b.Navigation("Vendas");
                 });
 
             modelBuilder.Entity("SIGES.Models.PermissaoModel", b =>
@@ -409,6 +581,13 @@ namespace SIGES.Migrations
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
                     b.Navigation("Ordens");
+
+                    b.Navigation("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.VendaModel", b =>
+                {
+                    b.Navigation("Lancamentos");
                 });
 #pragma warning restore 612, 618
         }

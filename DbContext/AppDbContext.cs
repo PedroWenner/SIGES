@@ -42,5 +42,7 @@ namespace SIGES.Data
         public DbSet<LogAlteracaoModel> LogsOperacoes { get; set; }
         public DbSet<ServicoModel> Servicos { get; set; }
         public DbSet<OsModel> Ordens { get; set; }
+        public DbSet<VendaModel> Vendas { get; set; }
+        public DbSet<LancamentoModel> Lancamentos { get; set; }
     }
 }

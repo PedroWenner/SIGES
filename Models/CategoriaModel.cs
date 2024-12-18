@@ -21,5 +21,9 @@ namespace SIGES.Models
         [IgnoreLog]
         [NotMapped]
         public int ProximoCodigo { get; set; }
+
+        [IgnoreLog]
+        [ValidateNever]
+        public ICollection<LancamentoModel> Lancamentos { get; set; } = new List<LancamentoModel>();
     }
 }

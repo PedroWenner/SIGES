@@ -1,0 +1,148 @@
+﻿@using SIGES.Helpers
+@using SIGES.ViewModel
+@model VendaViewModel
+
+@{
+    ViewData["Titulo"] = "Vendas";
+}
+
+<div class="new122">
+    <div class="widget-title" style="margin: -20px 0 0">
+        <span class="icon">
+            <i class="fas fa-user"></i>
+        </span>
+        <h5>Vendas</h5>
+    </div>
+    <div class="col-lg-12" style="margin-left: 0">
+        <div class="col-lg-4">
+            @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aVenda"))
+            {
+                <div class="d-flex">
+                    <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Venda" asp-action="Adicionar">
+                        <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                        <span class="button__text2">Nova venda</span>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <a role="button" class="button btn btn-mini btn-secondary disabled" style="max-width: 100px" title="Você não tem permissão para adicionar">
+                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                    <span class="button__text2">Nova venda</span>
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="widget-box">
+        <h5 style="padding: 3px 0"></h5>
+        <div class="widget-content nopadding tab-content">
+            <table id="tabela">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Nº</th>
+                        <th style="text-align: left;">Cliente</th>
+                        <th style="text-align: left;">Data da venda</th>
+                        <th style="text-align: left;">Venc. da garantia</th>
+                        <th style="text-align: left;">Status</th>
+                        <th style="text-align: left;">Faturado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Vendas == null || Model.Vendas.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7">Nenhum produto cadastrado</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var venda in Model.Vendas)
+                        {
+                            <tr>
+                                <td style="width: 5%; text-align: left;">@venda.Id</td>
+                                <td style="width: 20%; text-align: left;">@venda.Cliente.Nome</td>
+                                <td style="width: 30%; text-align: left;">@venda.DataVenda</td>
+                                <td style="width: 10%; text-align: left;"></td>
+                                <td style="width: 10%; text-align: left;">@venda.Status</td>
+                                <td style="width: 10%; text-align: left;">@venda.Faturado</td>
+                                <td style="width: 15%;">
+                                    <a href="#" data-entidade="VendaModel" data-id="@venda.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
+                                        <i class='bx bx-history'></i>
+                                    </a>
+                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eVenda"))
+                                    {
+                                        <a asp-controller="Venda" asp-action="Editar" asp-route-id="@venda.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar venda">
+                                            <i class="bx bx-edit bx-xs"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para editar">
+                                            <i class="bx bx-edit bx-xs"></i>
+                                        </a>
+                                    }
+                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dVenda"))
+                                    {
+                                        <a href="#modal-excluir" data-id="@venda.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir venda">
+                                            <i class="bx bx-trash-alt bx-xs"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para excluir">
+                                            <i class="bx bx-trash-alt bx-xs"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal excluir -->
+<div id="modal-excluir" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-controller="Venda" asp-action="Excluir">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Excluir produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="idVenda" name="id" />
+                    <h6 style="text-align: center">
+                        Deseja realmente excluir esta venda?
+                    </h6>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-danger">
+                        <span class="button__icon"><i class='bx bx-trash'></i></span>
+                        <span class="button__text2">Excluir</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_ModalLog")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on('click', 'a', function (event) {
+            var venda = $(this).data('id');
+            $('#idVenda').val(venda);
+        });
+    });
+</script>
