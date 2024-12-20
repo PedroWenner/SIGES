@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Interfaces;
 using SIGES.Models;
+using SIGES.Repositorios;
 using SIGES.ViewModel;
 
 namespace SIGES.Controllers
@@ -193,6 +194,22 @@ namespace SIGES.Controllers
             TempData["Success"] = "Usuário excluído com sucesso!";
             
             return RedirectToAction("Index");
+        }
+
+        [HttpGet("listarUsuarios")]
+        public JsonResult ListarUsuarios(string term)
+        {
+            var usuarios = _usuarioRepositorio.Listar()
+                .Where(c => c.Nome.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Select(c => new
+                {
+                    value = c.Id,
+                    nome = c.Nome,
+                    celular = c.Telefone ?? "",
+                    documento = c.Cpf ?? ""
+                }).ToList();
+
+            return Json(usuarios);
         }
     }
 }

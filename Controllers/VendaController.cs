@@ -51,7 +51,24 @@ namespace SIGES.Controllers
             await _logServiceRepositorio.RegistrarAdicao(usuarioAtual, venda);
 
             TempData["Success"] = "Venda cadastrada com sucesso!";
-            return RedirectToAction("Index");
+            return RedirectToAction("Editar", new { id = venda.Id });
+        }
+
+        [HttpGet("editar/{id}")]
+        public async Task<IActionResult> Editar(int id)
+        {
+            var venda = await _vendaRepositorio.ObterPorId(id);
+            if (venda == null)
+            {
+                TempData["Error"] = "Venda não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            ViewData["VendaId"] = venda.Id;
+            ViewData["ClienteNome"] = venda.Cliente?.Nome ?? "Cliente não encontrado";
+            ViewData["VendedorNome"] = venda.Usuario?.Nome ?? "Usuário não encontrado";
+
+            return View("EVenda", venda);
         }
     }
 }

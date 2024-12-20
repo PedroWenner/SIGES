@@ -24,9 +24,6 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="navLinkDetalheVenda" data-bs-toggle="tab" data-bs-target="#venda-tab-pane" type="button" role="tab" aria-controls="venda-tab-pane" aria-selected="true">Detalhes da venda</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="navLinkProdutos" data-bs-toggle="tab" data-bs-target="#produto-tab-pane" type="button" role="tab" aria-controls="produto-tab-pane" aria-selected="false">Produtos</button>
-                </li>
             </ul>
 
             <div class="tab-content">
@@ -42,12 +39,14 @@
                             </div>
                             <div class="col-3">
                                 <label for="cliente" class="form-label">Cliente</label>
-                                <input id="cliente" type="text" asp-for="ClienteId" required />
+                                <input id="cliente" type="text" placeholder="Digite o nome do cliente" required />
+                                <input id="cliente-id" type="hidden" asp-for="ClienteId" />
                                 <span asp-validation-for="ClienteId" class="text-danger"></span>
                             </div>
                             <div class="col-3">
                                 <label for="vendedor" class="form-label">Vendedor</label>
-                                <input id="vendedor" type="text" asp-for="UsuarioId" required />
+                                <input id="vendedor" type="text" placeholder="Digite o nome do vendedor" required />
+                                <input id="vendedor-id" type="hidden" asp-for="UsuarioId" />
                                 <span asp-validation-for="UsuarioId" class="text-danger"></span>
                             </div>
                             <div class="col-2">
@@ -66,16 +65,18 @@
                             </div>
                             <div class="col-2">
                                 <label for="garantia" class="form-label">Garantia (dias)</label>
-                                <input id="garantia" type="text" asp-for="GarantiaDias" onkeypress="return somenteNumeros(this)" required />
+                                <input id="garantia" type="text" asp-for="GarantiaDias" onkeypress="return somenteNumeros(this)" />
                                 <span asp-validation-for="GarantiaDias" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="row mb-3 mt-3">
                             <div class="col-6">
+                                <h6>Observações</h6>
                                 <textarea asp-for="Observacao" id="observacao"></textarea>
                             </div>
                             <div class="col-6">
+                                <h6>Observações para o cliente</h6>
                                 <textarea asp-for="ObservacaoCliente" id="observacaoCliente"></textarea>
                             </div>
                         </div>
@@ -87,20 +88,18 @@
                                 <span class="button__text2">Voltar</span>
                             </a>
                             <button type="submit" class="button btn btn-mini btn-success">
-                                <span class="button__icon"><i class='bx bx-save'></i></span>
-                                <span class="button__text2">Adicionar</span>
+                                <span class="button__icon"><i class='bx bx-chevrons-right'></i></span>
+                                <span class="button__text2">Continuar</span>
                             </button>
                         </div>
                     </form>
                 </div>
-                
-                <div class="tab-pane fade" id="produto-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutos" tabindex="0">...</div>
-
             </div>
         </div>
     </div>
 </div>
 
+<script src="~/js/jquery.validate.js"></script>
 <script src="~/js/ckeditor.js"></script>
 <script>
     ClassicEditor
@@ -122,4 +121,119 @@
                 'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
             ]
         });
+
+    $(function () {
+        $("#cliente").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/clientes/ListarClientes",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        if (data.length === 0) {
+                            response([{
+                                nome: "Adicionar cliente",
+                                value: "add",
+                                adicionar: true
+                            }]);
+                        } else {
+                            response(data);
+                        }
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                if (!ui.item.adicionar) {
+                    $("#cliente").val(ui.item.nome);
+                }
+
+                return false;
+            },
+            select: function (event, ui) {
+                if (ui.item.adicionar) {
+                    window.location.href = "/clientes/adicionar";
+                } else {
+                    $("#cliente").val(ui.item.nome);
+                    $("#cliente-id").val(ui.item.value);
+                }
+
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            if (item.adicionar) {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-add">➕ ${item.nome}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            } else {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-title">${item.nome}</span>
+                            <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            }
+        };
+    });
+
+    $(function () {
+        $("#vendedor").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/usuarios/listarUsuarios",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                $("#vendedor-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Celular: ${item.celular}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(document).ready(function () {
+        $('#formVenda').validate({
+            rules: {
+                'DataVenda': { required: true },
+            },
+            messages: {
+                'DataVenda': { required: 'Campo requerido.' },
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
 </script>

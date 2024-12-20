@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SIGES.Attributes;
 using SIGES.Interfaces;
 using SIGES.Models;
 using SIGES.ViewModel;
@@ -31,6 +32,7 @@ namespace SIGES.Controllers
             return View("LCliente", viewModel);
         }
 
+        [Permissao("aCliente")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
@@ -141,6 +143,22 @@ namespace SIGES.Controllers
             TempData["Success"] = "Cliente excluído com sucesso!";
 
             return RedirectToAction("Index");
+        }
+
+        [HttpGet("listarClientes")]
+        public JsonResult ListarClientes(string term)
+        {
+            var clientes = _clienteRepositorio.Listar()
+                .Where(c => c.Nome.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Select(c => new
+                 {
+                     value = c.Id,
+                     nome = c.Nome,
+                     celular = c.Celular ?? "",
+                     documento = c.Documento ?? ""
+                 }).ToList();
+
+            return Json(clientes);
         }
     }
 }

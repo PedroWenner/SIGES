@@ -24,7 +24,10 @@ namespace SIGES.Repositorios
 
         public async Task<VendaModel?> ObterPorId(int id)
         {
-            return await _context.Vendas.FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Vendas
+                .Include(c => c.Cliente)
+                .Include(p => p.Usuario)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task Adicionar(VendaModel venda)
