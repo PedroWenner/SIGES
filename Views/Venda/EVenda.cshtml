@@ -358,14 +358,13 @@
             },
             minLength: 2,
             focus: function (event, ui) {
-                $("#produto").val(ui.item.nome);
+                $("#produto").val(ui.item.nome + " | Preço: R$ " + ui.item.preco + " | Estoque: " + ui.item.estoque);
                 return false;
             },
             select: function (event, ui) {
-                $("#produto").val(ui.item.nome);
+                $("#produto").val(ui.item.nome + " | Preço: R$ " + ui.item.preco + " | Estoque: " + ui.item.estoque);
                 $("#produto-id").val(ui.item.value);
                 
-                // Formatar o preço para exibição com vírgula como separador decimal
                 let precoFormatado = parseFloat(ui.item.preco).toLocaleString('pt-BR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
@@ -380,7 +379,7 @@
                 .append(
                     `<div class="ui-menu-item-wrapper">
                         <span class="autocomplete-title">${item.nome}</span>
-                        <span class="autocomplete-details">Preco: R$ ${item.preco.toLocaleString('pt-BR', {
+                        <span class="autocomplete-details">Preço: R$ ${item.preco.toLocaleString('pt-BR', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
                         })} | Estoque: ${item.estoque}</span>
@@ -397,11 +396,11 @@
                 "Item.Preco": { required: true },
                 "Item.Quantidade": {
                     required: true,
-                    digits: true,
-                    max: function () {
-                        var estoque = $("#quantidade").data("estoque");
-                        return estoque || 0;
-                    }
+                    digits: true
+                    // , max: function () {
+                    //     var estoque = $("#quantidade").data("estoque");
+                    //     return estoque || 0;
+                    // }
                 }
             },
             messages: {
@@ -411,8 +410,8 @@
                 },
                 "Item.Quantidade": {
                     required: "Informe a quantidade.",
-                    digits: "Informe apenas números inteiros.",
-                    max: "A quantidade não pode ser maior que o estoque disponível."
+                    digits: "Informe apenas números inteiros."
+                    //, max: "A quantidade não pode ser maior que o estoque disponível."
                 }
             },
             submitHandler: function (form) {
@@ -496,22 +495,22 @@
 
                     return false;
                 }
-            },
-            errorPlacement: function (error, element) {
-                error.addClass("text-danger");
-                error.insertAfter(element);
-            },
-            highlight: function (element) {
-                $(element).addClass("is-invalid").removeClass("is-valid");
-            },
-            unhighlight: function (element) {
-                $(element).removeClass("is-invalid").addClass("is-valid");
             }
+            //,
+            // errorPlacement: function (error, element) {
+            //     error.addClass("text-danger");
+            //     error.insertAfter(element);
+            // },
+            // highlight: function (element) {
+            //     $(element).addClass("is-invalid").removeClass("is-valid");
+            // },
+            // unhighlight: function (element) {
+            //     $(element).removeClass("is-invalid").addClass("is-valid");
+            // }
         });
     });
 
-        $(document).ready(function () {
-        // Listener para o botão de exclusão
+    $(document).ready(function () {
         $(document).on("click", ".btn-remover", function (event) {
             event.preventDefault();
 
@@ -523,12 +522,12 @@
                 text: "Você deseja remover este item?",
                 icon: "warning",
                 showCancelButton: true,
+                cancelButtonText: "Cancelar",
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Sim, remover!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Mostrar progress bar
                     $("#progressBarProdutos").show();
 
                     $.ajax({
@@ -538,7 +537,6 @@
                         dataType: "json",
                         success: function (response) {
                             if (response.result) {
-                                // Atualizar a tabela
                                 let tbody = $("#tabela tbody");
                                 tbody.empty();
 
@@ -551,7 +549,7 @@
                                                 <td>${item.preco}</td>
                                                 <td>${item.subTotal}</td>
                                                 <td>
-                                                    <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover text-decoration-none">
+                                                    <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
                                                         <i class="bx bx-trash-alt bx-xs"></i>
                                                     </a>
                                                 </td>
@@ -583,7 +581,6 @@
                             Swal.fire("Erro!", "Ocorreu um erro ao tentar remover o item.", "error");
                         },
                         complete: function () {
-                            // Ocultar progress bar
                             $("#progressBarProdutos").hide();
                         }
                     });
@@ -591,5 +588,4 @@
             });
         });
     });
-
 </script>
