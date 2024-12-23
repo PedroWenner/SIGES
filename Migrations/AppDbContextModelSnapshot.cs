@@ -109,6 +109,39 @@ namespace SIGES.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ItensVendaModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("Preco")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
+
+                    b.Property<int>("ProdutoId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubTotal")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("VendaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProdutoId");
+
+                    b.HasIndex("VendaId");
+
+                    b.ToTable("ItensVenda");
+                });
+
             modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
                 {
                     b.Property<int>("Id")
@@ -417,7 +450,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$jjiwE..uZlQVXSv28Jm0Cu0kzjGJAE8Dwv1UEV5QCUctsX/AV9dwC",
+                            Senha = "$2a$11$kxSq2GJEy71GS2hOJwXXWe1Oil0490jmZWDfeiok3btHeDWKU4FTi",
                             Situacao = 1
                         });
                 });
@@ -475,6 +508,25 @@ namespace SIGES.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.ItensVendaModel", b =>
+                {
+                    b.HasOne("SIGES.Models.ProdutoModel", "Produto")
+                        .WithMany("Itens")
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SIGES.Models.VendaModel", "Venda")
+                        .WithMany("Itens")
+                        .HasForeignKey("VendaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
@@ -581,6 +633,11 @@ namespace SIGES.Migrations
                     b.Navigation("Usuarios");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ProdutoModel", b =>
+                {
+                    b.Navigation("Itens");
+                });
+
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
                     b.Navigation("Ordens");
@@ -590,6 +647,8 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.VendaModel", b =>
                 {
+                    b.Navigation("Itens");
+
                     b.Navigation("Lancamentos");
                 });
 #pragma warning restore 612, 618

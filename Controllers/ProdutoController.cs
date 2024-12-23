@@ -170,5 +170,21 @@ namespace SIGES.Controllers
             TempData["Success"] = "Estoque atualizado com sucesso!";
             return RedirectToAction("Index");
         }
+
+        [HttpGet("listarProdutos")]
+        public JsonResult ListarProdutos(string term)
+        {
+            var produtos = _produtoRepositorio.Listar()
+                .Where(c => c.Descricao.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Select(c => new
+                {
+                    value = c.Id,
+                    nome = c.Descricao,
+                    preco = c.PrecoVenda,
+                    estoque = c.Estoque
+                }).ToList();
+
+            return Json(produtos);
+        }
     }
 }

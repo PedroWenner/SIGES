@@ -4,8 +4,13 @@ using SIGES.Config;
 using SIGES.Data;
 using SIGES.Middleware;
 using SIGES.Services;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+var cultureInfo = new CultureInfo("pt-BR");
+
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 builder.Services.AddDistributedMemoryCache(); // Necessário para armazenar sessões na memória
 builder.Services.AddSession(options =>

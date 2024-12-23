@@ -57,5 +57,9 @@ namespace SIGES.Models
         [ValidateNever]
         public ICollection<LancamentoModel> Lancamentos { get; set; } = new List<LancamentoModel>();
 
+        [IgnoreLog]
+        [ValidateNever]
+        public ICollection<ItensVendaModel> Itens { get; set; } = new List<ItensVendaModel>();
+
     }
 }
