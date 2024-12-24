@@ -18,22 +18,22 @@ body * {
 }
 
 :root {
-  --funSider: #25233c;
-  --funCont : #e5eefd;
-  --blue    : #36449e;
-  --blue2   : #46435f;
-  --white   : #ffffff;
-  --white2  : #ebecf0;
-  --black   : #000000;
-  --black4  : #272b34;
-  --cinza   : #8a8d8f;
-  --cinza0  : #76818d;
-  --cinza1  : #aaa6b1;
-  --laranja : #fc9d0f;
-  --laranja1: #ffedd4;
-  --violeta : #6b22fc;
-  --violeta0: #333649;
-  --violeta1: #2f2b53;
+    --funSider: #25233c;
+    --funCont: #e5eefd;
+    --blue: #36449e;
+    --blue2: #46435f;
+    --white: #ffffff;
+    --white2: #ebecf0;
+    --black: #000000;
+    --black4: #272b34;
+    --cinza: #8a8d8f;
+    --cinza0: #76818d;
+    --cinza1: #aaa6b1;
+    --laranja: #fc9d0f;
+    --laranja1: #ffedd4;
+    --violeta: #6b22fc;
+    --violeta0: #ffffff;/*#333649;*/
+    --violeta1: #2f2b53;
 }
 
 #newlog {
