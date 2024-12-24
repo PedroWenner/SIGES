@@ -52,5 +52,10 @@ namespace SIGES.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<EmitenteModel> ObterEmitente()
+        {
+            return await _context.Emitente.FirstOrDefaultAsync();
+        }
     }
 }

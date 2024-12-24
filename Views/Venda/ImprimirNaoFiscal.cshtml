@@ -1,0 +1,94 @@
+﻿@using SIGES.ViewModel
+@model VendaImprimirViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="@Url.Content("~/bootstrap-5.3.3/css/bootstrap.css")" />
+    <link href="@Url.Content("~/font-awesome/css/font-awesome.css")" rel="stylesheet" />
+    <title>Imprimir Venda</title>
+</head>
+<body>
+    <div class="col-md-6 offset-md-3">
+        <!--<h5>EMITENTE</h5>-->
+
+        <div class="d-flex align-items-start">
+            <div class="me-4">
+                @if (Model.Emitente.ImagemBlob != null)
+                {
+                    <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do emitente" style="max-width: 150px;" />
+                }
+                else
+                {
+                    <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 150px; display:none;" />
+                }
+            </div>
+            <div>
+                <ul style="padding-left: 0; list-style: none;">
+                    <li><strong>Nome:</strong> @Model.Emitente.Nome</li>
+                    <li><strong>CNPJ:</strong> @Model.Emitente.Cnpj</li>
+                    <li><strong>Endereço:</strong> @Model.Emitente.Rua, @Model.Emitente.Numero</li>
+                    <li><strong>Bairro:</strong> @Model.Emitente.Bairro</li>
+                    <li><strong>Cidade - UF:</strong> @Model.Emitente.Cidade, @Model.Emitente.Uf</li>
+                    <li><strong>E-mail:</strong> @Model.Emitente.Email</li>
+                    <li><strong>Celular:</strong> @Model.Emitente.Telefone</li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr />
+
+        <h5>CLIENTE</h5>
+        <ul>
+            <li style="list-style: none;">
+                <span><strong>Nome:</strong> @Model.Venda.Cliente.Nome</span><br />
+                <span><strong>Endereço:</strong> @Model.Venda.Cliente.Rua, @Model.Venda.Cliente.NumeroRua</span><br />
+                <span><strong>Bairro:</strong> @Model.Venda.Cliente.Bairro</span><br />
+                <span><strong>Cidade - UF:</strong> @Model.Venda.Cliente.Cidade, @Model.Venda.Cliente.Estado</span><br />
+                <span><strong>E-mail:</strong> @Model.Venda.Cliente.Email</span><br />
+                <span><strong>Celular:</strong> @Model.Venda.Cliente.Celular</span><br />
+            </li>
+        </ul>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 10%">Cód</th>
+                    <th style="width: 10%">Produto</th>
+                    <th style="width: 10%">Qtd</th>
+                    <th style="width: 10%">Preço Unitário</th>
+                    <th style="width: 10%">Sub-total</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @foreach (var item in Model.ItensVenda)
+                {
+                    <tr>
+                        <td>@item.Produto.CodigoBarras</td>
+                        <td>@item.Produto.Descricao</td>
+                        <td>@item.Quantidade</td>
+                        <td>@Convert.ToDecimal(item.Preco).ToString("C")</td>
+                        <td>@Convert.ToDecimal((item.Preco * item.Quantidade)).ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <span class="float-end"><strong>Total:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade)).ToString("C")</span>
+
+        <div class="col-md-12 text-center" style="margin-top: 16rem!important;">
+            <hr class="mx-auto" style="width: 50%" />
+            <p class="text-center">Assinatura do recebedor</p>
+        </div>
+    </div>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>

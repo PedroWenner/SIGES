@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using iText.Commons.Actions.Contexts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SIGES.Attributes;
 using SIGES.Classes;
+using SIGES.Data;
 using SIGES.Interfaces;
 using SIGES.Models;
 using SIGES.Repositorios;
@@ -136,6 +138,7 @@ namespace SIGES.Controllers
             }
 
             await _categoriaRepositorio.Atualizar(categoriaExistente);
+
             TempData["Success"] = "Categoria atualizada com sucesso!";
             return RedirectToAction("Index");
         }

@@ -88,8 +88,49 @@ namespace SIGES.Controllers
                 Itens = itensVenda
             };
 
-            Console.WriteLine(ViewData["ActivePanel"]);
             return View("EVenda", viewModel);
+        }
+
+        [HttpPost("editar/{id}")]
+        public async Task<IActionResult> Editar(int id, VendaModel venda)
+        {
+            // Carregar os itens da venda
+            var itensVenda = _itensVendaRepositorio.Listar()
+                .Where(i => i.VendaId == id)
+                .ToList();
+
+            ViewData["VendaId"] = venda.Id;
+            ViewData["ClienteNome"] = venda.Cliente?.Nome ?? "Cliente não encontrado";
+            ViewData["VendedorNome"] = venda.Usuario?.Nome ?? "Usuário não encontrado";
+
+            var viewModel = new VendaViewModel
+            {
+                Venda = venda,
+                Item = new ItensVendaModel(),
+                Itens = itensVenda
+            };
+
+            if (!ModelState.IsValid)
+            {
+                return View("EVenda", viewModel);
+            }
+
+            var vendaExistente = await _vendaRepositorio.ObterPorId(id);
+            var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+            await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, vendaExistente, venda);
+
+            vendaExistente.DataVenda = venda.DataVenda;
+            vendaExistente.ClienteId = venda.ClienteId;
+            vendaExistente.UsuarioId = venda.UsuarioId;
+            vendaExistente.Status = venda.Status;
+            vendaExistente.GarantiaDias = venda.GarantiaDias;
+            vendaExistente.Observacao = venda.Observacao;
+            vendaExistente.ObservacaoCliente = venda.ObservacaoCliente;
+
+            await _vendaRepositorio.Atualizar(vendaExistente);
+
+            TempData["Success"] = "Venda atualizada com sucesso!";
+            return RedirectToAction("Index");
         }
 
         [HttpPost("adicionarProduto")]
@@ -188,6 +229,37 @@ namespace SIGES.Controllers
             {
                 return Json(new { result = false, message = $"Erro ao deletar produto: {ex.Message}" });
             }
+        }
+
+        [HttpGet("imprimir/{id}")]
+        public async Task<IActionResult> Imprimir(int id, string tipo = "a4")
+        {
+            var venda = await _vendaRepositorio.ObterPorId(id);
+            if (venda == null)
+            {
+                TempData["Error"] = "Venda não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            var itensVenda = _itensVendaRepositorio.Listar()
+                .Where(i => i.VendaId == id)
+                .ToList();
+
+            var emitente = await _vendaRepositorio.ObterEmitente();
+
+            var viewModel = new VendaImprimirViewModel
+            {
+                Venda = venda,
+                ItensVenda = itensVenda,
+                Emitente = emitente
+            };
+
+            if (tipo.ToLower() == "nao-fiscal")
+            {
+                return View("ImprimirNaoFiscal", viewModel);
+            }
+
+            return View("Imprimir", viewModel);
         }
     }
 }

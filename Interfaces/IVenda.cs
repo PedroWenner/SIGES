@@ -13,5 +13,7 @@ namespace SIGES.Interfaces
         Task Atualizar(VendaModel venda);
 
         Task Excluir(int id);
+
+        Task<EmitenteModel> ObterEmitente();
     }
 }
