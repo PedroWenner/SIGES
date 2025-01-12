@@ -11,6 +11,9 @@
         border: 1px solid #ccc;
         padding: 10px;
         width: 100%;
+        white-space: normal !important;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
 </style>
 
@@ -107,10 +110,10 @@
                                 <span class="button__icon"><i class='bx bx-show'></i></span>
                                 <span class="button__text2">Visualizar</span>
                             </button>
-                            <button type="submit" class="button btn btn-mini btn-danger">
+                            <a href="#modal-faturar" role="button" class="button btn btn-mini btn-danger" data-bs-target="#modal-faturar" data-bs-toggle="modal">
                                 <span class="button__icon"><i class='bx bx-dollar'></i></span>
                                 <span class="button__text2">Faturar</span>
-                            </button>
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -205,6 +208,82 @@
     </div>
 </div>
 
+<!-- Modal Faturar-->
+<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formFaturar" action="<?php echo current_url() ?>" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Faturar venda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
+                    <div class="col-12" style="margin-left: 0">
+                        <label for="descricao">Descrição</label>
+                        <input class="col-12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: @ViewData["VendaId"]" />
+                    </div>
+                    <div class="col-12" style="margin-left: 0">
+                        <div class="col-12" style="margin-left: 0">
+                            <label for="cliente">Cliente*</label>
+                            <input class="col-12" id="cliente" type="text" name="cliente" value="@ViewData["ClienteNome"]" />
+                            <input type="hidden" name="clientes_id" id="clienteId" asp-for="Venda.ClienteId">
+                            <input type="hidden" name="vendas_id" id="vendas_id" value="@ViewData["VendaId"]">
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-left: 0">
+                        <div class="col-5" style="margin-left: 0">
+                            <label for="valor">Valor*</label>
+                            <input type="hidden" id="tipo" name="tipo" value="receita" />
+                            <input class="col-12 money" id="valor" type="text" name="valor" value="" />
+                        </div>
+                        <div class="col-5" style="margin-left: 2">
+                            <label for="valor">Valor Com Desconto*</label>
+                            <input class="col-12 money" id="faturar-desconto" type="text" name="faturar-desconto" value="" />
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-left: 0">
+                        <div class="col-4" style="margin-left: 0">
+                            <label for="vencimento">Data Entrada*</label>
+                            <input class="col-12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-left: 0">
+                        <div class="col-4" style="margin-left: 0">
+                            <label for="recebido">Recebido?</label>
+                            &nbsp &nbsp &nbsp &nbsp<input id="recebido" type="checkbox" name="recebido" value="1" />
+                        </div>
+                        <div id="divRecebimento" class="span8" style=" display: none">
+                            <div class="col-6">
+                                <label for="recebimento">Data Recebimento</label>
+                                <input class="col-12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
+                            </div>
+                            <div class="col-6">
+                                <label for="formaPgto">Forma Pgto</label>
+                                <select name="formaPgto" id="formaPgto" class="col-12">
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    <option value="Débito">Débito</option>
+                                    <option value="Boleto">Boleto</option>
+                                    <option value="Depósito">Depósito</option>
+                                    <option value="Pix">Pix</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex">
+                    <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
+                        <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span>
+                    </button>
+                    <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="~/js/jquery.validate.js"></script>
 <script src="~/js/ckeditor.js"></script>
 <script>
@@ -214,8 +293,58 @@
             toolbar: [
                 'undo', 'redo', '|',
                 'heading', '|',
-                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
-            ]
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
+            ],
+            keyboard: {
+                bindings: {
+                    'space': {
+                        key: 32,
+                        run: (editor) => {
+                            editor.execute('input', { text: ' ' });
+                            return true;
+                        }
+                    }
+                }
+            },
+            heading: {
+                options: [
+                    {
+                        model: 'paragraph',
+                        title: 'Parágrafo',
+                        class: 'ck-heading_paragraph'
+                    },
+                    {
+                        model: 'heading1',
+                        view: 'h1',
+                        title: 'Heading 1',
+                        class: 'ck-heading_heading1'
+                    },
+                    {
+                        model: 'heading2',
+                        view: 'h2',
+                        title: 'Heading 2',
+                        class: 'ck-heading_heading2'
+                    },
+                    {
+                        model: 'heading3',
+                        view: 'h3',
+                        title: 'Heading 3',
+                        class: 'ck-heading_heading3'
+                    },
+                    {
+                        model: 'heading4',
+                        view: 'h4',
+                        title: 'Heading 4',
+                        class: 'ck-heading_heading4'
+                    }
+                ]
+            }
+        })
+        .then(editor => {
+            window.editor = editor;
+        })
+        .catch(error => {
+            console.error( error.stack );
         });
 
     ClassicEditor
@@ -224,8 +353,47 @@
             toolbar: [
                 'undo', 'redo', '|',
                 'heading', '|',
-                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
-            ]
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
+            ],
+            heading: {
+                options: [
+                    {
+                        model: 'paragraph',
+                        title: 'Parágrafo',
+                        class: 'ck-heading_paragraph'
+                    },
+                    {
+                        model: 'heading1',
+                        view: 'h1',
+                        title: 'Heading 1',
+                        class: 'ck-heading_heading1'
+                    },
+                    {
+                        model: 'heading2',
+                        view: 'h2',
+                        title: 'Heading 2',
+                        class: 'ck-heading_heading2'
+                    },
+                    {
+                        model: 'heading3',
+                        view: 'h3',
+                        title: 'Heading 3',
+                        class: 'ck-heading_heading3'
+                    },
+                    {
+                        model: 'heading4',
+                        view: 'h4',
+                        title: 'Heading 4',
+                        class: 'ck-heading_heading4'
+                    }
+                ]
+            }
+        })
+        .then(editor => {
+            window.editor = editor;
+        })
+        .catch(error => {
+            console.error( error.stack );
         });
 
     $(function () {
@@ -496,17 +664,6 @@
                     return false;
                 }
             }
-            //,
-            // errorPlacement: function (error, element) {
-            //     error.addClass("text-danger");
-            //     error.insertAfter(element);
-            // },
-            // highlight: function (element) {
-            //     $(element).addClass("is-invalid").removeClass("is-valid");
-            // },
-            // unhighlight: function (element) {
-            //     $(element).removeClass("is-invalid").addClass("is-valid");
-            // }
         });
     });
 
