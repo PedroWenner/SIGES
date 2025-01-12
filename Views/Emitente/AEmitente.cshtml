@@ -1,0 +1,176 @@
+﻿@model EmitenteModel
+
+@{
+    ViewData["Titulo"] = "Adicionar emitente";
+}
+
+<script src="~/js/funcoes.js"></script>
+
+    
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastrar emitente</h5>
+        </div>
+        <div class="card-body">
+            <form id="formEmitente" method="post" enctype="multipart/form-data" asp-controller="Emitente" asp-action="Adicionar">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="documento" class="form-label">CNPJ</label>
+                                    <input id="documento" type="text" asp-for="Cnpj" class="cpfcnpj" required />
+                                    <span asp-validation-for="Cnpj" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4 d-flex align-content-end flex-wrap">
+                                    <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="nomeCliente" class="form-label">Nome</label>
+                            <input id="nomeCliente" type="text" asp-for="Nome" required />
+                            <span asp-validation-for="Nome" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="ie" class="form-label">Ie</label>
+                            <input id="ie" type="text" asp-for="Ie" class="cnpj" required />
+                            <span asp-validation-for="Ie" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="cep" class="form-label">CEP</label>
+                            <input id="cep" type="text" asp-for="Cep" required />
+                            <span asp-validation-for="Cep" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="rua" class="form-label">Rua</label>
+                            <input id="rua" type="text" asp-for="Rua" required />
+                            <span asp-validation-for="Rua" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="numero" class="form-label">Número</label>
+                            <input id="numero" type="text" asp-for="Numero" required />
+                            <span asp-validation-for="Numero" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 col-md-4">
+                            <label for="bairro" class="form-label">Bairro</label>
+                            <input id="bairro" type="text" asp-for="Bairro" required />
+                            <span asp-validation-for="Bairro" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input id="cidade" type="text" asp-for="Cidade" required />
+                            <span asp-validation-for="Cidade" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select id="estado" asp-for="Uf">
+                                <option value="">Selecione...</option>
+                            </select>
+                            <span asp-validation-for="Uf" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input id="telefone" type="text" asp-for="Telefone" required />
+                            <span asp-validation-for="Telefone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input id="email" type="text" asp-for="Email" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imagem -->
+                <div class="mb-3 col-md-6">
+                    <label for="imagem" class="form-label">Imagem</label>
+                    <input type="file" id="imagem" name="imagemEmitente" accept="image/*" onchange="previewImage(event)" required />
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-center">
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Emitente" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                        <span class="button__text2">Voltar</span>
+                    </a>
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Adicionar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script type="text/javascript">
+
+    function previewImage(event) {
+        const img = document.getElementById('previewImg');
+        if (event.target.files.length > 0) {
+            img.src = URL.createObjectURL(event.target.files[0]);
+            img.onload = () => {
+                URL.revokeObjectURL(img.src);
+                img.style.display = "block";
+            };
+        } else {
+            img.style.display = "none";
+        }
+    }
+
+    $(document).ready(function () {
+        // Carrega os estados do arquivo JSON
+        $.getJSON('@Url.Content("~/json/estados.json")', function (data) {
+            if (data && data.estados && data.estados.length > 0) {
+                for (var i = 0; i < data.estados.length; i++) {
+                    $('#estado').append(new Option(data.estados[i].nome, data.estados[i].sigla));
+                }
+            } else {
+                console.error('Arquivo JSON não possui as medidas esperadas.');
+            }
+        });
+
+        $.validator.addMethod("extension", function (value, element, param) {
+            var extension = value.split('.').pop().toLowerCase();
+            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
+        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
+
+        $('#formEmitente').validate({
+            rules: {
+                'Descricao': { required: true },
+                'imagemCategoria': { required: true, extension: "jpg|jpeg|png|gif|bmp" }
+            },
+            messages: {
+                'Descricao': { required: 'Campo descrição é obrigatório.' },
+                'imagemCategoria': {
+                    required: 'Obrigatório selecionar imagem para categoria.',
+                    extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
+                }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+</script>

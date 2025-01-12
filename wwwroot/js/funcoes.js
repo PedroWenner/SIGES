@@ -147,6 +147,8 @@ $(document).ready(function () {
     }
 
     $('#buscar_info_cnpj').on('click', function () {
+
+        console.log($('#documento').val());
         //Nova variável "ndocumento" somente com dígitos.
         var ndocumento = $('#documento').val().replace(/\D/g, '');
 
@@ -283,11 +285,7 @@ $(document).ready(function () {
                         $("#rua").val(dados.logradouro);
                         $("#bairro").val(dados.bairro);
                         $("#cidade").val(dados.localidade);
-                        
-                        var estadoSigla = dados.uf;
-                        $("#estado").val(estadoSigla);
-
-                        $("#estado").select2().val(estadoSigla).trigger('change.select2');
+                        $("#estado").val(dados.uf);
                     } //end if.
                     else {
                         //CEP pesquisado não foi encontrado.
