@@ -12,8 +12,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="AntiXSS" Version="4.3.0" />
 		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 		<PackageReference Include="datatables.net-bs5" Version="2.1.8" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
 		<PackageReference Include="itext7" Version="9.0.0" />
 		<PackageReference Include="itext7.bouncy-castle-adapter" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />

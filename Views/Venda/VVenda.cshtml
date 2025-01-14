@@ -1,0 +1,636 @@
+﻿@using SIGES.ViewModel
+@model VendaViewModel
+
+@{
+    ViewData["Titulo"] = "Editar venda";
+}
+
+<style>
+    .ck-editor__editable {
+    min-height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    white-space: normal !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Dados da venda nº @ViewData["VendaId"]</h5>
+        </div>
+        <div class="card-body">
+
+            <div class="d-flex">
+                <a title="Editar" class="button btn btn-mini btn-success" asp-controller="Venda" asp-action="Editar" asp-route-id="@ViewData["VendaId"]">
+                    <span class="button__icon"><i class="bx bx-edit bx-xs"></i></span>
+                    <span class="button__text2">Editar</span>
+                </a>
+                <a title="Orçamento" class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@ViewData["VendaId"]" asp-route-tipo="nao-fiscal" target="_blank">
+                    <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
+                    <span class="button__text2">Orçamento</span>
+                </a>
+                <a title="Papel A4" class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@ViewData["VendaId"]" asp-route-tipo="a4" target="_blank">
+                    <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
+                    <span class="button__text2">Papel A4</span>
+                </a>
+                <a title="CP não fiscal" class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@ViewData["VendaId"]" asp-route-tipo="a4" target="_blank">
+                    <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
+                    <span class="button__text2">CP não fiscal</span>
+                </a>
+                <a data-bs-target="#modal-gerar-pagamento" data-bs-toggle="modal" title="Gerar pagamento" class="button btn btn-mini btn-info">
+                    <span class="button__icon"><i class="bx bx-qr bx-xs"></i></span>
+                    <span class="button__text2">Gerar pagamento</span>
+                </a>
+                <a title="Voltar" class="button btn btn-mini btn-warning" asp-controller="Venda" asp-action="Index">
+                    <span class="button__icon"><i class="bx bx-x bx-xs"></i></span>
+                    <span class="button__text2">Voltar</span>
+                </a>
+            </div>
+
+            <div class="col-lg-12 mt-3 p-3 text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Cliente</h6>
+                        <p style="margin-bottom: 0px!important;">@ViewData["ClienteNome"]</p>
+                        <p style="margin-bottom: 0px!important;">@ViewData["ClienteEndereco"]</p>
+                        <p style="margin-bottom: 0px!important;">@ViewData["ClienteCep"]</p>
+                        <p style="margin-bottom: 0px!important;">@ViewData["ClienteEmail"]</p>
+                        <p style="margin-bottom: 0px!important;">@ViewData["ClienteCelular"]</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Vendedor</h6>
+                        <p style="margin-bottom: 0px!important;">@ViewData["VendedorNome"]</p>
+                        <p style="margin-bottom: 0px!important;">@ViewData["VendedorEmail"]</p>
+                        <p style="margin-bottom: 0px!important;">@ViewData["VendedorCelular"]</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12 mt-3 p-3">
+                <table class="table table-condensed">
+                    <tbody>
+                        @foreach (var item in Model.Vendas)
+                        {
+                            <tr>
+                                <td><b>Status Venda: </b> @item.Status </td>
+                                <td><b>Data da Venda: </b> @item.DataVenda.ToString("dd/MM/yyyy") </td>
+                                <td><b>Garantia: </b> @item.GarantiaDias </td>
+                                @* <td><?php if (in_array($result->status, ['Finalizado', 'Faturado', 'Orçamento', 'Aberto', 'Em Andamento', 'Aguardando Peças'])): ?><b>Venc. da Garantia: </b><?php echo dateInterval($result->dataVenda, $result->garantia); ?><?php endif; ?></td> *@
+                            </tr>
+                        }
+                        
+                        <tr>
+                            <td colspan="3"><b>Observações: </b>@Html.Raw(@ViewData["VendaObservacao"])</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Faturar-->
+<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formFaturar" action="<?php echo current_url() ?>" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Faturar venda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
+                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <label for="descricao">Descrição</label>
+                        <input class="col-12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: @ViewData["VendaId"]" />
+                    </div>
+                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-12" style="margin-left: 0">
+                            <label for="cliente">Cliente</label>
+                            <input class="col-12" id="cliente" type="text" name="cliente" value="@ViewData["ClienteNome"]" required />
+                            <input type="hidden" name="clientes_id" id="clienteId" asp-for="Venda.ClienteId">
+                            <input type="hidden" name="vendas_id" id="vendas_id" value="@ViewData["VendaId"]">
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-5" style="margin-left: 0;">
+                            <label for="valor">Valor*</label>
+                            <input type="hidden" id="tipo" name="tipo" value="receita" />
+                            <input class="col-12 money" id="valor" type="text" name="valor" value="" />
+                        </div>
+                        <div class="col-5" style="margin-left: 2px;">
+                            <label for="valor">Valor Com Desconto*</label>
+                            <input class="col-12 money" id="faturar-desconto" type="text" name="faturar-desconto" value="" />
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-4" style="margin-left: 0">
+                            <label for="vencimento">Data Entrada*</label>
+                            <input class="col-12 datepicker" autocomplete="off" id="vencimento" type="text" name="vencimento" />
+                        </div>
+                    </div>
+                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-4" style="margin-left: 0">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="recebido" name="recebido" checked>
+                                <label class="form-check-label" for="recebido">Recebido</label>
+                            </div>
+                        </div>
+                        <div id="divRecebimento" class="span8" style=" display: none">
+                            <div class="col-6">
+                                <label for="recebimento">Data Recebimento</label>
+                                <input class="col-12 datepicker" autocomplete="off" id="recebimento" type="text" name="recebimento" />
+                            </div>
+                            <div class="col-6">
+                                <label for="formaPgto">Forma Pgto</label>
+                                <select name="formaPgto" id="formaPgto" class="col-12">
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    <option value="Débito">Débito</option>
+                                    <option value="Boleto">Boleto</option>
+                                    <option value="Depósito">Depósito</option>
+                                    <option value="Pix">Pix</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex">
+                    <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
+                        <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span>
+                    </button>
+                    <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script src="~/js/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#observacao'), {
+            language: 'pt-br',
+            toolbar: [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
+            ],
+            keyboard: {
+                bindings: {
+                    'space': {
+                        key: 32,
+                        run: (editor) => {
+                            editor.execute('input', { text: ' ' });
+                            return true;
+                        }
+                    }
+                }
+            },
+            heading: {
+                options: [
+                    {
+                        model: 'paragraph',
+                        title: 'Parágrafo',
+                        class: 'ck-heading_paragraph'
+                    },
+                    {
+                        model: 'heading1',
+                        view: 'h1',
+                        title: 'Heading 1',
+                        class: 'ck-heading_heading1'
+                    },
+                    {
+                        model: 'heading2',
+                        view: 'h2',
+                        title: 'Heading 2',
+                        class: 'ck-heading_heading2'
+                    },
+                    {
+                        model: 'heading3',
+                        view: 'h3',
+                        title: 'Heading 3',
+                        class: 'ck-heading_heading3'
+                    },
+                    {
+                        model: 'heading4',
+                        view: 'h4',
+                        title: 'Heading 4',
+                        class: 'ck-heading_heading4'
+                    }
+                ]
+            }
+        })
+        .then(editor => {
+            window.editor = editor;
+        })
+        .catch(error => {
+            console.error( error.stack );
+        });
+
+    ClassicEditor
+        .create(document.querySelector('#observacaoCliente'), {
+            language: 'pt-br',
+            toolbar: [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
+            ],
+            heading: {
+                options: [
+                    {
+                        model: 'paragraph',
+                        title: 'Parágrafo',
+                        class: 'ck-heading_paragraph'
+                    },
+                    {
+                        model: 'heading1',
+                        view: 'h1',
+                        title: 'Heading 1',
+                        class: 'ck-heading_heading1'
+                    },
+                    {
+                        model: 'heading2',
+                        view: 'h2',
+                        title: 'Heading 2',
+                        class: 'ck-heading_heading2'
+                    },
+                    {
+                        model: 'heading3',
+                        view: 'h3',
+                        title: 'Heading 3',
+                        class: 'ck-heading_heading3'
+                    },
+                    {
+                        model: 'heading4',
+                        view: 'h4',
+                        title: 'Heading 4',
+                        class: 'ck-heading_heading4'
+                    }
+                ]
+            }
+        })
+        .then(editor => {
+            window.editor = editor;
+        })
+        .catch(error => {
+            console.error( error.stack );
+        });
+
+    $(function () {
+        $("#cliente").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/clientes/ListarClientes",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        if (data.length === 0) {
+                            response([{
+                                nome: "Adicionar cliente",
+                                value: "add",
+                                adicionar: true
+                            }]);
+                        } else {
+                            response(data);
+                        }
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                if (!ui.item.adicionar) {
+                    $("#cliente").val(ui.item.nome);
+                }
+
+                return false;
+            },
+            select: function (event, ui) {
+                if (ui.item.adicionar) {
+                    window.location.href = "/clientes/adicionar";
+                } else {
+                    $("#cliente").val(ui.item.nome);
+                    $("#cliente-id").val(ui.item.value);
+                }
+
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            if (item.adicionar) {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-add">➕ ${item.nome}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            } else {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-title">${item.nome}</span>
+                            <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            }
+        };
+    });
+
+    $(function () {
+        $("#vendedor").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/usuarios/listarUsuarios",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                $("#vendedor-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Celular: ${item.celular}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(document).ready(function () {
+        $(".money").mask("#.##0,00", {reverse: true});
+        $('#formVenda').validate({
+            rules: {
+                'DataVenda': { required: true },
+            },
+            messages: {
+                'DataVenda': { required: 'Campo requerido.' },
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+
+    $(function () {
+        $("#produto").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/produtos/listarProdutos",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#produto").val(ui.item.nome + " | Preço: R$ " + ui.item.preco + " | Estoque: " + ui.item.estoque);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#produto").val(ui.item.nome + " | Preço: R$ " + ui.item.preco + " | Estoque: " + ui.item.estoque);
+                $("#produto-id").val(ui.item.value);
+
+                let precoFormatado = parseFloat(ui.item.preco).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                $("#preco").val(precoFormatado);
+
+                $("#quantidade").data("estoque", ui.item.estoque);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Preço: R$ ${item.preco.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })} | Estoque: ${item.estoque}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(document).ready(function () {
+        $("#formProdutos").validate({
+            rules: {
+                "Item.ProdutoId": { required: true },
+                "Item.Preco": { required: true },
+                "Item.Quantidade": {
+                    required: true,
+                    digits: true
+                    // , max: function () {
+                    //     var estoque = $("#quantidade").data("estoque");
+                    //     return estoque || 0;
+                    // }
+                }
+            },
+            messages: {
+                "Item.ProdutoId": { required: "Selecione um produto." },
+                "Item.Preco": {
+                    required: "Informe o preço."
+                },
+                "Item.Quantidade": {
+                    required: "Informe a quantidade.",
+                    digits: "Informe apenas números inteiros."
+                    //, max: "A quantidade não pode ser maior que o estoque disponível."
+                }
+            },
+            submitHandler: function (form) {
+                var quantidade = parseInt($("#quantidade").val());
+                var estoque = parseInt($("#quantidade").data("estoque"));
+
+                if (estoque < quantidade) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Atenção",
+                        text: "Você não possui estoque suficiente."
+                    });
+                } else {
+                    var dados = $(form).serialize();
+                    // Mostra a barra de progresso
+                    $("#progressBarProdutos").show();
+
+                    $.ajax({
+                        type: "POST",
+                        url: form.action,
+                        data: dados,
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.result) {
+                                let tbody = $("#tabela tbody");
+                                tbody.empty();
+
+                                if (response.items && Array.isArray(response.items)) {
+                                    response.items.forEach(item => {
+                                        tbody.append(`
+                                            <tr>
+                                                <td style="text-align: left;">${item.produtoNome}</td>
+                                                <td style="text-align: left;">${item.quantidade}</td>
+                                                <td style="text-align: left;">${item.preco}</td>
+                                                <td style="text-align: left;">${item.subTotal}</td>
+                                                <td style="text-align: left;">
+                                                    <a href="#" data-item-id="${item.id}" data-venda-id="${@Model.Venda.Id}" class="btn-remover btn-nwe4 text-decoration-none">
+                                                        <i class="bx bx-trash-alt bx-xs"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        `);
+                                    });
+                                }
+
+                                $("#tabela tfoot").html(`
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                        <td colspan="2" class="text-start">${response.total || "R$ 0,00"}</td>
+                                    </tr>
+                                `);
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: "Produto adicionado com sucesso!"
+                                });
+
+                                $("#quantidade").val("");
+                                $("#preco").val("");
+                                $("#produto").val("").focus();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Erro",
+                                    text: response.messages
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Erro",
+                                text: "Não foi possível adicionar o produto. Tente novamente."
+                            });
+                        },
+                        complete: function () {
+                            $("#progressBarProdutos").hide();
+                        }
+                    });
+
+                    return false;
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $(document).on("click", ".btn-remover", function (event) {
+            event.preventDefault();
+
+            var itemId = $(this).data("item-id");
+            var vendaId = $(this).data("venda-id");
+
+            Swal.fire({
+                title: "Tem certeza?",
+                text: "Você deseja remover este item?",
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, remover!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#progressBarProdutos").show();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/vendas/removerProduto",
+                        data: { itemId: itemId, vendaId: vendaId },
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.result) {
+                                let tbody = $("#tabela tbody");
+                                tbody.empty();
+
+                                if (response.items && Array.isArray(response.items)) {
+                                    response.items.forEach(item => {
+                                        tbody.append(`
+                                            <tr>
+                                                <td>${item.produtoNome}</td>
+                                                <td>${item.quantidade}</td>
+                                                <td>${item.preco}</td>
+                                                <td>${item.subTotal}</td>
+                                                <td>
+                                                    <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
+                                                        <i class="bx bx-trash-alt bx-xs"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        `);
+                                    });
+                                } else {
+                                    tbody.append(`
+                                        <tr>
+                                            <td colspan="5" class="text-center">Nenhum produto adicionado à venda.</td>
+                                        </tr>
+                                    `);
+                                }
+
+                                // Atualizar o total
+                                $("#tabela tfoot").html(`
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                        <td colspan="2" class="text-start">${response.total}</td>
+                                    </tr>
+                                `);
+
+                                Swal.fire("Removido!", "O item foi removido com sucesso.", "success");
+                            } else {
+                                Swal.fire("Erro!", response.message || "Não foi possível remover o item.", "error");
+                            }
+                        },
+                        error: function () {
+                            Swal.fire("Erro!", "Ocorreu um erro ao tentar remover o item.", "error");
+                        },
+                        complete: function () {
+                            $("#progressBarProdutos").hide();
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

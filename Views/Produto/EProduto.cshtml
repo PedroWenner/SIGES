@@ -162,7 +162,7 @@
 
     function calcLucro(precoCompra, margemLucro) {
         var precoVenda = (precoCompra * (1 + (margemLucro / 100))).toFixed(2);
-        $('#precoVenda').val(precoVenda);
+        $('#precoVenda').val(precoVenda.replace(".", ","));
     }
 
     $("#margem").keyup(function() {

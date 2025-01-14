@@ -6,6 +6,10 @@ using SIGES.Repositorios;
 using SIGES.ViewModel;
 using System.Drawing;
 using System.Globalization;
+using System.Net;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using SIGES.Helpers;
+
 
 namespace SIGES.Controllers
 {
@@ -53,6 +57,11 @@ namespace SIGES.Controllers
             {
                 return View("AVenda");
             }
+
+            string observacaoSanitizada = HtmlHelper.HigienizarHtml(venda.Observacao);
+            venda.Observacao = observacaoSanitizada;
+            observacaoSanitizada = HtmlHelper.HigienizarHtml(venda.ObservacaoCliente);
+            venda.ObservacaoCliente = observacaoSanitizada;
 
             await _vendaRepositorio.Adicionar(venda);
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
@@ -124,8 +133,8 @@ namespace SIGES.Controllers
             vendaExistente.UsuarioId = venda.UsuarioId;
             vendaExistente.Status = venda.Status;
             vendaExistente.GarantiaDias = venda.GarantiaDias;
-            vendaExistente.Observacao = venda.Observacao;
-            vendaExistente.ObservacaoCliente = venda.ObservacaoCliente;
+            vendaExistente.Observacao = HtmlHelper.HigienizarHtml(venda.Observacao);
+            vendaExistente.ObservacaoCliente = HtmlHelper.HigienizarHtml(venda.ObservacaoCliente);
 
             await _vendaRepositorio.Atualizar(vendaExistente);
 
@@ -261,5 +270,54 @@ namespace SIGES.Controllers
 
             return View("Imprimir", viewModel);
         }
+
+        [HttpGet("visualizar/{id}")]
+        public async Task<IActionResult> Visualizar(int id)
+        {
+            var venda = await _vendaRepositorio.ObterPorId(id);
+            if (venda == null)
+            {
+                TempData["Error"] = "Venda não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            var vendaPorId = _vendaRepositorio.Listar();
+            vendaPorId = vendaPorId.Where(x => x.Id == id);
+
+            // Carregar os itens da venda
+            var itensVenda = _itensVendaRepositorio.Listar()
+                .Where(i => i.VendaId == id)
+                .ToList();
+
+            ViewData["VendaId"] = venda.Id;
+            ViewData["ClienteNome"] = venda.Cliente?.Nome ?? "Cliente não encontrado";
+            ViewData["ClienteEndereco"] = venda.Cliente?.Rua;
+            ViewData["ClienteEndereco"] += ", " + venda.Cliente?.NumeroRua;
+            ViewData["ClienteEndereco"] += ", " + venda.Cliente?.Bairro;
+            ViewData["ClienteCep"] = venda.Cliente?.Cidade;
+            ViewData["ClienteCep"] += " - " + venda.Cliente?.Estado;
+            ViewData["ClienteCep"] += " - CEP: " + venda.Cliente?.Cep;
+            ViewData["ClienteEmail"] = "E-mail: " + venda.Cliente?.Email;
+            ViewData["ClienteCelular"] = "Celular: " + venda.Cliente?.Celular;
+
+            ViewData["VendedorNome"] = venda.Usuario?.Nome ?? "Vendedor não encontrado";
+            ViewData["VendedorEmail"] = "E-mail: " + venda.Usuario?.Email;
+            ViewData["VendedorCelular"] = "Celular: " + venda.Usuario?.Telefone;
+            
+            string conteudoDecodificado = HtmlHelper.RemoverTagsHtml(venda.Observacao);
+            ViewData["VendaObservacao"] = conteudoDecodificado;
+
+            var viewModel = new VendaViewModel
+            {
+                Vendas = vendaPorId.ToList(),
+                Venda = venda,
+                Item = new ItensVendaModel(),
+                Itens = itensVenda
+            };
+
+            return View("VVenda", viewModel);
+        }
+
+        
     }
 }

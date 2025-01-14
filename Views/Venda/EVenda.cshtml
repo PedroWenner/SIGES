@@ -99,19 +99,19 @@
                         <!-- Botões -->
                         <div class="d-flex justify-content-center">
                             <a title="Voltar" class="button btn btn-warning" asp-controller="Venda" asp-action="Index">
-                                <span class="button__icon"><i class="bx bx-undo"></i></span>
+                                <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
                                 <span class="button__text2">Voltar</span>
                             </a>
                             <button type="submit" class="button btn btn-mini btn-success">
-                                <span class="button__icon"><i class='bx bx-sync'></i></span>
+                                <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
                                 <span class="button__text2">Atualizar</span>
                             </button>
-                            <button type="submit" class="button btn btn-mini btn-primary">
-                                <span class="button__icon"><i class='bx bx-show'></i></span>
+                            <a title="Visualizar" class="button btn btn-primary" asp-controller="Venda" asp-action="Visualizar" asp-route-id="@ViewData["VendaId"]">
+                                <span class="button__icon"><i class='bx bx-show bx-xs'></i></span>
                                 <span class="button__text2">Visualizar</span>
-                            </button>
+                            </a>
                             <a href="#modal-faturar" role="button" class="button btn btn-mini btn-danger" data-bs-target="#modal-faturar" data-bs-toggle="modal">
-                                <span class="button__icon"><i class='bx bx-dollar'></i></span>
+                                <span class="button__icon"><i class='bx bx-dollar bx-xs'></i></span>
                                 <span class="button__text2">Faturar</span>
                             </a>
                         </div>
