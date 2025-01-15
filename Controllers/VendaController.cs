@@ -281,38 +281,15 @@ namespace SIGES.Controllers
                 return RedirectToAction("Index");
             }
 
-            var vendaPorId = _vendaRepositorio.Listar();
-            vendaPorId = vendaPorId.Where(x => x.Id == id);
-
-            // Carregar os itens da venda
-            var itensVenda = _itensVendaRepositorio.Listar()
-                .Where(i => i.VendaId == id)
-                .ToList();
-
-            ViewData["VendaId"] = venda.Id;
-            ViewData["ClienteNome"] = venda.Cliente?.Nome ?? "Cliente não encontrado";
-            ViewData["ClienteEndereco"] = venda.Cliente?.Rua;
-            ViewData["ClienteEndereco"] += ", " + venda.Cliente?.NumeroRua;
-            ViewData["ClienteEndereco"] += ", " + venda.Cliente?.Bairro;
-            ViewData["ClienteCep"] = venda.Cliente?.Cidade;
-            ViewData["ClienteCep"] += " - " + venda.Cliente?.Estado;
-            ViewData["ClienteCep"] += " - CEP: " + venda.Cliente?.Cep;
-            ViewData["ClienteEmail"] = "E-mail: " + venda.Cliente?.Email;
-            ViewData["ClienteCelular"] = "Celular: " + venda.Cliente?.Celular;
-
-            ViewData["VendedorNome"] = venda.Usuario?.Nome ?? "Vendedor não encontrado";
-            ViewData["VendedorEmail"] = "E-mail: " + venda.Usuario?.Email;
-            ViewData["VendedorCelular"] = "Celular: " + venda.Usuario?.Telefone;
-            
             string conteudoDecodificado = HtmlHelper.RemoverTagsHtml(venda.Observacao);
             ViewData["VendaObservacao"] = conteudoDecodificado;
 
             var viewModel = new VendaViewModel
             {
-                Vendas = vendaPorId.ToList(),
+                Vendas = _vendaRepositorio.Listar().Where((x => x.Id == id)).ToList(),
                 Venda = venda,
                 Item = new ItensVendaModel(),
-                Itens = itensVenda
+                Itens = _itensVendaRepositorio.Listar().Where(i => i.VendaId == id).ToList()
             };
 
             return View("VVenda", viewModel);
