@@ -1,0 +1,158 @@
+﻿@model GarantiaModel
+
+@{
+    ViewData["Titulo"] = "Adicionar garantia";
+}
+
+<style>
+    .ck-editor__editable {
+        min-height: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 100%;
+        white-space: normal !important;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastrar garantia</h5>
+        </div>
+        <div class="card-body">
+            <form id="formGarantia" method="post" asp-controller="Garantia" asp-action="Adicionar">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div class="row mb-3 mt-3">
+                    <div class="col-2">
+                    <label for="dataGarantia" class="form-label">Data c venda</label>
+                        <input id="dataGarantia" type="text" asp-for="DataGarantia" class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
+                        <span asp-validation-for="DataGarantia" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label for="responsavel" class="form-label">Responsável</label>
+                        <input id="responsavel" type="text" value="@ViewData["ClienteNome"]" placeholder="Digite o nome do responsável" required />
+                        <input id="responsavel-id" type="hidden" asp-for="UsuarioId" />
+                        <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                    </div>
+                    <div class="col-7">
+                        <label for="refGarantia" class="form-label">Ref. garantia</label>
+                        <input id="refGarantia" type="text" asp-for="RefGarantia" placeholder="Informe uma referência: Exemplos: TV, Notebook, Celular" required />
+                        <span asp-validation-for="RefGarantia" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 mt-3">
+                    <div class="col-12">
+                        <label for="textoGarantia" class="form-label">Ref. garantia</label>
+                        <textarea asp-for="TextoGarantia" id="textoGarantia" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-center">
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Garantia" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
+                        <span class="button__text2">Voltar</span>
+                    </a>
+                    <button type="submit" class="button btn btn-mini btn-success">
+                        <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
+                        <span class="button__text2">Cadastrar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script src="~/js/ckeditor.js"></script>
+<script type="text/javascript">
+
+    ClassicEditor
+        .create(document.querySelector('#textoGarantia'), {
+            language: 'pt-br',
+            toolbar: [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
+            ],
+            keyboard: {
+                bindings: {
+                    'space': {
+                        key: 32,
+                        run: (editor) => {
+                            editor.execute('input', { text: ' ' });
+                            return true;
+                        }
+                    }
+                }
+            },
+            heading: {
+                options: [
+                    {
+                        model: 'paragraph',
+                        title: 'Parágrafo',
+                        class: 'ck-heading_paragraph'
+                    },
+                    {
+                        model: 'heading1',
+                        view: 'h1',
+                        title: 'Heading 1',
+                        class: 'ck-heading_heading1'
+                    },
+                    {
+                        model: 'heading2',
+                        view: 'h2',
+                        title: 'Heading 2',
+                        class: 'ck-heading_heading2'
+                    },
+                    {
+                        model: 'heading3',
+                        view: 'h3',
+                        title: 'Heading 3',
+                        class: 'ck-heading_heading3'
+                    },
+                    {
+                        model: 'heading4',
+                        view: 'h4',
+                        title: 'Heading 4',
+                        class: 'ck-heading_heading4'
+                    }
+                ]
+            }
+        })
+        .then(editor => {
+            window.editor = editor;
+        })
+        .catch(error => {
+            console.error( error.stack );
+        });
+
+    $(document).ready(function () {
+        $('#formGarantia').validate({
+            rules: {
+                'Descricao': { required: true },
+                'imagemCategoria': { required: true, extension: "jpg|jpeg|png|gif|bmp" }
+            },
+            messages: {
+                'Descricao': { required: 'Campo descrição é obrigatório.' },
+                'imagemCategoria': {
+                    required: 'Obrigatório selecionar imagem para categoria.',
+                    extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
+                }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+</script>

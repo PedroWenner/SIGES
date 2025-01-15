@@ -18,6 +18,7 @@ namespace SIGES.Config
             services.AddScoped<IVenda, VendaRepositorio>();
             services.AddScoped<IItensVenda, IItensVendaRepositorio>();
             services.AddScoped<IEmitente, EmitenteRepositorio>();
+            services.AddScoped<IGarantia, GarantiaRepositorio>();
         }
     }
 }

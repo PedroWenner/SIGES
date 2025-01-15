@@ -46,5 +46,6 @@ namespace SIGES.Data
         public DbSet<LancamentoModel> Lancamentos { get; set; }
         public DbSet<ItensVendaModel> ItensVenda { get; set; }
         public DbSet<EmitenteModel> Emitente { get; set; }
+        public DbSet<GarantiaModel> Garantias { get; set; }
     }
 }
