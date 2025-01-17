@@ -104,6 +104,18 @@
                     </li>
                 }
 
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vGarantia"))
+                {
+                    <!--Bloco de OS-->
+                    <li class="@(routesPedidos.Contains(ViewContext.HttpContext.Request.Path) ? "active" : "")" title="Termos de garantias">
+                        <a asp-controller="Garantia" asp-action="Index">
+                            <i class='bx bx-receipt iconX'></i>
+                            <span class="title">Termos de garantias</span>
+                            <span class="title-tooltip">Termos de garantias</span>
+                        </a>
+                    </li>
+                }
+
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vUsuario"))
                 {
                     <!--Bloco do Usuários-->

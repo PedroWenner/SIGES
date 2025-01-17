@@ -885,6 +885,65 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Garantias -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingGarantia">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGarantia" aria-expanded="false" aria-controls="collapseGarantia">
+                                <i class='bx bx-receipt me-2'></i> Garantias
+                            </button>
+                        </h2>
+                        <div id="collapseGarantia" class="accordion-collapse collapse" aria-labelledby="headingGarantia" data-bs-parent="#permissionsAccordion">
+                            <div class="accordion-body">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="vGarantia" value="1"
+                                                    @if (ViewData["vGarantia"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Visualizar garantia</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="aGarantia" value="1"
+                                                    @if (ViewData["aGarantia"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Adicionar garantia</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="eGarantia" value="1"
+                                                    @if (ViewData["eGarantia"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Editar garantia</label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input marcar" type="checkbox" name="dGarantia" value="1"
+                                                    @if (ViewData["dGarantia"]?.ToString() == "checked")
+                                                    {
+                                                        <text>checked</text>
+                                                    }>
+                                                    <label class="form-check-label">Excluir garantia</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 
                 </div>
 

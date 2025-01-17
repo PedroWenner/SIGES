@@ -52,9 +52,6 @@ namespace SIGES.Controllers
                 return View("AGarantia", garantia);
             }
 
-            string textoLimpo = HtmlHelper.HigienizarHtml(garantia.TextoGarantia);
-            garantia.TextoGarantia = textoLimpo;
-
             await _garantiaRepositorio.Adicionar(garantia);
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
             await _logServiceRepositorio.RegistrarAdicao(usuarioAtual, garantia);
@@ -73,7 +70,12 @@ namespace SIGES.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View("EGarantia", garantia);
+            var viewModel = new GarantiaViewModel
+            {
+                Garantia = garantia
+            };
+
+            return View("EGarantia", viewModel);
         }
 
         [HttpPost("editar/{id}")]
@@ -96,7 +98,7 @@ namespace SIGES.Controllers
 
             existente.DataGarantia = garantia.DataGarantia;
             existente.RefGarantia = garantia.RefGarantia;
-            existente.TextoGarantia = HtmlHelper.HigienizarHtml(garantia.TextoGarantia);
+            existente.TextoGarantia = garantia.TextoGarantia;
             existente.UsuarioId = garantia.UsuarioId;
 
             await _garantiaRepositorio.Atualizar(existente);

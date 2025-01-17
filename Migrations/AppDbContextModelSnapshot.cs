@@ -169,6 +169,33 @@ namespace SIGES.Migrations
                     b.ToTable("Emitente");
                 });
 
+            modelBuilder.Entity("SIGES.Models.GarantiaModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("DataGarantia")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("RefGarantia")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TextoGarantia")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Garantias");
+                });
+
             modelBuilder.Entity("SIGES.Models.ItensVendaModel", b =>
                 {
                     b.Property<int>("Id")
@@ -510,7 +537,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$87xnZ7eccDhyhfOnfP319.A1oOxEVTAP9gKzmbiFQnqJH9J9oi5gK",
+                            Senha = "$2a$11$xhJS3gbJK3RazwgayvXPqukKWUjIcVoIt2wBU8yVoQoUojzYVTcny",
                             Situacao = 1
                         });
                 });
@@ -568,6 +595,16 @@ namespace SIGES.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.GarantiaModel", b =>
+                {
+                    b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
+                        .WithMany("Garantias")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("SIGES.Models.ItensVendaModel", b =>
@@ -700,6 +737,8 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
+                    b.Navigation("Garantias");
+
                     b.Navigation("Ordens");
 
                     b.Navigation("Vendas");

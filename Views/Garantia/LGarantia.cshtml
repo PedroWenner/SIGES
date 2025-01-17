@@ -49,9 +49,11 @@
                         {
                             <tr>
                                 <td>@garantia.Id</td>
-                                <td>@garantia.DataGarantia</td>
+                                <td>@Convert.ToDateTime(garantia.DataGarantia).ToString("dd/MM/yyyy")</td>
                                 <td>@garantia.RefGarantia</td>
-                                <td>@garantia.TextoGarantia</td>
+                                <td>
+                                    @HtmlHelpers.TruncateString(HtmlHelpers.RemoverTagsHtml(@garantia.TextoGarantia), 50)
+                                </td>
                                 <td>@garantia.Usuario.Nome</td>
                                 <td>
                                     <a href="#" data-entidade="GarantiaModel" data-id="@garantia.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">

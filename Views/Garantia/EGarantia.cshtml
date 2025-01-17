@@ -1,76 +1,61 @@
-﻿@model CategoriaModel
-
+﻿@using SIGES.Helpers
+@using SIGES.ViewModel
+@model GarantiaViewModel
 @{
-    ViewData["Titulo"] = "Editar categoria";
+    ViewData["Titulo"] = "Editar garantia";
 }
 
+<link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
 <style>
-    input.is-invalid::placeholder {
-        color: #dc3545; /* Vermelho para erro */
-        opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
-        font-size: 12px;
+    .trumbowyg-box {
+        height: 400px !important;
     }
 </style>
-
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex align-items-center">
-            <h5 class="mb-0">Alteração de categoria</h5>
+            <h5 class="mb-0">Editar garantia</h5>
         </div>
         <div class="card-body">
-            <form id="formCategoria" method="post" enctype="multipart/form-data" asp-controller="Categoria" asp-action="Editar">
+            <form id="formGarantia" method="post" asp-controller="Garantia" asp-action="Editar">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="Garantia.Id" />
 
-                <!-- Código -->
-                <div class="mb-3">
-                    <label for="codigo" class="form-label">Código</label>
-                    <input type="text" asp-for="Id" disabled />
-                    <input type="hidden" asp-for="Id" />
+                <div class="row mb-3 mt-3">
+                    <div class="col-2">
+                        <label for="dataGarantia" class="form-label">Data</label>
+                        <input id="dataGarantia" type="text" asp-for="Garantia.DataGarantia" class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
+                        <span asp-validation-for="Garantia.DataGarantia" class="text-danger"></span>
+                    </div>
+                    <div class="col-3">
+                        <label for="responsavel" class="form-label">Responsável</label>
+                        <input id="responsavel" type="text" placeholder="Digite o nome do responsável" asp-for="Garantia.Usuario.Nome" required />
+                        <input id="responsavel-id" type="hidden" asp-for="Garantia.UsuarioId" />
+                        <span asp-validation-for="Garantia.UsuarioId" class="text-danger"></span>
+                    </div>
+                    <div class="col-7">
+                        <label for="refGarantia" class="form-label">Ref. garantia</label>
+                        <input id="refGarantia" type="text" asp-for="Garantia.RefGarantia" placeholder="Informe uma referência: Exemplos: TV, Notebook, Celular" required />
+                        <span asp-validation-for="Garantia.RefGarantia" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <!-- Descrição -->
-                <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição <span class="text-danger">*</span></label>
-                    <input type="text" asp-for="Descricao" required />
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
-                </div>
-
-                <!-- Imagem -->
-                <div class="mb-3">
-                    <label for="imagem" class="form-label">Imagem</label>
-                    <input type="file" id="imagem" name="imagemCategoria" accept="image/*"
-                           data-imagem-cadastrada="@(Model.ImagemBlob != null)" onchange="previewImage(event)" required />
-                    @if (Model.ImagemBlob != null)
-                    {
-                        <p class="mt-2">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>
-                    }
-                    else
-                    {
-                        <span class="text-danger mt-2">Nenhuma imagem cadastrada. É obrigatório adicionar uma imagem.</span>
-                    }
-                </div>
-
-                <!-- Pré-visualização da imagem -->
-                <div class="mb-3 text-center">
-                    @if (Model.ImagemBlob != null)
-                    {
-                        <img src="data:image/png;base64,@Convert.ToBase64String(Model.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem da categoria" style="max-width: 200px;" />
-                    }
-                    else
-                    {
-                        <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
-                    }
+                <div class="row mb-3 mt-3">
+                    <div class="col-12">
+                        <label for="textoGarantia" class="form-label">Termo de garantia</label>
+                        <textarea asp-for="Garantia.TextoGarantia" id="textoGarantia" required></textarea>
+                    </div>
                 </div>
 
                 <!-- Botões -->
                 <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Categoria" asp-action="Index">
-                        <span class="button__icon"><i class="bx bx-undo"></i></span>
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Garantia" asp-action="Index">
+                        <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
                         <span class="button__text2">Voltar</span>
                     </a>
                     <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Atualizar</span>
+                        <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
+                        <span class="button__text2">Cadastrar</span>
                     </button>
                 </div>
             </form>
@@ -78,47 +63,84 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="~/js/jquery.validate.js"></script>
+<script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js"></script>
+<script src="~/trumbowyg/dist/langs/pt_br.js"></script>
 <script type="text/javascript">
 
-    function previewImage(event) {
-        const img = document.getElementById('previewImg');
-        if (event.target.files.length > 0) {
-            img.src = URL.createObjectURL(event.target.files[0]);
-            img.onload = () => {
-                URL.revokeObjectURL(img.src); // Libera memória
-                img.style.display = "block";
-            };
-        } else {
-            img.style.display = "none";
+    $('#textoGarantia').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
         }
-    }
+    });
+
+    $(function () {
+        $("#responsavel").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/usuarios/listarUsuarios",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#responsavel").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#responsavel").val(ui.item.nome);
+                $("#responsavel-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Celular: ${item.celular}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
 
     $(document).ready(function () {
-        $.validator.addMethod("extension", function (value, element, param) {
-            var extension = value.split('.').pop().toLowerCase();
-            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
-        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
-
-        $('#formCategoria').validate({
+        $('#formGarantia').validate({
             rules: {
-                'Descricao': { required: true },
-                'imagemCategoria': {
-                    required: function (element) {
-                        return $(element).data('imagem-cadastrada') === false;
-                    },
-                    extension: "jpg|jpeg|png|gif|bmp"
-                }
+                'TextoGarantia': { required: true },
+                'DataGarantia': { required: true },
+                'RefGarantia': { required: true }
             },
             messages: {
-                'Descricao': { required: 'Campo descrição é obrigatório.' },
-                'imagemCategoria': {
-                    required: 'É obrigatório adicionar uma imagem.',
-                    extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
-                }
+                'TextoGarantia': { required: 'Campo termo de garantia é obrigatório.' },
+                'DataGarantia': { required: 'Campo data é obrigatório.' },
+                'RefGarantia': { required: 'Campo ref. garantia é obrigatório.' }
             },
             errorPlacement: function (error, element) {
-                // Insere o texto do erro como placeholder dentro do input
                 element.attr("placeholder", error.text());
             },
             highlight: function (element, errorClass, validClass) {
@@ -126,8 +148,6 @@
             },
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass("is-invalid").addClass("is-valid");
-
-                // Remove o placeholder ao corrigir o campo
                 $(element).attr("placeholder", "");
             }
         });

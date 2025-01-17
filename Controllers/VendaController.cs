@@ -58,9 +58,9 @@ namespace SIGES.Controllers
                 return View("AVenda");
             }
 
-            string observacaoSanitizada = HtmlHelper.HigienizarHtml(venda.Observacao);
+            string observacaoSanitizada = HtmlHelpers.HigienizarHtml(venda.Observacao);
             venda.Observacao = observacaoSanitizada;
-            observacaoSanitizada = HtmlHelper.HigienizarHtml(venda.ObservacaoCliente);
+            observacaoSanitizada = HtmlHelpers.HigienizarHtml(venda.ObservacaoCliente);
             venda.ObservacaoCliente = observacaoSanitizada;
 
             await _vendaRepositorio.Adicionar(venda);
@@ -133,8 +133,8 @@ namespace SIGES.Controllers
             vendaExistente.UsuarioId = venda.UsuarioId;
             vendaExistente.Status = venda.Status;
             vendaExistente.GarantiaDias = venda.GarantiaDias;
-            vendaExistente.Observacao = HtmlHelper.HigienizarHtml(venda.Observacao);
-            vendaExistente.ObservacaoCliente = HtmlHelper.HigienizarHtml(venda.ObservacaoCliente);
+            vendaExistente.Observacao = HtmlHelpers.HigienizarHtml(venda.Observacao);
+            vendaExistente.ObservacaoCliente = HtmlHelpers.HigienizarHtml(venda.ObservacaoCliente);
 
             await _vendaRepositorio.Atualizar(vendaExistente);
 
@@ -281,7 +281,7 @@ namespace SIGES.Controllers
                 return RedirectToAction("Index");
             }
 
-            string conteudoDecodificado = HtmlHelper.RemoverTagsHtml(venda.Observacao);
+            string conteudoDecodificado = HtmlHelpers.RemoverTagsHtml(venda.Observacao);
             ViewData["VendaObservacao"] = conteudoDecodificado;
 
             var viewModel = new VendaViewModel
