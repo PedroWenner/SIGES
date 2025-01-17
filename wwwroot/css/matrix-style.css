@@ -720,7 +720,7 @@ End hora certa */
 }
 
 #sidebar li .iconX {
-  min-width      : 50px;
+  min-width      : 40px;
   display        : flex;
   align-items    : center;
   justify-content: center;
