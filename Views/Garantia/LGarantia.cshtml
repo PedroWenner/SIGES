@@ -71,6 +71,12 @@
                                             <i class="bx bx-edit bx-xs"></i>
                                         </a>
                                     }
+                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vGarantia"))
+                                    {
+                                        <a asp-controller="Garantia" asp-action="Imprimir" asp-route-id="@garantia.Id" asp-route-tipo="termo-garantia" target="_blank" style="margin-right: 1%" class="btn-nwe6 text-decoration-none" title="Imprimir">
+                                            <i class="bx bx-printer bx-xs"></i>
+                                        </a>
+                                    }
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dGarantia"))
                                     {
                                         <a href="#modal-excluir" data-id="@garantia.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir garantia">

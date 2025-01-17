@@ -124,5 +124,31 @@ namespace SIGES.Controllers
             TempData["Success"] = "Garantia excluída com sucesso!";
             return RedirectToAction("Index");
         }
+
+        [HttpGet("imprimir/{id}")]
+        public async Task<IActionResult> Imprimir(int id, string tipo = "termo-garantia")
+        {
+            var garantia = await _garantiaRepositorio.ObterPorId(id);
+            if (garantia == null)
+            {
+                TempData["Error"] = "Termo não encontrado.";
+                return RedirectToAction("Index");
+            }
+
+            var emitente = await _garantiaRepositorio.ObterEmitente();
+
+            var viewModel = new GarantiaImprimirViewModel
+            {
+                Garantia = garantia,
+                Emitente = emitente
+            };
+
+            if (tipo.ToLower() == "termo-garantia")
+            {
+                return View("ImprimirTermoGarantia", viewModel);
+            }
+
+            return View("Imprimir", viewModel);
+        }
     }
 }

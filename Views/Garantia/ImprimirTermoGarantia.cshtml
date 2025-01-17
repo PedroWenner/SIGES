@@ -1,0 +1,82 @@
+﻿@using SIGES.ViewModel
+@model GarantiaImprimirViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="@Url.Content("~/bootstrap-5.3.3/css/bootstrap.css")" />
+    <link href="@Url.Content("~/font-awesome/css/font-awesome.css")" rel="stylesheet" />
+    <title>Imprimir Termo Garantia</title>
+</head>
+<body>
+    <div class="col-md-6 offset-md-3">
+        <!--<h5>EMITENTE</h5>-->
+
+        <div class="d-flex align-items-start">
+            <div class="me-4">
+                @if (Model.Emitente.ImagemBlob != null)
+                {
+                    <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do emitente" style="max-width: 150px;" />
+                }
+                else
+                {
+                    <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 150px; display:none;" />
+                }
+            </div>
+            <div>
+                <ul style="padding-left: 0; list-style: none;">
+                    <li><strong>Nome:</strong> @Model.Emitente.Nome</li>
+                    <li><strong>CNPJ:</strong> @Model.Emitente.Cnpj</li>
+                    <li><strong>Endereço:</strong> @Model.Emitente.Rua, @Model.Emitente.Numero</li>
+                    <li><strong>Bairro:</strong> @Model.Emitente.Bairro</li>
+                    <li><strong>Cidade - UF:</strong> @Model.Emitente.Cidade, @Model.Emitente.Uf</li>
+                    <li><strong>E-mail:</strong> @Model.Emitente.Email</li>
+                    <li><strong>Celular:</strong> @Model.Emitente.Telefone</li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr />
+
+        <h5 class="text-center">Termo de garantia</h5>
+
+        <hr />
+
+        <h6>@Model.Garantia.RefGarantia</h6>
+        @Html.Raw(@Model.Garantia.TextoGarantia)
+
+        <hr />
+
+        <table class="table table-borderless table-condensed" style="margin-top: 5rem!important;">
+            <tbody>
+                <tr>
+                    <td>
+                        <p class="text-center">@DateTime.Now.ToString("dd/MM/yyyy")</p>
+                        <hr>
+                        <p class="text-center">Data</p>
+                    </td>
+                    <td>
+                        <p style="visibility:hidden;">@DateTime.Now.ToString("dd/MM/yyyy")</p>
+                        <hr>
+                        <p class="text-center">Assinatura do Cliente</p>
+                    </td>
+                    <td>
+                        <p style="visibility:hidden;">@DateTime.Now.ToString("dd/MM/yyyy")</p>
+                        <hr>
+                        <p class="text-center">Assinatura do Técnico Responsável</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        window.print();
+    </script>
+</body>
+</html>
