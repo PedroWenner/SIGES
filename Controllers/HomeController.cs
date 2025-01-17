@@ -22,9 +22,6 @@ namespace SIGES.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.Saudacao = SaudeHelper.ObterSaudacao();
-            ViewBag.NomeUsuario = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
-
             var clientes = _clienteRepositorio.Listar();
             var produtos = _produtoRepositorio.Listar();
             var os = _osRepositorio.Listar();

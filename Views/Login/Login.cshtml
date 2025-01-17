@@ -14,6 +14,10 @@
     <link href="@Url.Content("~/font-awesome/css/font-awesome.css")" rel="stylesheet" />
     <link rel="shortcut icon" type="image/png" href="~/img/AlcaLogo1.png" />
 
+    <script src="@Url.Content("~/js/jquery-3.7.1.min.js")"></script>
+    <script src="~/js/sweetalert2.all.min.js"></script>
+    <script src="@Url.Content("~/js/sweetalert.min.js")"></script>
+
     <style>
         input::placeholder {
             color: white;
@@ -30,8 +34,7 @@
 <body>
     <div class="main-login">
         <div class="left-login">
-            <!-- Saudação -->
-            <h1 class="h-one">
+            <h1 class="h-one text-black">
                 @if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour < 12)
                 {
                     <text>Olá! Bom dia!</text>
@@ -80,48 +83,26 @@
                 </div>
             </div>
         </form>
+
+        @if (TempData["Error"] != null)
+        {
+            <script type="text/javascript">
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    text: '@Html.Raw(TempData["Error"])',
+                    showConfirmButton: true,
+                    timer: 4000
+                });
+            </script>
+        }
     </div>
 
-    
-
-    <!-- Modal de Notificação -->
-    @if (!string.IsNullOrEmpty(ViewBag.Error))
-    {
-        <div id="notification" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 id="myModalLabel"></h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>@ViewBag.Error</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-sm btn-danger" data-bs-dismiss="modal" aria-hidden="true">
-                            <span class="button__icon"><i class="bx bx-x"></i></span>
-                            <span class="button__text2">Fechar</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
-    <script src="@Url.Content("~/js/jquery-3.7.1.min.js")"></script>
     <script src="~/bootstrap-5.3.3/js/bootstrap.bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            if ($('#notification').length) {
-                $('#notification').modal('show');
-            }
-        });
-    </script>
-
     <script>
         $(document).ready(function () {
-            // Configura o jQuery Validation no formulário
             $('#formLogin').validate({
                 rules: {
                     login: {
@@ -139,8 +120,52 @@
                         required: 'Por favor, insira sua senha.'
                     }
                 },
+                submitHandler: function(form) {
+                    var dados = $(form).serialize();
+                    $('#btn-acessar').addClass('disabled').text('Aguarde...');
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Login/Autenticar",
+                        data: dados,
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.sucesso) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Login realizado com sucesso!',
+                                    text: 'Redirecionando...',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                setTimeout(function () {
+                                    window.location.href = "/Home/Index";
+                                }, 2000);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro ao fazer login',
+                                    text: data.mensagem
+                                });
+
+                                $('#btn-acessar').removeClass('disabled').text('Acessar');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro no servidor',
+                                text: 'Tente novamente mais tarde.'
+                            });
+
+                            $('#btn-acessar').removeClass('disabled').text('Acessar');
+                        }
+                    });
+
+                    return false;
+                },
                 errorPlacement: function (error, element) {
-                    // Insere o texto do erro como placeholder dentro do input
                     element.attr("placeholder", error.text());
                 },
                 highlight: function (element, errorClass, validClass) {
@@ -148,14 +173,10 @@
                 },
                 unhighlight: function (element, errorClass, validClass) {
                     $(element).removeClass("is-invalid").addClass("is-valid");
-
-                    // Remove o placeholder ao corrigir o campo
                     $(element).attr("placeholder", "");
                 }
             });
         });
     </script>
-
 </body>
-
 </html>

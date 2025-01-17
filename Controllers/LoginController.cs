@@ -24,20 +24,18 @@ namespace SIGES.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login(string login, string senha)
+        [HttpPost("Login/Autenticar")]
+        public async Task<JsonResult> Autenticar(string login, string senha)
         {
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login || u.Nome == login);
             if (usuario == null || !_authService.VerificarSenha(usuario.Senha, senha))
             {
-                ViewBag.Error = "Os dados de acesso estão incorretos. Por favor, tente novamente.";
-                return View(usuario);
+                return Json(new { sucesso = false, mensagem = "Os dados de acesso estão incorretos. Por favor, tente novamente." });
             }
 
             if (usuario.DataExpiracao < DateTime.Now)
             {
-                ViewBag.Error = "O usuário que você está utilizando para acesso expirou. Contate seu superior.";
-                return View(usuario);
+                return Json(new { sucesso = false, mensagem = "O usuário que você está utilizando para acesso expirou. Contate seu superior." });
             }
 
             // Criação do cookie de autenticação
@@ -52,7 +50,7 @@ namespace SIGES.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
             {
-                IsPersistent = true, // Lembra o login
+                IsPersistent = true,
                 ExpiresUtc = DateTime.UtcNow.AddHours(1)
             };
 
@@ -62,7 +60,7 @@ namespace SIGES.Controllers
             HttpContext.Session.SetString("UserName", usuario.Nome);
             HttpContext.Session.SetString("UserCpf", usuario.Cpf);
 
-            return RedirectToAction("Index", "Home");
+            return Json(new { sucesso = true });
         }
 
         public async Task<IActionResult> Logout()
