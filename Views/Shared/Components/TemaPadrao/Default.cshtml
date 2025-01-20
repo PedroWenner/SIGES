@@ -1,0 +1,15 @@
+﻿@model string
+
+@{
+    string cssPath = Model switch
+    {
+        "puredark" => "~/css/tema-pure-dark.css",
+        "darkviolet" => "~/css/tema-dark-violet.css",
+        "darkorange" => "~/css/tema-dark-orange.css",
+        "whitegreen" => "~/css/tema-white-green.css",
+        "whiteblack" => "~/css/tema-white-black.css",
+        _ => "~/css/tema-white.css"
+    };
+}
+
+<link rel="stylesheet" href="@Url.Content(cssPath)" />

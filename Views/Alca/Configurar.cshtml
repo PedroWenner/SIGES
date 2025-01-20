@@ -228,7 +228,10 @@
                                 <label for="EFI_CREDENTIAIS_CLIENT_SECRET" class="form-label">CLIENT_SECRET</label>
                             </div>
                             <div class="col-2">
-                                <input id="EFI_CREDENTIAIS_CLIENT_SECRET" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET" type="text" value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET")" />
+                                <div class="password-container">
+                                    <input id="EFI_CREDENTIAIS_CLIENT_SECRET" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET" type="password" value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET")" class="password-input" />
+                                    <i class="fa fa-eye toggle-password" onclick="togglePassword('EFI_CREDENTIAIS_CLIENT_SECRET')"></i>
+                                </div>
                             </div>
                             <div class="col-auto">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://app.sejaefi.com.br/api/aplicacoes" target="_blank" rel="noopener noreferrer">"API" -> "Aplicações"</a>.</span>
@@ -294,8 +297,12 @@
                                 <label for="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" class="form-label">CLIENT_SECRET</label>
                             </div>
                             <div class="col-2">
-                                <input id="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" type="text"
-                                       value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET")" />
+                                <div class="password-container">
+                                    <input id="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" type="password"
+                                           value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET")" class="password-input" />
+                                    <i class="fa fa-eye toggle-password" onclick="togglePassword('MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET')"></i>
+                                </div>
+                                
                             </div>
                             <div class="col-auto">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a>.</span>
@@ -668,7 +675,7 @@
                             <div class="col-2">
                                 <div class="password-container">
                                     <input id="EMAIL_SMTP_PASS" name="EMAIL_SMTP_PASS" type="password" class="password-input" />
-                                    <i class="fa fa-eye toggle-password" onclick="togglePassword()"></i>
+                                    <i class="fa fa-eye toggle-password" onclick="togglePassword('EMAIL_SMTP_PASS')"></i>
                                 </div>
                                 
                             </div>
@@ -694,8 +701,8 @@
 </div>
 
 <script>
-    function togglePassword() {
-        var input = document.getElementById("EMAIL_SMTP_PASS");
+    function togglePassword(id) {
+        var input = document.getElementById(id);
         var icon = document.querySelector(".toggle-password");
         if (input.type === "password") {
             input.type = "text";

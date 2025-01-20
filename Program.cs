@@ -53,6 +53,7 @@ builder.Services.AddSingleton<AppSettingsService>(provider =>
     var configuration = provider.GetRequiredService<IConfiguration>();
     return new AppSettingsService(configuration);
 });
+builder.Services.AddScoped<TemaService>();
 
 var app = builder.Build();
 
