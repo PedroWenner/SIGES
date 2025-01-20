@@ -97,14 +97,14 @@
                                 </a>
                             </li>
                         }
-                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vUsuario"))
+                        @* @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vUsuario"))
                         {
                             <li>
                                 <a asp-controller="Usuario" asp-action="Index" class="dropdown-item dropdown-item-custom">
                                     <i class='bx bx-group iconX'></i> Usuários
                                 </a>
                             </li>
-                        }
+                        } *@
                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCategoria"))
                         {
                             <li>

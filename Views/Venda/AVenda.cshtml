@@ -4,14 +4,7 @@
     ViewData["Titulo"] = "Adicionar venda";
 }
 
-<style>
-    .ck-editor__editable {
-        min-height: 300px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        width: 100%;
-    }
-</style>
+<link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
 
 <div class="container mt-4">
     <div class="card shadow-sm">
@@ -100,27 +93,58 @@
 </div>
 
 <script src="~/js/jquery.validate.js"></script>
-<script src="~/js/ckeditor.js"></script>
+<script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js"></script>
+<script src="~/trumbowyg/dist/langs/pt_br.js"></script>
 <script>
-    ClassicEditor
-        .create(document.querySelector('#observacao'), {
-            language: 'pt-br',
-            toolbar: [
-                'undo', 'redo', '|',
-                'heading', '|',
-                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
-            ]
-        });
+    $('#observacao').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
 
-    ClassicEditor
-        .create(document.querySelector('#observacaoCliente'), {
-            language: 'pt-br',
-            toolbar: [
-                'undo', 'redo', '|',
-                'heading', '|',
-                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|',
-            ]
-        });
+    $('#observacaoCliente').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
 
     $(function () {
         $("#cliente").autocomplete({

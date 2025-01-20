@@ -295,6 +295,63 @@ namespace SIGES.Controllers
             return View("VVenda", viewModel);
         }
 
-        
+        [HttpPost("adicionarDesconto")]
+        public async Task<IActionResult> AdicionarDesconto(VendaModel venda)
+        {
+            var vendaExistente = await _vendaRepositorio.ObterPorId(venda.Id);
+            if (vendaExistente == null)
+            {
+                return Json(new { result = false, message = "Venda não encontrada." });
+            }
+
+            try
+            {
+                var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
+                await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, vendaExistente, venda);
+
+                vendaExistente.Desconto = venda.Desconto;
+                vendaExistente.TipoDesconto = venda.TipoDesconto;
+                vendaExistente.ValorDesconto = venda.ValorDesconto;
+                await _vendaRepositorio.Atualizar(vendaExistente);
+
+                return Json(new
+                {
+                    sucesso = true,
+                    message = "Desconto adicionado com sucesso!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { sucesso = false, message = $"Erro ao adicionar desconto ao produto: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("obterItensVenda")]
+        public async Task<IActionResult> ObterItensVenda(int vendaId)
+        {
+            var venda = await _vendaRepositorio.ObterPorId(vendaId);
+            if (venda == null)
+            {
+                return Json(new { result = false, message = "Venda não encontrada." });
+            }
+
+            var itens = _itensVendaRepositorio.Listar().Where(i => i.VendaId == vendaId).ToList();
+
+            return Json(new
+            {
+                result = true,
+                items = itens.Select(i => new
+                {
+                    i.Id,
+                    ProdutoNome = i.Produto.Descricao,
+                    i.Quantidade,
+                    Preco = Convert.ToDecimal(i.Preco.ToString()).ToString(),
+                    SubTotal = Convert.ToDecimal((i.Preco * i.Quantidade).ToString()).ToString()
+                }),
+                total = Convert.ToDecimal(itens.Sum(i => i.Preco * i.Quantidade).ToString()).ToString(),
+                desconto = venda.Desconto.HasValue ? Convert.ToDecimal(venda.Desconto.ToString()).ToString() : "0",
+                totalComDesconto = (itens.Sum(i => i.Preco * i.Quantidade) - (venda.Desconto ?? 0)).ToString()
+            });
+        }
     }
 }

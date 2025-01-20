@@ -82,8 +82,8 @@
 
                         <!-- Tipo de Cliente -->
                         <div class="mb-3 col-md-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Fornecedor" value="0" id="fornecedor"
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" name="Fornecedor" value="1" id="fornecedor"
                                 @if (@Model.Fornecedor.Equals(1))
                                 {
                                     <text>checked</text>

@@ -13,26 +13,33 @@ namespace SIGES.Models
         public int Id { get; set; }
 
         public DateTime DataVenda { get; set; } = DateTime.Now;
-
-        public string Status { get; set; }
-
-        public int? GarantiaDias { get; set; }
-
+        
         [Column(TypeName = "decimal(15,2)")]
         public decimal? ValorTotal { get; set; }
 
         [Column(TypeName = "decimal(15,2)")]
+        public decimal? Desconto { get; set; }
+
+        [Column(TypeName = "decimal(15,2)")]
         public decimal? ValorDesconto { get; set; }
+
+        public string? TipoDesconto { get; set; }
 
         public int? Faturado { get; set; }
 
         [IgnoreLog]
+        public string? Observacao { get; set; }
+
+        [IgnoreLog]
+        public string? ObservacaoCliente { get; set; }
+
+        [IgnoreLog]
         public int ClienteId { get; set; }
-        
+
         [IgnoreLog]
         [ValidateNever]
         public ClienteModel Cliente { get; set; }
-        
+
         [IgnoreLog]
         public int UsuarioId { get; set; }
 
@@ -47,11 +54,10 @@ namespace SIGES.Models
         [ValidateNever]
         public LancamentoModel Lancamento { get; set; }
 
-        [IgnoreLog]
-        public string? Observacao { get; set; }
+        public string Status { get; set; }
 
-        [IgnoreLog]
-        public string? ObservacaoCliente { get; set; }
+        public int? GarantiaDias { get; set; }
+
 
         [IgnoreLog]
         [ValidateNever]

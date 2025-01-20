@@ -48,6 +48,11 @@ builder.Services.AddAuthorization();
 
 // Configurar repositórios de maneira centralizada
 RepoConfig.RegistrarRepositorios(builder.Services);
+builder.Services.AddSingleton<AppSettingsService>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new AppSettingsService(configuration);
+});
 
 var app = builder.Build();
 

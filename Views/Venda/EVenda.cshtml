@@ -5,17 +5,7 @@
     ViewData["Titulo"] = "Editar venda";
 }
 
-<style>
-    .ck-editor__editable {
-        min-height: 300px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        width: 100%;
-        white-space: normal !important;
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-    }
-</style>
+<link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
 
 <div class="container mt-4">
     <div class="card shadow-sm">
@@ -120,33 +110,72 @@
 
                 <div class="tab-pane fade" id="produto-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutos" tabindex="0">
                     <div class="col-lg-12 mt-3 p-3 text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3">
-                        <form id="formProdutos" method="post" asp-controller="Venda" asp-action="AdicionarProduto">
-                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form id="formProdutos" method="post" asp-controller="Venda" asp-action="AdicionarProduto">
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                            <div class="row mb-3 mt-3">
-                                <div class="col-5">
-                                    <label for="produto" class="form-label">Produto</label>
-                                    <input id="produto" type="text" placeholder="Digite o nome do produto" />
-                                    <input id="produto-id" type="hidden" asp-for="Item.ProdutoId" />
-                                    <input id="venda-id" type="hidden" asp-for="Item.VendaId" value="@ViewData["VendaId"]" />
-                                    <span asp-validation-for="Item.ProdutoId" class="text-danger"></span>
-                                </div>
-                                <div class="col-2">
-                                    <label for="preco" class="form-label">Preço</label>
-                                    <input id="preco" type="text" asp-for="Item.Preco" class="money" />
-                                </div>
-                                <div class="col-2">
-                                    <label for="quantidade" class="form-label">Quantidade</label>
-                                    <input id="quantidade" type="text" asp-for="Item.Quantidade" onkeypress="return somenteNumeros(this)" />
-                                </div>
-                                <div class="col-2 align-content-end flex-wrap">
-                                    <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                        <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                        <span class="button__text2">Adicionar</span>
-                                    </button>
-                                </div>
+                                    <div class="row mb-3 mt-3">
+                                        <div class="col-5">
+                                            <label for="produto" class="form-label">Produto</label>
+                                            <input id="produto" type="text" placeholder="Digite o nome do produto" />
+                                            <input id="produto-id" type="hidden" asp-for="Item.ProdutoId" />
+                                            <input id="venda-id" type="hidden" asp-for="Item.VendaId" value="@ViewData["VendaId"]" />
+                                            <span asp-validation-for="Item.ProdutoId" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="preco" class="form-label">Preço</label>
+                                            <input id="preco" type="text" asp-for="Item.Preco" class="money" />
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="quantidade" class="form-label">Quantidade</label>
+                                            <input id="quantidade" type="text" asp-for="Item.Quantidade" onkeypress="return somenteNumeros(this)" />
+                                        </div>
+                                        <div class="col-2 align-content-end flex-wrap">
+                                            <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                <span class="button__text2">Adicionar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form id="formDesconto" method="post" asp-controller="Venda" asp-action="AdicionarDesconto">
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                    <input type="hidden" asp-for="Venda.Id" />
+                                    
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <label for="desconto" class="form-label">Desconto</label>                                            
+                                            <input id="desconto" type="text" asp-for="Venda.Desconto" class="money" required placeholder="0,00"
+                                                onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;" />
+                                        </div>
+                                        <div class="col-1">
+                                            <label for="tipoDesconto" class="form-label">Tipo desc.</label>
+                                            <select id="tipoDesconto" asp-for="Venda.TipoDesconto">
+                                                <option value="real">R$</option>
+                                                <option value="porcento">%</option>
+                                            </select>
+                                            <span asp-validation-for="Venda.TipoDesconto" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="valorDesconto" class="form-label">Total com desconto</label>
+                                            <input id="valorDesconto" type="text" asp-for="Venda.ValorDesconto" class="money" readonly placeholder="0,00" />
+                                        </div>
+                                        <div class="col-2 align-content-end flex-wrap">
+                                            <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="table-responsive mt-4">
@@ -198,6 +227,21 @@
                                         R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)
                                     </td>
                                 </tr>
+                                @if (Model.Venda.Desconto != null || Model.Venda.Desconto > 0)
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
+                                        <td colspan="2" class="text-start">
+                                            R$ @Model.Venda.Desconto
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Total com desconto:</strong></td>
+                                        <td colspan="2" class="text-start">
+                                            R$ @(Model.Itens.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto)
+                                        </td>
+                                    </tr>
+                                }
                             </tfoot>
                         </table>
                     </div>
@@ -287,117 +331,59 @@
 </div>
 
 <script src="~/js/jquery.validate.js"></script>
-<script src="~/js/ckeditor.js"></script>
+<script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js"></script>
+<script src="~/trumbowyg/dist/langs/pt_br.js"></script>
 <script>
-    ClassicEditor
-        .create(document.querySelector('#observacao'), {
-            language: 'pt-br',
-            toolbar: [
-                'undo', 'redo', '|',
-                'heading', '|',
-                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
-            ],
-            keyboard: {
-                bindings: {
-                    'space': {
-                        key: 32,
-                        run: (editor) => {
-                            editor.execute('input', { text: ' ' });
-                            return true;
-                        }
-                    }
-                }
-            },
-            heading: {
-                options: [
-                    {
-                        model: 'paragraph',
-                        title: 'Parágrafo',
-                        class: 'ck-heading_paragraph'
-                    },
-                    {
-                        model: 'heading1',
-                        view: 'h1',
-                        title: 'Heading 1',
-                        class: 'ck-heading_heading1'
-                    },
-                    {
-                        model: 'heading2',
-                        view: 'h2',
-                        title: 'Heading 2',
-                        class: 'ck-heading_heading2'
-                    },
-                    {
-                        model: 'heading3',
-                        view: 'h3',
-                        title: 'Heading 3',
-                        class: 'ck-heading_heading3'
-                    },
-                    {
-                        model: 'heading4',
-                        view: 'h4',
-                        title: 'Heading 4',
-                        class: 'ck-heading_heading4'
-                    }
+    $('#observacao').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
                 ]
             }
-        })
-        .then(editor => {
-            window.editor = editor;
-        })
-        .catch(error => {
-            console.error( error.stack );
-        });
-
-    ClassicEditor
-        .create(document.querySelector('#observacaoCliente'), {
-            language: 'pt-br',
-            toolbar: [
-                'undo', 'redo', '|',
-                'heading', '|',
-                'bold', 'italic', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'outdent', 'indent'
-            ],
-            heading: {
-                options: [
-                    {
-                        model: 'paragraph',
-                        title: 'Parágrafo',
-                        class: 'ck-heading_paragraph'
-                    },
-                    {
-                        model: 'heading1',
-                        view: 'h1',
-                        title: 'Heading 1',
-                        class: 'ck-heading_heading1'
-                    },
-                    {
-                        model: 'heading2',
-                        view: 'h2',
-                        title: 'Heading 2',
-                        class: 'ck-heading_heading2'
-                    },
-                    {
-                        model: 'heading3',
-                        view: 'h3',
-                        title: 'Heading 3',
-                        class: 'ck-heading_heading3'
-                    },
-                    {
-                        model: 'heading4',
-                        view: 'h4',
-                        title: 'Heading 4',
-                        class: 'ck-heading_heading4'
-                    }
+        }
+    });
+    
+    $('#observacaoCliente').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
                 ]
             }
-        })
-        .then(editor => {
-            window.editor = editor;
-        })
-        .catch(error => {
-            console.error( error.stack );
-        });
-
+        }
+    });
+    
     $(function () {
         $("#cliente").autocomplete({
             source: function (request, response) {
@@ -747,4 +733,166 @@
             });
         });
     });
+
+    function calcularTotalComDesconto(input) {
+        const tipoDesconto = $("#tipoDesconto").val();
+        const valor = parseFloat($("#desconto").val().replace('.', '').replace(',', '.')) || 0;
+        let valorComDesconto = parseFloat(input.replace('.', '').replace(',', '.')) || 0;
+
+        if (tipoDesconto === 'real') {
+            if (valor > valorComDesconto) {
+                Swal.fire("Erro!", "Não é possível aplicar um desconto maior que o valor total da venda.", "error");
+                $("#desconto").val(''); // Limpa o campo desconto em caso de erro
+                return false;
+            }
+                
+            valorComDesconto -= valor;
+        } else {
+            if (valor > 100) {
+                Swal.fire("Erro!", "Não é possível aplicar desconto maior que 100%.", "error");
+                $("#desconto").val('');
+                return false;
+            }
+            
+            valorComDesconto -= (valorComDesconto * valor) / 100;
+        }
+
+        // Formata para exibição no input e mantém o padrão brasileiro (vírgula como separador decimal)
+        $("#valorDesconto").val(valorComDesconto.toFixed(2).replace('.', ','));
+    }
+
+    $(document).ready(function () {
+        $('#formDesconto').validate({
+            rules: { 'Venda.Desconto': { required: true } },
+            messages: { 'Venda.Desconto': { required: 'Por favor, insira o desconto.' } },
+            submitHandler: function(form) {
+                var dados = $(form).serialize();
+                $('#btn-adicionar-desconto').addClass('disabled').text('Aguarde...');
+                $("#valorDesconto").removeClass('readonly');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/vendas/AdicionarDesconto",
+                    data: dados,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.sucesso) {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Desconto aplicado',
+                                text: data.message,
+                                showConfirmButton: true,
+                                timer: 4000
+                            });
+
+                            $("#desconto").val("");
+                            $("#valorDesconto").val("");
+                            atualizarTabelaProdutos();
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Erro',
+                                text: data.message,
+                                showConfirmButton: true,
+                                timer: 4000
+                            });
+                        }
+
+                        $('#btn-adicionar-desconto').removeClass('disabled').text('Adicionar');
+                        $("#valorDesconto").addClass('readonly');
+                    },
+                    error: function () {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Erro no servidor!',
+                            text: 'Não foi possível aplicar o desconto. Tente novamente.',
+                            showConfirmButton: true,
+                            timer: 4000
+                            
+                        });
+
+                        $('#btn-adicionar-desconto').removeClass('disabled').text('Adicionar');
+                        $("#valorDesconto").addClass('readonly');
+                    }
+                });
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+
+    function atualizarTabelaProdutos() {
+        var vendaId = $("input[name='Venda.Id']").val();
+
+        $.ajax({
+            type: "GET",
+            url: "/vendas/obterItensVenda",
+            data: { vendaId: vendaId },
+            dataType: "json",
+            success: function (response) {
+                let tbody = $("#tabela tbody");
+                tbody.empty();
+
+                if (response.items && Array.isArray(response.items)) {
+                    response.items.forEach(item => {
+                        tbody.append(`
+                            <tr>
+                                <td style="text-align: left;">${item.produtoNome}</td>
+                                <td style="text-align: left;">${item.quantidade}</td>
+                                <td style="text-align: left;">${item.preco}</td>
+                                <td style="text-align: left;">${item.subTotal}</td>
+                                <td style="text-align: left;">
+                                    <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
+                                        <i class="bx bx-trash-alt bx-xs"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    tbody.append(`
+                        <tr>
+                            <td colspan="5" class="text-center">Nenhum produto adicionado à venda.</td>
+                        </tr>
+                    `);
+                }
+
+                let valorDesconto = response.desconto.replace('.','').replace(',','.');
+                // Atualiza os totais na tabela
+                $("#tabela tfoot").html(`
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td colspan="2" class="text-start">${response.total || "R$ 0,00"}</td>
+                    </tr>
+                    ${valorDesconto > 0 ? `
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
+                        <td colspan="2" class="text-start">R$ ${response.desconto}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total com desconto:</strong></td>
+                        <td colspan="2" class="text-start">R$ ${response.totalComDesconto}</td>
+                    </tr>` : ""}
+                `);
+            },
+            error: function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro",
+                    text: "Não foi possível atualizar a tabela. Tente novamente."
+                });
+            }
+        });
+    }
 </script>

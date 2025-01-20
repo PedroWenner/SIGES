@@ -1,4 +1,5 @@
-﻿@using SIGES.ViewModel
+﻿@using SIGES.Helpers
+@using SIGES.ViewModel
 @model VendaImprimirViewModel
 @{
     Layout = null;
@@ -14,7 +15,11 @@
     <title>Imprimir Venda</title>
 </head>
 <body>
-    <!--<h5>EMITENTE</h5>-->
+    @{
+        string garantia = Model.Venda.GarantiaDias.ToString();
+        DateTime vencGarantia = Model.Venda.DataVenda.AddDays(double.Parse(string.IsNullOrEmpty(garantia) ? "0" : garantia));
+    }
+
     <div class="d-flex align-items-start">
         <div class="me-4">
             @if (Model.Emitente.ImagemBlob != null)
@@ -52,12 +57,38 @@
         </li>
     </ul>
 
-    <hr />
-        <span class="me-4"><strong>Status:</strong> @Model.Venda.Status</span>
-        <span class="me-4"><strong>Data da venda:</strong> @Model.Venda.DataVenda.ToString("dd/MM/yyyy")</span>
-        <span class="me-4"><strong>Garantia:</strong> @Model.Venda.GarantiaDias (dias)</span>
-        <span><strong>Venc. da garantia:</strong> </span>
-    <hr />
+    <table class="table table-borderless table-condensed">
+        <tbody>
+            <tr>
+                <td>
+                    <b>Status:</b>
+                    @Model.Venda.Status
+                </td>
+                <td>
+                    <b>Data da venda:</b>
+                    @Model.Venda.DataVenda.ToString("dd/MM/yyyy")
+                </td>
+                @if (Model.Venda.GarantiaDias != null && Model.Venda.GarantiaDias > 0)
+                {
+                    <td>
+                        <b>Garantia:</b>
+                        @Model.Venda.GarantiaDias (dias)
+                    </td>
+                    <td>
+                        <b>Venc. da garantia:</b>
+                        @vencGarantia.ToString("dd/MM/yyyy")
+                    </td>
+                }
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <hr />
+                    <b>Observações:</b>
+                    @HtmlHelpers.RemoverTagsHtml(Model.Venda.Observacao);
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     <table class="table">
         <thead>
@@ -84,6 +115,15 @@
     </table>
 
     <span class="float-end"><strong>Total:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade)).ToString("C")</span>
+    <br />
+
+    @if (Model.Venda.Desconto != null || Model.Venda.Desconto > 0)
+    {
+        <span class="float-end"><strong>Desconto:</strong> @Convert.ToDecimal(Model.Venda.Desconto).ToString("C")</span>
+        <br />
+        <span class="float-end"><strong>Total com desconto:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto).ToString("C")</span>
+        <br />
+    }
 
     <script>
         window.print();

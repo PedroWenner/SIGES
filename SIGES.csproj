@@ -5,10 +5,18 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="AppSettingsService.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Content Remove="C:\Users\pedro.alcantara\.nuget\packages\datatables.net-bs5\2.1.8\contentFiles\any\any\wwwroot\css\dataTables.bootstrap5.css" />
 		<Content Remove="C:\Users\pedro.alcantara\.nuget\packages\datatables.net-bs5\2.1.8\contentFiles\any\any\wwwroot\css\dataTables.bootstrap5.min.css" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Services\AppSettingsService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

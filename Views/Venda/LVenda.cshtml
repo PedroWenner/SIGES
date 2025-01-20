@@ -60,6 +60,9 @@
                     {
                         @foreach (var venda in Model.Vendas)
                         {
+                            string garantia = venda.GarantiaDias.ToString();
+                            DateTime vencGarantia = venda.DataVenda.AddDays(double.Parse(string.IsNullOrEmpty(garantia) ? "0" : garantia));
+
                             string cor = string.Empty;
                             switch (venda.Status) {
                                 case "Aberto":
@@ -96,15 +99,22 @@
 
                             <tr>
                                 <td style="width: 5%; text-align: left;">@venda.Id</td>
-                                <td style="width: 20%; text-align: left;">@venda.Cliente.Nome</td>
-                                <td style="width: 30%; text-align: left;">@venda.DataVenda.ToShortDateString()</td>
-                                <td style="width: 10%; text-align: left;"></td>
+                                <td style="width: 40%; text-align: left;">@venda.Cliente.Nome</td>
+                                <td style="width: 10%; text-align: left;">@venda.DataVenda.ToShortDateString()</td>
+                                <td style="width: 10%; text-align: left;">
+                                    @if (venda.GarantiaDias != null && venda.GarantiaDias > 0)
+                                    {
+                                        <span class="badge" style="background-color: #4d9c79; border-color: #4d9c79; font-weight: normal!important;">
+                                            @vencGarantia.ToString("dd/MM/yyyy")
+                                        </span>
+                                    }
+                                </td>
                                 <td style="width: 10%; text-align: left;">
                                     <span class="badge" style="background-color: @cor; border-color: @cor; font-weight: normal!important;">
                                         @venda.Status
                                     </span>
                                 </td>
-                                <td style="width: 10%; text-align: left;">@venda.Faturado</td>
+                                <td style="width: 10%; text-align: left;">@(string.IsNullOrEmpty(venda.Faturado.ToString()) ? "Não" : "Sim")</td>
                                 <td style="width: 15%;">
                                     <a href="#" data-entidade="VendaModel" data-id="@venda.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>

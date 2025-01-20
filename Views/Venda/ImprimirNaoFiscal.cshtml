@@ -14,9 +14,12 @@
     <title>Imprimir Venda</title>
 </head>
 <body>
-    <div class="col-md-6 offset-md-3">
-        <!--<h5>EMITENTE</h5>-->
+    @{
+        string garantia = Model.Venda.GarantiaDias.ToString();
+        DateTime vencGarantia = Model.Venda.DataVenda.AddDays(double.Parse(string.IsNullOrEmpty(garantia) ? "0" : garantia));
+    }
 
+    <div class="col-md-6 offset-md-3">
         <div class="d-flex align-items-start">
             <div class="me-4">
                 @if (Model.Emitente.ImagemBlob != null)
@@ -80,6 +83,15 @@
         </table>
 
         <span class="float-end"><strong>Total:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade)).ToString("C")</span>
+        <br />
+
+        @if (Model.Venda.Desconto != null || Model.Venda.Desconto > 0)
+        {
+            <span class="float-end"><strong>Desconto:</strong> @Convert.ToDecimal(Model.Venda.Desconto).ToString("C")</span>
+            <br />
+            <span class="float-end"><strong>Total com desconto:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto).ToString("C")</span>
+            <br />
+        }
 
         <div class="col-md-12 text-center" style="margin-top: 16rem!important;">
             <hr class="mx-auto" style="width: 50%" />

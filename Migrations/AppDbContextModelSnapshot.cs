@@ -109,6 +109,29 @@ namespace SIGES.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ConfiguracaoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Config")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Valor")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Config")
+                        .IsUnique();
+
+                    b.ToTable("Configuracoes");
+                });
+
             modelBuilder.Entity("SIGES.Models.EmitenteModel", b =>
                 {
                     b.Property<int>("Id")
@@ -537,7 +560,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$xhJS3gbJK3RazwgayvXPqukKWUjIcVoIt2wBU8yVoQoUojzYVTcny",
+                            Senha = "$2a$11$SXpYnx4t4FFBTzzuxm6m3Ogw/ZaizDhHCUrTxIV83ODBxOYQyZ5zq",
                             Situacao = 1
                         });
                 });
@@ -556,6 +579,10 @@ namespace SIGES.Migrations
                     b.Property<DateTime>("DataVenda")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<decimal?>("Desconto")
+                        .HasPrecision(15, 2)
+                        .HasColumnType("decimal(15,2)");
+
                     b.Property<int?>("Faturado")
                         .HasColumnType("int");
 
@@ -573,6 +600,9 @@ namespace SIGES.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("TipoDesconto")
                         .HasColumnType("longtext");
 
                     b.Property<int>("UsuarioId")

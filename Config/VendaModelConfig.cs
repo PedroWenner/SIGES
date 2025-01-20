@@ -31,6 +31,9 @@ namespace SIGES.Config
 
             builder.Property(e => e.ValorTotal)
                 .HasPrecision(15, 2);
+
+            builder.Property(e => e.Desconto)
+                .HasPrecision(15, 2);
         }
     }
 }
