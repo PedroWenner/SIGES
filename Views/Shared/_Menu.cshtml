@@ -140,6 +140,18 @@
                     </ul>
                 </li>
 
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vVenda"))
+                {
+                    <!--Bloco de Vendas-->
+                    <li title="Vendas" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Venda" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a asp-controller="Venda" asp-action="Index">
+                            <i class='bx bx-cart-alt iconX'></i>
+                            <span class="title">Vendas</span>
+                            <span class="title-tooltip">Vendas</span>
+                        </a>
+                    </li>
+                }
+
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vOs"))
                 {
                     <!--Bloco de OS-->
@@ -148,6 +160,18 @@
                             <i class='bx bx-file iconX'></i>
                             <span class="title">Ordens de serviço</span>
                             <span class="title-tooltip">Ordens</span>
+                        </a>
+                    </li>
+                }
+
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vLancamento"))
+                {
+                    <!--Bloco de Lancamentos-->
+                    <li title="Lancamentos" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Lancamento" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a asp-controller="Ordem" asp-action="Index">
+                            <i class='bx bx-bar-chart-alt-2 iconX'></i>
+                            <span class="title">Lançamentos</span>
+                            <span class="title-tooltip">Lançamentos</span>
                         </a>
                     </li>
                 }

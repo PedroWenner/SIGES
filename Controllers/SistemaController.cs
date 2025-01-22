@@ -152,5 +152,54 @@ namespace SIGES.Controllers
             // Escrever de volta no arquivo
             System.IO.File.WriteAllText(appSettingsFile, jsonObj.ToString(Newtonsoft.Json.Formatting.Indented));
         }
+
+        [HttpGet("obter-configuracoes")]
+        public async Task<IActionResult> ObterConfiguracoes()
+        {
+            var configuracoes = await _configuracaoRepositorio.ObterTodasConfiguracoesAsync();
+            var configuracoesViewModel = new Dictionary<string, string>();
+
+            foreach (var config in configuracoes)
+            {
+                configuracoesViewModel[config.Config] = config.Valor ?? string.Empty;
+            }
+
+            var configuracoesAppSettings = new List<string>
+            {
+                "IMPRIMIR_ANEXOS",
+                "PAYMENT_GATEWAYS_EFI_PRODUCTION",
+                "PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID",
+                "PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET",
+                "PAYMENT_GATEWAYS_EFI_BOLETO_EXPIRATION",
+                "PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY",
+                "PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN",
+                "PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID",
+                "PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET",
+                "PAYMENT_GATEWAYS_MERCADO_PAGO_BOLETO_EXPIRATION",
+                "PAYMENT_GATEWAYS_ASAAS_PRODUCTION",
+                "PAYMENT_GATEWAYS_ASAAS_NOTIFY",
+                "PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY",
+                "PAYMENT_GATEWAYS_ASAAS_BOLETO_EXPIRATION",
+                "API_ENABLED",
+                "API_TOKEN_EXPIRE_TIME",
+                "API_JWT_KEY",
+                "EMAIL_PROTOCOL",
+                "EMAIL_SMTP_HOST",
+                "EMAIL_SMTP_CRYPTO",
+                "EMAIL_SMTP_PORT",
+                "EMAIL_SMTP_USER",
+                "EMAIL_SMTP_PASS"
+            };
+
+            foreach (var chave in configuracoesAppSettings)
+            {
+                if (!configuracoesViewModel.ContainsKey(chave))
+                {
+                    configuracoesViewModel[chave] = _appSettingsService.ObterConfiguracao(chave);
+                }
+            }
+
+            return Json(configuracoesViewModel);
+        }
     }
 }

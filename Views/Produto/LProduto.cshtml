@@ -99,14 +99,14 @@
                                     }
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eProduto"))
                                     {
-                                        <a href="#modal-atualizar-estoque" data-id="@produto.Id" data-estoque="@produto.Estoque" role="button" data-bs-target="#modal-atualizar-estoque"
+                                        <a id="btn-controla-estoque" href="#modal-atualizar-estoque" data-id="@produto.Id" data-estoque="@produto.Estoque" role="button" data-bs-target="#modal-atualizar-estoque"
                                             data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe5 text-decoration-none" title="Atualizar estoque">
                                             <i class="bx bx-plus-circle bx-xs"></i>
                                         </a>
                                     }
                                     else
                                     {
-                                        <a role="button" class="btn-nwe4-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para atualizar estoque">
+                                        <a id="btn-controla-estoque" role="button" class="btn-nwe4-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para atualizar estoque">
                                             <i class="bx bx-plus-circle bx-xs"></i>
                                         </a>
                                     }

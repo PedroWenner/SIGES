@@ -24,7 +24,7 @@
                     <!-- Preço -->
                     <div class="mb-3 col-md-2">
                         <label for="valor" class="form-label">Valor</label>
-                        <input id="valor" type="text" asp-for="Valor" class="money" data-affixes-stay="true" data-thousands="." data-decimal="," required />
+                        <input id="valor" type="text" asp-for="Valor" class="money" required />
                         <span asp-validation-for="Valor" class="text-danger"></span>
                     </div>
                 </div>
@@ -56,7 +56,6 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $(".money").maskMoney();
         $('#formServico').validate({
             rules: {
                 'Nome': { required: true },

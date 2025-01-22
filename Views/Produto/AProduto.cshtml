@@ -150,38 +150,73 @@
             console.error("Erro ao carregar o arquivo JSON.");
         });
 
-        $.validator.addMethod("extension", function (value, element, param) {
-            var extension = value.split('.').pop().toLowerCase();
-            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
-        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
+        ConfiguracaoJsService.carregarConfiguracoes(function () {
+            var controlaEstoque = parseInt(ConfiguracaoJsService.obterConfiguracao("control_estoque", 0));
 
-        $('#formProduto').validate({
-            rules: {
-                'Descricao': { required: true },
-                'PrecoCompra': { required: true },
-                'PrecoVenda': { required: true },
-                'UnidadeMedida': { required: true },
-                'Estoque': { required: true },
-                'imagemCategoria': { extension: "jpg|jpeg|png|gif|bmp" }
-            },
-            messages: {
-                'Descricao': { required: 'Campo descrição é obrigatório.' },
-                'PrecoCompra': { required: 'Campo preço de compra é obrigatório.' },
-                'PrecoVenda': { required: 'Campo preço de venda é obrigatório.' },
-                'UnidadeMedida': { required: 'Unidade deve ser selecionado.' },
-                'Estoque': { required: 'Campo estoque é obrigatório.' },
-                'imagemCategoria': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
-            },
-            errorPlacement: function (error, element) {
-                element.attr("placeholder", error.text());
-            },
-            highlight: function (element, errorClass, validClass) {
-                $(element).addClass("is-invalid").removeClass("is-valid");
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).removeClass("is-invalid").addClass("is-valid");
-                $(element).attr("placeholder", "");
+            let required = true;
+            let msgRequired = 'Campo estoque é obrigatório';
+
+            if (controlaEstoque === 0) {
+                required = false;
+                msgRequired = '';
+                $("#estoque").removeAttr("required");
             }
+            else {
+                $("#estoque").attr("required", "required");
+            }
+
+            $.validator.addMethod("extension", function (value, element, param) {
+                var extension = value.split('.').pop().toLowerCase();
+                return this.optional(element) || param.split('|').indexOf(extension) !== -1;
+            }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
+
+            $('#formProduto').validate({
+                rules: {
+                    'Descricao': { required: true },
+                    'PrecoCompra': { required: true },
+                    'PrecoVenda': { required: true },
+                    'UnidadeMedida': { required: true },
+                    'Estoque': { required: required },
+                    'imagemCategoria': { extension: "jpg|jpeg|png|gif|bmp" }
+                },
+                messages: {
+                    'Descricao': { required: 'Campo descrição é obrigatório.' },
+                    'PrecoCompra': { required: 'Campo preço de compra é obrigatório.' },
+                    'PrecoVenda': { required: 'Campo preço de venda é obrigatório.' },
+                    'UnidadeMedida': { required: 'Unidade deve ser selecionado.' },
+                    'Estoque': { required: msgRequired },
+                    'imagemCategoria': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
+                },
+                errorPlacement: function (error, element) {
+                    element.attr("placeholder", error.text());
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).addClass("is-invalid").removeClass("is-valid");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).removeClass("is-invalid").addClass("is-valid");
+                    $(element).attr("placeholder", "");
+                }
+            });
+
+            console.log("Required =", required);
+            console.log("msgRequired =", msgRequired);
+            const requiredFields = document.querySelectorAll("[required]");
+                requiredFields.forEach((field) => {
+                    const label = field.closest("form").querySelector(`label[for='${field.id}']`);
+                    if (label && !label.innerHTML.includes("*")) {
+                        label.innerHTML += ' <span class="text-danger">*</span>';
+                    }
+                });
         });
+    });
+</script>
+<script type="text/javascript">
+    ConfiguracaoJsService.carregarConfiguracoes(function () {
+        var controlaEstoque = parseInt(ConfiguracaoJsService.obterConfiguracao("control_estoque", 0));
+
+        if (controlaEstoque === 0) {
+            document.getElementById("estoque").removeAttribute("required");
+        }
     });
 </script>
