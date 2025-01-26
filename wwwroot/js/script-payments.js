@@ -1,55 +1,95 @@
-$('#form-gerar-cobranca').submit(function(e) {
-    e.preventDefault();
-
-    $("#modal-gerar-pagamento").modal('hide');
-
-    var form = $(this);
-    $.ajax({
-        url: form.attr('action'),
-        type: form.attr('method'),
-        data: form.serialize(),
-        beforeSend: function() {
-            swal({
-                title: 'Processando',
-                text: 'Criando cobrança...',
-                icon: 'info',
-                showCloseButton: false,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false
-            });
-        },
-        success: function(response) {
-            swal("Sucesso!", "Cobrança criada com sucesso!", "success");
-            setTimeout(function() {
-                window.location.href = window.BaseUrl + 'index.php/cobrancas/visualizar/' + response.idCobranca;
-            }, 5000);
-        },
-        error: function (response) {
-            var message = response.responseJSON.message || "Erro ao criar cobrança!";
-            swal("Erro!", message, "error");
-        }
+// Carregar os gateways de pagamento na inicialização
+$.getJSON("/api/payment-gateways", function (data) {
+    $.each(data, function (key, value) {
+        $("#gatewayDePagamento").append(new Option(value.name, key));
     });
 });
 
-$("#gateway_de_pagamento").change(function (e) {
-    var gatewayDePagamento = $(this).val();
-    $("#forma_pagamento").hide();
-    $("#label_forma_pagamento").hide();
-    $('#forma_pagamento').empty();
+// Atualizar as formas de pagamento ao mudar o gateway
+$("#gatewayDePagamento").change(function () {
+    var gateway = $(this).val();
+    $("#formaPagamento").empty();
+    $("#formaPagamentoWrapper").hide();
 
-    if (!gatewayDePagamento) {
+    if (!gateway) {
         return;
     }
 
-    $('#forma_pagamento').append(new Option('Escolha a forma de pagamento', ''));
-    for (var i = 0; i < paymentGatewaysConfig[gatewayDePagamento]['payment_methods'].length; i++) {
-        var option = new Option(
-            paymentGatewaysConfig[gatewayDePagamento]['payment_methods'][i]['name'],
-            paymentGatewaysConfig[gatewayDePagamento]['payment_methods'][i]['value']
-        );
-        $('#forma_pagamento').append(option);
+    // Buscar métodos de pagamento via API
+    $.getJSON("/api/payment-gateways/" + gateway + "/methods", function (data) {
+        $("#formaPagamento").append(new Option("Escolha a forma de pagamento", ""));
+        $.each(data, function (_, method) {
+            $("#formaPagamento").append(new Option(method.name, method.value));
+        });
+        $("#formaPagamentoWrapper").show();
+    });
+});
+
+// Submeter o formulário para gerar cobrança via AJAX
+$("#formGerarCobranca").submit(function (e) {
+    e.preventDefault();
+
+    var requestData = {
+        Id: $("#id").val(),
+        Tipo: "venda", // Defina isso corretamente
+        FormaPagamento: $("#formaPagamento").val(),
+        GatewayDePagamento: $("#gatewayDePagamento").val(),
+        Valor: parseFloat($("#valor").val()) || 0
+    };
+
+    console.log("📌 Enviando requisição:", requestData);
+
+    // Se o campo de forma de pagamento estiver oculto, remova o atributo "required"
+    if ($("#formaPagamento").is(":hidden")) {
+        $("#formaPagamento").removeAttr("required");
     }
-    $("#forma_pagamento").show();
-    $("#label_forma_pagamento").show();
-})
+
+    // Fechar modal antes da requisição
+    $("#modalGerarPagamento").modal('hide');
+
+    var form = $(this);
+    $.ajax({
+        url: "/api/cobrancas/adicionar", // Certifique-se que essa URL está correta
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(requestData),
+        //beforeSend: function () {
+        //    Swal.fire({
+        //        title: 'Processando...',
+        //        text: 'Criando cobrança...',
+        //        icon: 'info',
+        //        allowOutsideClick: false,
+        //        showConfirmButton: false
+        //    });
+        //},
+        //success: function (response) {
+        //    Swal.fire("Sucesso!", "Cobrança criada com sucesso!", "success").then(() => {
+        //        window.location.href = "/cobrancas/visualizar/" + response.idCobranca;
+        //    });
+        //},
+        //error: function (response) {
+        //    var message = response.responseJSON?.message || "Erro ao criar cobrança!";
+        //    Swal.fire("Erro!", message, "error");
+        //}
+        beforeSend: function () {
+            console.log("⏳ Enviando solicitação...");
+            Swal.fire({
+                title: 'Processando...',
+                text: 'Criando cobrança...',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false
+            });
+        },
+        success: function (response) {
+            console.log("✅ Resposta recebida:", response);
+            Swal.fire("Sucesso!", "Cobrança criada com sucesso!", "success").then(() => {
+                window.location.href = "/cobrancas/visualizar/" + response.idCobranca;
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("❌ Erro na requisição:", xhr.responseText);
+            Swal.fire("Erro!", "Erro ao criar cobrança!", "error");
+        }
+    });
+});

@@ -48,5 +48,6 @@ namespace SIGES.Data
         public DbSet<EmitenteModel> Emitente { get; set; }
         public DbSet<GarantiaModel> Garantias { get; set; }
         public DbSet<ConfiguracaoModel> Configuracoes { get; set; }
+        public DbSet<Cobranca> Cobrancas { get; set; }
     }
 }

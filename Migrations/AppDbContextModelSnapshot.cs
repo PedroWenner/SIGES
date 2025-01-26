@@ -109,6 +109,119 @@ namespace SIGES.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("SIGES.Models.Cobranca", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("idCobranca");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("barcode");
+
+                    b.Property<string>("ChargeId")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("charge_id");
+
+                    b.Property<int?>("ClientesId")
+                        .HasColumnType("int")
+                        .HasColumnName("clientes_id");
+
+                    b.Property<DateTime?>("ConditionalDiscountDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("conditional_discount_date");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<int?>("CustomId")
+                        .HasColumnType("int")
+                        .HasColumnName("custom_id");
+
+                    b.Property<DateTime>("ExpireAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("expire_at");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("link");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("message");
+
+                    b.Property<int?>("OsId")
+                        .HasColumnType("int")
+                        .HasColumnName("os_id");
+
+                    b.Property<string>("Payment")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("payment");
+
+                    b.Property<string>("PaymentGateway")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("payment_gateway");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasMaxLength(11)
+                        .HasColumnType("varchar(11)")
+                        .HasColumnName("payment_method");
+
+                    b.Property<string>("PaymentUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("payment_url");
+
+                    b.Property<string>("Pdf")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("pdf");
+
+                    b.Property<string>("RequestDeliveryAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("request_delivery_address");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(36)
+                        .HasColumnType("varchar(36)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Total")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)")
+                        .HasColumnName("total");
+
+                    b.Property<int?>("VendasId")
+                        .HasColumnType("int")
+                        .HasColumnName("vendas_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientesId");
+
+                    b.HasIndex("OsId");
+
+                    b.HasIndex("VendasId");
+
+                    b.ToTable("cobrancas");
+                });
+
             modelBuilder.Entity("SIGES.Models.ConfiguracaoModel", b =>
                 {
                     b.Property<int>("Id")
@@ -560,7 +673,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$SXpYnx4t4FFBTzzuxm6m3Ogw/ZaizDhHCUrTxIV83ODBxOYQyZ5zq",
+                            Senha = "$2a$11$WpM90R22EE1x95NWFt0wSOOHPDLI7Nz25ABRN7kEluyhSXw8I6DkC",
                             Situacao = 1
                         });
                 });
@@ -625,6 +738,30 @@ namespace SIGES.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.Cobranca", b =>
+                {
+                    b.HasOne("SIGES.Models.ClienteModel", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClientesId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SIGES.Models.OsModel", "Os")
+                        .WithMany()
+                        .HasForeignKey("OsId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SIGES.Models.VendaModel", "Venda")
+                        .WithMany()
+                        .HasForeignKey("VendasId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Os");
+
+                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("SIGES.Models.GarantiaModel", b =>

@@ -41,7 +41,7 @@
                     <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
                     <span class="button__text2">CP não fiscal</span>
                 </a>
-                <a data-bs-target="#modal-gerar-pagamento" data-bs-toggle="modal" title="Gerar pagamento" class="button btn btn-mini btn-info">
+                <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" title="Gerar pagamento" class="button btn btn-mini btn-info">
                     <span class="button__icon"><i class="bx bx-qr bx-xs"></i></span>
                     <span class="button__text2">Gerar pagamento</span>
                 </a>
@@ -130,3 +130,5 @@
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("~/Views/Cobranca/_ModalGerarPagamento.cshtml")

@@ -53,7 +53,10 @@ builder.Services.AddSingleton<AppSettingsService>(provider =>
     var configuration = provider.GetRequiredService<IConfiguration>();
     return new AppSettingsService(configuration);
 });
+builder.Services.AddSingleton<PaymentGatewaysService>();
 builder.Services.AddScoped<TemaService>();
+builder.Services.AddSingleton<PaymentGatewaysService>();
+builder.Services.AddScoped<CobrancaService>();
 
 var app = builder.Build();
 

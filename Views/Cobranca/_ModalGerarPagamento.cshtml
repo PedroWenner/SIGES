@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Gerar Pagamento";
+}
+
+<div class="modal fade" id="modalGerarPagamento" tabindex="-1" aria-labelledby="modalGerarPagamentoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formGerarCobranca">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Escolher Forma de Pagamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="gatewayDePagamento" class="form-label">Gateway de Pagamento:</label>
+                        <select id="gatewayDePagamento" class="form-select" required>
+                            <option value="">Escolha o gateway de pagamento</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="formaPagamentoWrapper" style="display: none;">
+                        <label id="labelFormaPagamento" for="formaPagamento" class="form-label">Forma de Pagamento:</label>
+                        <select id="formaPagamento" class="form-select"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="payment" type="submit" class="button btn btn-mini btn-info" style="float: right;">
+                        <span class="button__icon"><i class='bx bx-qr'></i></span>
+                        <span class="button__text">Gerar Pagamento</span></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $("#formaPagamento").hide();
+    $("#labelFormaPagamento").hide();
+</script>
+<script src="~/js/script-payments.js"></script>

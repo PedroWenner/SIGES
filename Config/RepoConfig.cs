@@ -20,6 +20,7 @@ namespace SIGES.Config
             services.AddScoped<IEmitente, EmitenteRepositorio>();
             services.AddScoped<IGarantia, GarantiaRepositorio>();
             services.AddScoped<IConfiguracao, ConfiguracaoRepositorio>();
+            services.AddScoped<ICobranca, CobrancaRepository>();
         }
     }
 }
