@@ -2,7 +2,7 @@
     ViewData["Title"] = "Gerar Pagamento";
 }
 
-<div class="modal fade" id="modalGerarPagamento" tabindex="-1" aria-labelledby="modalGerarPagamentoLabel" aria-hidden="true">
+<div class="modal fade" id="modalGerarPagamento" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalGerarPagamentoLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form id="formGerarCobranca">
             <div class="modal-content">
@@ -13,7 +13,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="gatewayDePagamento" class="form-label">Gateway de Pagamento:</label>
-                        <select id="gatewayDePagamento" class="form-select" required>
+                        <select id="gatewayDePagamento" class="form-select" required onchange="carregaFormaPagamento();">
                             <option value="">Escolha o gateway de pagamento</option>
                         </select>
                     </div>

@@ -5,25 +5,32 @@ $.getJSON("/api/payment-gateways", function (data) {
     });
 });
 
-// Atualizar as formas de pagamento ao mudar o gateway
-$("#gatewayDePagamento").change(function () {
-    var gateway = $(this).val();
+function carregaFormaPagamento() {
+    var gateway = $("#gatewayDePagamento").val();
     $("#formaPagamento").empty();
     $("#formaPagamentoWrapper").hide();
+
+    console.log("📌 Gateway selecionado:", gateway);
 
     if (!gateway) {
         return;
     }
-
+    
     // Buscar métodos de pagamento via API
     $.getJSON("/api/payment-gateways/" + gateway + "/methods", function (data) {
+        console.log("✅ Métodos de pagamento recebidos:", data);
+
         $("#formaPagamento").append(new Option("Escolha a forma de pagamento", ""));
         $.each(data, function (_, method) {
             $("#formaPagamento").append(new Option(method.name, method.value));
         });
+
+        console.log("🟢 Exibindo #formaPagamentoWrapper");
         $("#formaPagamentoWrapper").show();
+        $("#labelFormaPagamento").show();
+        $("#formaPagamento").show();
     });
-});
+}
 
 // Submeter o formulário para gerar cobrança via AJAX
 $("#formGerarCobranca").submit(function (e) {
@@ -53,24 +60,6 @@ $("#formGerarCobranca").submit(function (e) {
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),
-        //beforeSend: function () {
-        //    Swal.fire({
-        //        title: 'Processando...',
-        //        text: 'Criando cobrança...',
-        //        icon: 'info',
-        //        allowOutsideClick: false,
-        //        showConfirmButton: false
-        //    });
-        //},
-        //success: function (response) {
-        //    Swal.fire("Sucesso!", "Cobrança criada com sucesso!", "success").then(() => {
-        //        window.location.href = "/cobrancas/visualizar/" + response.idCobranca;
-        //    });
-        //},
-        //error: function (response) {
-        //    var message = response.responseJSON?.message || "Erro ao criar cobrança!";
-        //    Swal.fire("Erro!", message, "error");
-        //}
         beforeSend: function () {
             console.log("⏳ Enviando solicitação...");
             Swal.fire({
