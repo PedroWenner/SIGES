@@ -55,8 +55,7 @@ builder.Services.AddSingleton<AppSettingsService>(provider =>
 });
 builder.Services.AddSingleton<PaymentGatewaysService>();
 builder.Services.AddScoped<TemaService>();
-builder.Services.AddSingleton<PaymentGatewaysService>();
-builder.Services.AddScoped<CobrancaService>();
+builder.Services.AddScoped<MercadoPagoService>();
 
 var app = builder.Build();
 

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SIGES.Interfaces;
+using SIGES.Models;
 using SIGES.Models.Requests;
 using SIGES.Services;
 
@@ -8,13 +10,13 @@ namespace SIGES.Controllers
     [ApiController]
     public class CobrancaController : ControllerBase
     {
-        private readonly CobrancaService _cobrancaService;
-        private readonly ILogger<CobrancaController> _logger;
+        private readonly ICobranca _cobrancaRepository;
+        private readonly IPaymentGateway _paymentGateway;
 
-        public CobrancaController(CobrancaService cobrancaService, ILogger<CobrancaController> logger)
+        public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway)
         {
-            _cobrancaService = cobrancaService;
-            _logger = logger;
+            _cobrancaRepository = cobrancaRepository;
+            _paymentGateway = paymentGateway;
         }
 
         [HttpPost("adicionar")]
@@ -22,78 +24,52 @@ namespace SIGES.Controllers
         {
             try
             {
-                var cobranca = await _cobrancaService.CriarCobranca(request);
+                var cobrancas = await _cobrancaRepository.ObterTodasCobrancas();
+                var cobrancasExistentes = cobrancas.Where(x => (request.Tipo == "venda" ? x.VendasId : x.OsId) == request.Id).ToList();
+
+                if (cobrancasExistentes.Any())
+                {
+                    return BadRequest(new { message = "Já existe uma cobrança!" });
+                }
+
+                var cobranca = await _paymentGateway.CriarCobranca(request);
                 return Ok(cobranca);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Erro ao criar cobrança: {ex.Message}");
                 return StatusCode(500, new { message = ex.Message, stackTrace = ex.StackTrace });
             }
         }
 
-        [HttpGet("visualizar/{id}")]
-        public async Task<IActionResult> ObterCobranca(int id)
-        {
-            var cobranca = await _cobrancaService.ObterCobranca(id);
-            if (cobranca == null)
-            {
-                return NotFound(new { message = "Cobrança não encontrada!" });
-            }
-            return Ok(cobranca);
-        }
-
-        [HttpPost("atualizar")]
-        public async Task<IActionResult> AtualizarCobranca([FromBody] AtualizarCobrancaRequest request)
+        [HttpPost("confirmar-pagamento/{id}")]
+        public async Task<IActionResult> ConfirmarPagamento(int id)
         {
             try
             {
-                await _cobrancaService.AtualizarCobranca(request.Id);
-                return Ok(new { message = "Cobrança atualizada com sucesso!" });
+                bool confirmado = await _paymentGateway.ConfirmarPagamento(id);
+                if (confirmado)
+                    return Ok(new { message = "Pagamento confirmado!" });
+
+                return BadRequest(new { message = "Pagamento não confirmado." });
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message });
             }
         }
 
-        [HttpPost("excluir/{id}")]
-        public async Task<IActionResult> ExcluirCobranca(int id)
+        [HttpPost("cancelar/{id}")]
+        public async Task<IActionResult> CancelarCobranca(int id)
         {
             try
             {
-                await _cobrancaService.ExcluirCobranca(id);
-                return Ok(new { message = "Cobrança excluída com sucesso!" });
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
+                bool cancelado = await _paymentGateway.CancelarCobranca(id);
+                if (cancelado)
+                    return Ok(new { message = "Cobrança cancelada!" });
 
-        [HttpPost("confirmar-pagamento")]
-        public async Task<IActionResult> ConfirmarPagamento([FromBody] ConfirmarPagamentoRequest request)
-        {
-            try
-            {
-                await _cobrancaService.ConfirmarPagamento(request.Id);
-                return Ok(new { message = "Pagamento confirmado com sucesso!" });
+                return BadRequest(new { message = "Cobrança não pode ser cancelada." });
             }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
-        [HttpPost("cancelar")]
-        public async Task<IActionResult> CancelarCobranca([FromBody] CancelarCobrancaRequest request)
-        {
-            try
-            {
-                await _cobrancaService.CancelarCobranca(request.Id);
-                return Ok(new { message = "Cobrança cancelada com sucesso!" });
-            }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { message = ex.Message });
             }

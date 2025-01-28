@@ -11,6 +11,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <input id="hfId" type="hidden" />
+                    <input id="hfTipo" type="hidden" />
                     <div class="mb-3">
                         <label for="gatewayDePagamento" class="form-label">Gateway de Pagamento:</label>
                         <select id="gatewayDePagamento" class="form-select" required onchange="carregaFormaPagamento();">
@@ -20,7 +22,7 @@
 
                     <div class="mb-3" id="formaPagamentoWrapper" style="display: none;">
                         <label id="labelFormaPagamento" for="formaPagamento" class="form-label">Forma de Pagamento:</label>
-                        <select id="formaPagamento" class="form-select"></select>
+                        <select id="formaPagamento" class="form-select" required></select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -37,5 +39,16 @@
 <script>
     $("#formaPagamento").hide();
     $("#labelFormaPagamento").hide();
+
+    // Quando o modal for aberto pelo botão "Gerar Pagamento"
+    $('[data-bs-toggle="modal"]').on('click', function () {
+        var id = $(this).data('id');
+        var tipo = $(this).data('tipo');
+        console.log("📌 ID capturado:", id); // DEBUG
+        console.log("📌 TIPO capturado:", tipo); // DEBUG
+
+        $("#hfId").val(id);
+        $("#hfTipo").val(tipo);
+    });
 </script>
 <script src="~/js/script-payments.js"></script>

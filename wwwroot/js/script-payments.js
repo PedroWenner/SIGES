@@ -37,8 +37,8 @@ $("#formGerarCobranca").submit(function (e) {
     e.preventDefault();
 
     var requestData = {
-        Id: $("#id").val(),
-        Tipo: "venda", // Defina isso corretamente
+        Id: $("#hfId").val(),
+        Tipo: $("#hfTipo").val(),
         FormaPagamento: $("#formaPagamento").val(),
         GatewayDePagamento: $("#gatewayDePagamento").val(),
         Valor: parseFloat($("#valor").val()) || 0
@@ -46,17 +46,12 @@ $("#formGerarCobranca").submit(function (e) {
 
     console.log("📌 Enviando requisição:", requestData);
 
-    // Se o campo de forma de pagamento estiver oculto, remova o atributo "required"
-    if ($("#formaPagamento").is(":hidden")) {
-        $("#formaPagamento").removeAttr("required");
-    }
-
     // Fechar modal antes da requisição
     $("#modalGerarPagamento").modal('hide');
 
     var form = $(this);
     $.ajax({
-        url: "/api/cobrancas/adicionar", // Certifique-se que essa URL está correta
+        url: "/api/cobrancas/adicionar",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),

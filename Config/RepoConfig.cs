@@ -1,5 +1,6 @@
 ﻿using SIGES.Interfaces;
 using SIGES.Repositorios;
+using SIGES.Services;
 
 namespace SIGES.Config
 {
@@ -21,6 +22,7 @@ namespace SIGES.Config
             services.AddScoped<IGarantia, GarantiaRepositorio>();
             services.AddScoped<IConfiguracao, ConfiguracaoRepositorio>();
             services.AddScoped<ICobranca, CobrancaRepository>();
+            services.AddScoped<IPaymentGateway, MercadoPagoService>();
         }
     }
 }

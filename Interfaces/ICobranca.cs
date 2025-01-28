@@ -1,4 +1,5 @@
-﻿using SIGES.Models.Requests;
+﻿using SIGES.Models;
+using SIGES.Models.Requests;
 
 namespace SIGES.Interfaces
 {
@@ -10,5 +11,6 @@ namespace SIGES.Interfaces
         Task ConfirmarPagamento(int id);
         Task CancelarCobranca(int id);
         Task<object> ObterCobrancaPorId(int id);
+        Task<IEnumerable<Cobranca>> ObterTodasCobrancas();
     }
 }
