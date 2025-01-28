@@ -68,7 +68,7 @@ $("#formGerarCobranca").submit(function (e) {
         success: function (response) {
             console.log("✅ Resposta recebida:", response);
             Swal.fire("Sucesso!", "Cobrança criada com sucesso!", "success").then(() => {
-                window.location.href = "/cobrancas/visualizar/" + response.idCobranca;
+                //window.location.href = "/cobrancas/visualizar/" + response.idCobranca;
             });
         },
         error: function (xhr, status, error) {

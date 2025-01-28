@@ -12,11 +12,15 @@ namespace SIGES.Controllers
     {
         private readonly ICobranca _cobrancaRepository;
         private readonly IPaymentGateway _paymentGateway;
+        private readonly IVenda _vendaRepository;
+        private readonly IOs _osRepository;
 
-        public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway)
+        public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, IVenda vendaRepository, IOs osRepository)
         {
             _cobrancaRepository = cobrancaRepository;
             _paymentGateway = paymentGateway;
+            _vendaRepository = vendaRepository;
+            _osRepository = osRepository;
         }
 
         [HttpPost("adicionar")]
@@ -32,8 +36,10 @@ namespace SIGES.Controllers
                     return BadRequest(new { message = "Já existe uma cobrança!" });
                 }
 
-                var cobranca = await _paymentGateway.CriarCobranca(request);
-                return Ok(cobranca);
+                var dados = await _vendaRepository.ObterPorId(request.Id);
+
+                //var cobranca = await _paymentGateway.CriarCobranca(request);
+                return Ok(/*cobranca*/);
             }
             catch (Exception ex)
             {

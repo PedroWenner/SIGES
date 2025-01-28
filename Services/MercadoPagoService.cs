@@ -22,6 +22,7 @@ namespace SIGES.Services
             // Configura credenciais do MercadoPago
             var config = _paymentGatewaysService.GetGateways()["MercadoPago"];
             MercadoPagoConfig.AccessToken = config.Credentials["access_token"];
+            MercadoPagoConfig.PlatformId = config.Credentials["platform_id"];
         }
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace SIGES.Services
                     TransactionAmount = request.Valor,
                     Description = request.Tipo == "venda" ? $"Venda #{request.Id}" : $"Ordem de Serviço #{request.Id}",
                     PaymentMethodId = request.FormaPagamento,
-                    Payer = new MercadoPago.Client.Common.PaymentPayerRequest
+                    Payer = new PaymentPayerRequest
                     {
                         Email = "comprador@email.com" // Deve ser substituído pelo email real do comprador
                     }
@@ -59,8 +60,8 @@ namespace SIGES.Services
                     PaymentMethod = request.FormaPagamento,
                     PaymentGateway = "MercadoPago",
                     Status = payment.Status,
-                    Total = request.Valor.ToString("F2"),
-                    Barcode = payment.Barcode?.Content ?? "",
+                    Total = request.Valor.ToString(),
+                    //Barcode = payment.Barcode?.Content ?? "",
                     Link = payment.TransactionDetails.ExternalResourceUrl ?? "",
                     Payment = request.FormaPagamento,
                     CreatedAt = DateTime.UtcNow,
@@ -138,10 +139,10 @@ namespace SIGES.Services
                     return false; // Se já foi pago, não pode ser cancelado
                 }
 
-                await client.UpdateAsync(payment.Id, new PaymentUpdateRequest { Status = "cancelled" });
+                //await client.UpdateAsync(payment.Id, new PaymentUpdateRequest { Status = "cancelled" });
 
-                cobranca.Status = "Cancelado";
-                await _context.SaveChangesAsync();
+                //cobranca.Status = "Cancelado";
+                //await _context.SaveChangesAsync();
 
                 return true;
             }

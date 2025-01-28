@@ -6,26 +6,9 @@
         public string Tipo { get; set; } = string.Empty;
         public string FormaPagamento { get; set; } = string.Empty;
         public string GatewayDePagamento { get; set; } = string.Empty;
-        public decimal Valor { get; set; }
-    }
-
-    public class ExcluirCobrancaRequest
-    {
-        public int Id { get; set; }
-    }
-
-    public class AtualizarCobrancaRequest
-    {
-        public int Id { get; set; }
-    }
-
-    public class ConfirmarPagamentoRequest
-    {
-        public int Id { get; set; }
-    }
-
-    public class CancelarCobrancaRequest
-    {
-        public int Id { get; set; }
+        public decimal? Valor { get; set; }
+        public string? EmailCliente {  get; set; } = string.Empty;
+        public int? ClienteId { get; set; }
+        public virtual ClienteModel? Cliente { get; set; }
     }
 }
