@@ -13,5 +13,6 @@ namespace SIGES.Interfaces
         Task Atualizar(ItensVendaModel item);
 
         Task Excluir(int id);
+        IEnumerable<ItensVendaModel?> ObterPorVendaId(int id);
     }
 }

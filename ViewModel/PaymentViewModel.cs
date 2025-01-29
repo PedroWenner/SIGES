@@ -7,7 +7,7 @@ namespace SIGES.ViewModel
     {
         public VendaModel? Venda { get; set; } = new VendaModel();
         public OsModel? Os { get; set; } = new OsModel();
-        public string Tipo { get; set; };
+        public string Tipo { get; set; }
         public string FormaPagamento { get; set; }
     }
 }

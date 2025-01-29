@@ -15,14 +15,16 @@ namespace SIGES.Controllers
         private readonly ICobranca _cobrancaRepository;
         private readonly IPaymentGateway _paymentGateway;
         private readonly IVenda _vendaRepository;
+        private readonly IItensVenda _itensVendasRepository;
         private readonly IOs _osRepository;
 
-        public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, IVenda vendaRepository, IOs osRepository)
+        public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, IVenda vendaRepository, IOs osRepository, IItensVenda itensVendasRepository)
         {
             _cobrancaRepository = cobrancaRepository;
             _paymentGateway = paymentGateway;
             _vendaRepository = vendaRepository;
             _osRepository = osRepository;
+            _itensVendasRepository = itensVendasRepository;
         }
 
         [HttpPost("adicionar")]
@@ -35,31 +37,35 @@ namespace SIGES.Controllers
 
                 if (cobrancasExistentes.Any())
                 {
-                    return BadRequest(new { message = "Já existe uma cobrança!" });
+                    var retur = new
+                    {
+                        Status = "Erro!",
+                        Message = "Já existe cobrança!",
+                        Acao = "error"
+                    };
+                    return Ok(retur);
                 }
 
                 var paymentRequest = new PaymentRequest();
                 if (request.Tipo == "venda")
                 {
                     var venda = await _vendaRepository.ObterPorId(request.Id);
+                    var produtos = _itensVendasRepository.ObterPorVendaId(request.Id);
 
-                    string address = "zip_code = " + Regex.Replace(venda.Cliente.Cep, "[^0-9]", "");
-                    address += "street_name = " + venda.Cliente.Rua;
-                    address += "street_number = " + venda.Cliente.NumeroRua;
-                    address += "neighborhood = " + venda.Cliente.Bairro;
-                    address += "city = " + venda.Cliente.Cidade;
-                    address += "federal_unit = " + venda.Cliente.Estado;
+                    var qtd = produtos.Sum(x => x.Quantidade);
+                    var valor = produtos.Sum(x => x.Preco);
+                    var desconto = venda.Desconto;
+                    var valorComDesconto = venda.ValorDesconto;
 
                     string documento = Regex.Replace(venda.Cliente.Documento, "[^0-9]", "");
-                    documento = (documento.Length == 11 ? "CPF" : "CNPJ") + " = " + documento;
-
                     string name = venda.Cliente.Nome;
                     string[] words = name.Split(' ');
 
                     paymentRequest = new PaymentRequest
                     {
+                        Id = request.Id,
                         Tipo = request.Tipo,
-                        TransactionAmount = venda.ValorTotal,
+                        TransactionAmount = valorComDesconto,
                         Description = $"Venda #{request.Id}",
                         PaymentMethodId = "bolbradesco",
                         Identification = documento,
@@ -71,7 +77,7 @@ namespace SIGES.Controllers
                         FederalUnit = venda.Cliente.Estado,
                         Email = venda.Cliente.Email ?? "",
                         ClienteId = venda.Cliente.Id,
-                        FirstName = words[0],
+                        FirstName = words[1],
                         LastName = words[words.Length - 1],
                     };
                 }
@@ -85,6 +91,7 @@ namespace SIGES.Controllers
 
                     paymentRequest = new PaymentRequest
                     {
+                        Id = request.Id,
                         Tipo = request.Tipo,
                         //TransactionAmount = os.,
                         Description = $"Ordem de Serviço #{request.Id}",

@@ -42,6 +42,33 @@ namespace SIGES.Services
 
                 DateTime dateOfExpiration = DateTime.Now.AddDays(boletoVencimento);
 
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request), "A requisição de pagamento está nula!");
+                }
+
+                // Criar instâncias para evitar NullReferenceException
+                var payer = new PaymentPayerRequest
+                {
+                    Email = request.Email ?? throw new Exception("Email do cliente não pode ser nulo."),
+                    FirstName = request.FirstName ?? "Desconhecido",
+                    LastName = request.LastName ?? "Desconhecido",
+                    Identification = new IdentificationRequest
+                    {
+                        Type = request.Identification?.Length == 11 ? "CPF" : "CNPJ",
+                        Number = request.Identification ?? throw new Exception("Documento do cliente não pode ser nulo.")
+                    },
+                    Address = new PaymentPayerAddressRequest
+                    {
+                        ZipCode = request.ZipCode ?? throw new Exception("CEP não pode ser nulo."),
+                        StreetName = request.StreetName ?? throw new Exception("Rua não pode ser nula."),
+                        StreetNumber = request.StreetNumber ?? throw new Exception("Número da rua não pode ser nulo."),
+                        Neighborhood = request.Neighborhood ?? "Não informado",
+                        City = request.City ?? throw new Exception("Cidade não pode ser nula."),
+                        FederalUnit = request.FederalUnit ?? throw new Exception("Estado não pode ser nulo.")
+                    }
+                };
+
                 var paymentRequest = new PaymentCreateRequest
                 {
                     TransactionAmount = request.TransactionAmount,
@@ -49,26 +76,7 @@ namespace SIGES.Services
                     PaymentMethodId = request.PaymentMethodId,
                     NotificationUrl = "http://alcatech.com.br/",
                     DateOfExpiration = dateOfExpiration,
-                    Payer = new PaymentPayerRequest
-                    {
-                        Email = request.Email,
-                        FirstName = request.FirstName,
-                        LastName = request.LastName,
-                        Identification =
-                        {
-                            Type = request.Identification.Length == 11 ? "CPF" : "CNPJ",
-                            Number = request.Identification
-                        },
-                        Address =
-                        {
-                            ZipCode = request.ZipCode,
-                            StreetName = request.StreetName,
-                            StreetNumber = request.StreetNumber,
-                            Neighborhood = request.Neighborhood,
-                            City = request.City,
-                            FederalUnit = request.FederalUnit
-                        }
-                    }
+                    Payer = payer
                 };
 
                 var client = new PaymentClient();
@@ -109,12 +117,13 @@ namespace SIGES.Services
                 {
                     Status = "Sucesso",
                     Message = "Cobrança gerada com sucesso!",
-                    Cobranca = novaCobranca
+                    //Cobranca = novaCobranca,
+                    Acao = "success"
                 };
             }
             catch (Exception ex)
             {
-                return new { Status = "Erro", Message = ex.Message };
+                return new { Status = "Erro", Message = ex.Message, Acao = "error" };
             }
         }
 

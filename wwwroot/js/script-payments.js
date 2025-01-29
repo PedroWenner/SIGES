@@ -10,22 +10,18 @@ function carregaFormaPagamento() {
     $("#formaPagamento").empty();
     $("#formaPagamentoWrapper").hide();
 
-    console.log("📌 Gateway selecionado:", gateway);
-
     if (!gateway) {
         return;
     }
     
     // Buscar métodos de pagamento via API
     $.getJSON("/api/payment-gateways/" + gateway + "/methods", function (data) {
-        console.log("✅ Métodos de pagamento recebidos:", data);
 
         $("#formaPagamento").append(new Option("Escolha a forma de pagamento", ""));
         $.each(data, function (_, method) {
             $("#formaPagamento").append(new Option(method.name, method.value));
         });
 
-        console.log("🟢 Exibindo #formaPagamentoWrapper");
         $("#formaPagamentoWrapper").show();
         $("#labelFormaPagamento").show();
         $("#formaPagamento").show();
@@ -44,8 +40,6 @@ $("#formGerarCobranca").submit(function (e) {
         Valor: parseFloat($("#valor").val()) || 0
     };
 
-    console.log("📌 Enviando requisição:", requestData);
-
     // Fechar modal antes da requisição
     $("#modalGerarPagamento").modal('hide');
 
@@ -56,7 +50,6 @@ $("#formGerarCobranca").submit(function (e) {
         contentType: "application/json",
         data: JSON.stringify(requestData),
         beforeSend: function () {
-            console.log("⏳ Enviando solicitação...");
             Swal.fire({
                 title: 'Processando...',
                 text: 'Criando cobrança...',
@@ -67,7 +60,7 @@ $("#formGerarCobranca").submit(function (e) {
         },
         success: function (response) {
             console.log("✅ Resposta recebida:", response);
-            Swal.fire("Sucesso!", "Cobrança criada com sucesso!", "success").then(() => {
+            Swal.fire(response.status, response.message, response.acao).then(() => {
                 //window.location.href = "/cobrancas/visualizar/" + response.idCobranca;
             });
         },
