@@ -45,7 +45,7 @@ $("#formGerarCobranca").submit(function (e) {
 
     var form = $(this);
     $.ajax({
-        url: "/api/cobrancas/adicionar",
+        url: "/api/v1/adicionar",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(requestData),

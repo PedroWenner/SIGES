@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SIGES.Services;
 
-namespace SIGES.Controllers
+namespace SIGES.Controllers.Api
 {
     [Route("api/payment-gateways")]
     [ApiController]

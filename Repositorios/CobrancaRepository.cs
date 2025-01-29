@@ -23,7 +23,7 @@ namespace SIGES.Repositorios
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IEnumerable<Cobranca>> ObterTodasCobrancas()
+        public async Task<IEnumerable<Cobranca>> Listar()
         {
             return await _context.Cobrancas
                 .Include(c => c.Cliente)

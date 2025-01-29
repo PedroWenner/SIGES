@@ -16,11 +16,13 @@ namespace SIGES.Middleware
             if (context.User.Identity.IsAuthenticated)
             {
                 var userIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+                var master = context.User.Claims.FirstOrDefault(c => c.Type == "Master")?.Value;
 
                 if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out int userId))
                 {
                     var permissoes = await permissaoRepositorio.ObterPermissoesUsuario(userId);
                     context.Items["Permissoes"] = permissoes;
+                    context.Items["Master"] = master;
                 }
             }
 

@@ -44,7 +44,8 @@ namespace SIGES.Controllers
                 new Claim(ClaimTypes.Name, usuario.Nome),
                 new Claim(ClaimTypes.Email, usuario.Email),
                 new Claim("UserId", usuario.Id.ToString()),
-                new Claim(ClaimTypes.Role, usuario.PermissaoId.ToString())
+                new Claim(ClaimTypes.Role, usuario.PermissaoId.ToString()),
+                new Claim("Master", usuario.Master)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

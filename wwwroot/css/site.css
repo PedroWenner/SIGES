@@ -71,3 +71,19 @@
         position: initial !important;
     }
 }
+
+
+/*#newlog {
+    display: flex!important;
+    justify-content: center!important;
+    align-items: center!important;
+    padding: 10px!important;
+    max-width: 100%!important;
+}*/
+
+.icon2 img {
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+    border: 0;
+}

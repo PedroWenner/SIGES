@@ -35,14 +35,13 @@
     }
 </style>
 
+<link href="~/css/site.css" rel="stylesheet" />
+
 <!--sidebar-menu-->
 <nav id="sidebar">
     <div id="newlog">
         <div class="icon2">
-            <img src="~/img/AlcaLogo1.png">
-        </div>
-        <div class="title1">
-
+            <img src="~/img/01.png">
         </div>
     </div>
     <a href="#" class="visible-phone">
@@ -172,6 +171,18 @@
                             <i class='bx bx-bar-chart-alt-2 iconX'></i>
                             <span class="title">Lançamentos</span>
                             <span class="title-tooltip">Lançamentos</span>
+                        </a>
+                    </li>
+                }
+
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))
+                {
+                    <!--Bloco de Lancamentos-->
+                    <li title="Lancamentos" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Cobranca" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a asp-controller="Cobranca" asp-action="Index">
+                            <i class='bx bx-dollar-circle iconX'></i>
+                            <span class="title">Cobranças</span>
+                            <span class="title-tooltip">Cobranças</span>
                         </a>
                     </li>
                 }

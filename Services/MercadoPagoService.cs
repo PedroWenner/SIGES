@@ -90,6 +90,7 @@ namespace SIGES.Services
                 // Criar a cobrança no banco
                 var novaCobranca = new Cobranca
                 {
+                    Barcode = payment.TransactionDetails.Barcode.Content,
                     Link = payment.TransactionDetails.ExternalResourceUrl ?? "",
                     Pdf = payment.TransactionDetails.ExternalResourceUrl ?? "",
                     ExpireAt = payment.DateOfExpiration ?? DateTime.Now,
@@ -117,7 +118,6 @@ namespace SIGES.Services
                 {
                     Status = "Sucesso",
                     Message = "Cobrança gerada com sucesso!",
-                    //Cobranca = novaCobranca,
                     Acao = "success"
                 };
             }

@@ -1,0 +1,202 @@
+﻿@using SIGES.Helpers
+@using SIGES.ViewModel
+@model CobrancaViewModel
+
+@{
+    ViewData["Titulo"] = "Cobranças";
+}
+
+<div class="new122">
+    <div class="widget-title" style="margin: -20px 0 0">
+        <span class="icon">
+            <i class="fas fa-user"></i>
+        </span>
+        <h5>Cobranças</h5>
+    </div>
+
+    <div class="widget-box">
+        <h5 style="padding: 3px 0"></h5>
+        <div class="widget-content nopadding tab-content">
+            <table id="tabela">
+                <thead>
+                    <tr>
+                        <th style="width:5%">#</th>
+                        <th style="width:10%">Gateway</th>
+                        <th style="width:5%">Tipo</th>
+                        <th style="width:10%">Data de Vencimento</th>
+                        <th style="width:10%">Referência</th>
+                        <th style="width:10%">Status</th>
+                        <th style="width:10%">Valor</th>
+                        <th style="width:20%">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Cobrancas == null || Model.Cobrancas.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="8">Nenhuma cobrança cadastrada</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var cobranca in Model.Cobrancas)
+                        {
+                            <tr>
+                                <td>@cobranca.Id</td>
+                                <td>@cobranca.PaymentGateway</td>
+                                <td>@cobranca.PaymentMethod</td>
+                                <td>@cobranca.ExpireAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(cobranca.OsId.ToString()))
+                                    {
+                                        <a href="#">Ordem de serviço: #@cobranca.OsId</a>
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(cobranca.VendasId.ToString()))
+                                    {
+                                        <a href="#">Venda: #@cobranca.VendasId</a>
+                                    }
+                                </td>
+                                <td></td>
+                                <td>@cobranca.Total</td>
+                                <td>
+                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))
+                                    {
+                                        <a href="#modal-cancelar" data-id="@cobranca.Id" role="button" data-bs-target="#modal-cancelar" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Cancelar cobrança">
+                                            <i class="bx bx-x bx-xs"></i>
+                                        </a>
+                                        <a asp-controller="Cobranca" asp-action="Atualizar" asp-route-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Atualizar cobrança">
+                                            <i class="bx bx-refresh bx-xs"></i>
+                                        </a>
+                                        <a href="#modal-confirmar" data-id="@cobranca.Id" role="button" data-bs-target="#modal-confirmar" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Confirmar pagamento">
+                                            <i class="bx bx-check bx-xs"></i>
+                                        </a>
+                                        <a asp-controller="Cobranca" asp-action="Visualizar" asp-route-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe2 text-decoration-none" title="Ver mais detalhes">
+                                            <i class="bx bx-show bx-xs"></i>
+                                        </a>
+                                        <a asp-controller="Cobranca" asp-action="EnviarEmail" asp-route-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe5 text-decoration-none" title="Enviar por e-mail">
+                                            <i class="bx bx-envelope bx-xs"></i>
+                                        </a>
+                                        @if ((PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))@*  && !string.IsNullOrEmpty(cobranca.Barcode) *@)
+                                        {
+                                            <a href="@cobranca.Link" target="_blank" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Visualizar boleto">
+                                                <i class="bx bx-barcode bx-xs"></i>
+                                            </a>
+                                        }
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))
+                                        {
+                                            <a href="#modal-excluir" data-id="@cobranca.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir cobrança">
+                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                            </a>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="idCobranca" name="id" />
+
+<!-- Modal excluir -->
+<div id="modal-excluir" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-controller="Cobranca" asp-action="Excluir">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Excluir serviço</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 style="text-align: center">
+                        Deseja realmente excluir este serviço?
+                    </h6>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-danger">
+                        <span class="button__icon"><i class='bx bx-trash'></i></span>
+                        <span class="button__text2">Excluir</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal confirmar -->
+<div id="modal-confirmar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-controller="Cobranca" asp-action="ConfirmarPagamento">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Confirmar pagamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 style="text-align: center">
+                        Deseja realmente confirmar pagamento desta cobrança?
+                    </h6>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-success">
+                        <span class="button__icon"><i class='bx bx-save'></i></span>
+                        <span class="button__text2">Confirmar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal cancelar -->
+<div id="modal-cancelar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-controller="Cobranca" asp-action="Cancelar">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Cancelar cobrança</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 style="text-align: center">
+                        Deseja realmente cancelar esta cobrança?
+                    </h6>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-danger">
+                        <span class="button__icon"><i class='bx bx-x'></i></span>
+                        <span class="button__text2">Confirmar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_ModalLog")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on('click', 'a', function () {
+            var id = $(this).data('id');
+            $('#idCobranca').val(id);
+            console.log("✅ idCobranca: ", id);
+        });
+    });
+</script>
