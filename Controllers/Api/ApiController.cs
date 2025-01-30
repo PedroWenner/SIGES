@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SIGES.Attributes;
 using SIGES.Interfaces;
+using SIGES.Models;
 using SIGES.Models.Requests;
 using System.Diagnostics.Metrics;
 using System.Text.RegularExpressions;
@@ -16,13 +17,17 @@ namespace SIGES.Controllers.Api
         private readonly IVenda _vendaRepository;
         private readonly IItensVenda _itensVendasRepository;
         private readonly IOs _osRepository;
-        public ApiController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, IVenda vendaRepository, IOs osRepository, IItensVenda itensVendasRepository)
+        private readonly IClienteRepositorio _clienteRepository;
+
+        public ApiController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, IVenda vendaRepository,
+            IOs osRepository, IItensVenda itensVendasRepository, IClienteRepositorio clienteRepository)
         {
             _cobrancaRepository = cobrancaRepository;
             _paymentGateway = paymentGateway;
             _vendaRepository = vendaRepository;
             _osRepository = osRepository;
             _itensVendasRepository = itensVendasRepository;
+            _clienteRepository = clienteRepository;
         }
 
         [HttpPost("adicionar")]
@@ -38,6 +43,8 @@ namespace SIGES.Controllers.Api
                 {
                     return Ok(new { Status = "Erro!", Message = "Já existe cobrança!", Acao = "error" });
                 }
+
+                var produtos = request.Tipo == "venda" ? _vendaRepository.GetProdutos(request.Id) : _vendaRepository.GetProdutos(request.Id);
 
                 var paymentRequest = new PaymentRequest();
                 if (request.Tipo == "venda")
@@ -64,6 +71,19 @@ namespace SIGES.Controllers.Api
                     }
 
                     var totalValor = ValorTotal(totalProdutos, totalServicos, desconto, tipoDesconto);
+
+                    var cliente = await _clienteRepository.ObterPorId(venda.Cliente.Id);
+                    if (cliente == null)
+                    {
+                        return Ok(new { Status = "Erro!", Message = "OS ou venda sem cliente vinculado!", Acao = "error" });
+                    }
+
+                    List<string> errosCadastro = ErrosCadastro(cliente);
+                    if (errosCadastro.Any())
+                    {
+                        string mensagemErro = "Por favor, preencha os seguintes dados do(a) cliente:\n\n" + string.Join("\n", errosCadastro);
+                        return Ok(new { Status = "Erro!", Message = mensagemErro, Acao = "error" });
+                    }
 
                     string documento = Regex.Replace(venda.Cliente.Documento, "[^0-9]", "");
                     string name = venda.Cliente.Nome;
@@ -161,7 +181,6 @@ namespace SIGES.Controllers.Api
             }
         }
 
-
         public decimal ValorTotal(decimal produtosValor, decimal servicosValor, decimal desconto, string tipoDesconto)
         {
             decimal defDesconto = 0;
@@ -180,6 +199,42 @@ namespace SIGES.Controllers.Api
             }
 
             return (produtosValor + servicosValor) - desconto;
+        }
+
+        /// <summary>
+        /// Método que retorna se tiver algum dado do cliente vazio
+        /// </summary>
+        public List<string> ErrosCadastro(ClienteModel cliente)
+        {
+            List<string> erros = new List<string>();
+
+            if (cliente == null)
+            {
+                erros.Add("Cliente não pode ser nulo.");
+                return erros;
+            }
+
+            // Lista de campos obrigatórios
+            List<string> camposObrigatorios = new List<string>
+            {
+                "Rua", "Numero", "Bairro", "Cep", "Cidade", "Estado", "Documento", "Telefone", "Nome", "Email"
+            };
+
+            // Percorre as propriedades do objeto cliente e verifica se algum valor é inválido
+            foreach (var propriedade in cliente.GetType().GetProperties())
+            {
+                if (camposObrigatorios.Contains(propriedade.Name))
+                {
+                    var valor = propriedade.GetValue(cliente);
+
+                    if (valor == null || string.IsNullOrWhiteSpace(valor.ToString()) || (valor.ToString().Length < 2 && !int.TryParse(valor.ToString(), out _)))
+                    {
+                        erros.Add($"- {propriedade.Name}");
+                    }
+                }
+            }
+
+            return erros;
         }
     }
 }

@@ -57,5 +57,14 @@ namespace SIGES.Repositorios
         {
             return await _context.Emitente.FirstOrDefaultAsync();
         }
+
+        public IEnumerable<ItensVendaModel?> GetProdutos(int id)
+        {
+            return _context.ItensVenda
+                .Include(c => c.Produto)
+                .Include(p => p.Venda)
+                .Where(c => c.VendaId == id)
+                .ToList();
+        }
     }
 }
