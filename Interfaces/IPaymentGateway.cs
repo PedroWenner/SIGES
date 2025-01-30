@@ -1,6 +1,7 @@
 ﻿using SIGES.Models.Requests;
 using SIGES.Models;
 using SIGES.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SIGES.Interfaces
 {
@@ -9,5 +10,6 @@ namespace SIGES.Interfaces
         Task<object> CriarCobranca(PaymentRequest request);
         Task<bool> CancelarCobranca(int id);
         Task<bool> ConfirmarPagamento(int id);
+        Task<bool> AtualizarStatus(int id);
     }
 }

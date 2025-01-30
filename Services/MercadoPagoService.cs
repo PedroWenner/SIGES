@@ -23,7 +23,6 @@ namespace SIGES.Services
             // Configura credenciais do MercadoPago
             var config = _paymentGatewaysService.GetGateways()["MercadoPago"];
             MercadoPagoConfig.AccessToken = config.Credentials["access_token"];
-            //MercadoPagoConfig.PlatformId = config.Credentials["platform_id"];
         }
 
         /// <summary>
@@ -160,30 +159,46 @@ namespace SIGES.Services
         /// </summary>
         public async Task<bool> CancelarCobranca(int id)
         {
-            try
+            var cobranca = await _context.Cobrancas.FindAsync(id);
+            if (cobranca == null) throw new Exception("Cobrança não encontrada!");
+
+            var client = new PaymentClient();
+            var payment = await client.GetAsync(Convert.ToInt64(cobranca.ChargeId));
+
+            if (payment == null) throw new Exception("Pagamento não encontrado no Mercado Pago!");
+
+            var canceledPayment = await client.CancelAsync(payment.Id ?? 0);
+
+            if (canceledPayment.Status != "cancelled")
             {
-                var cobranca = await _context.Cobrancas.FindAsync(id);
-                if (cobranca == null) throw new Exception("Cobrança não encontrada!");
-
-                var client = new PaymentClient();
-                var payment = await client.GetAsync(Convert.ToInt64(cobranca.ChargeId));
-
-                if (payment.Status == "approved")
-                {
-                    return false; // Se já foi pago, não pode ser cancelado
-                }
-
-                //await client.UpdateAsync(payment.Id, new PaymentUpdateRequest { Status = "cancelled" });
-
-                //cobranca.Status = "Cancelado";
-                //await _context.SaveChangesAsync();
-
-                return true;
+                throw new Exception("Erro ao cancelar pagamento no Mercado Pago!");
             }
-            catch (Exception)
-            {
-                return false;
-            }
+
+            // Atualiza o status no banco
+            cobranca.Status = "cancelled";
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Atualiza o status da venda
+        /// </summary>
+        public async Task<bool> AtualizarStatus(int id)
+        {
+            var cobranca = await _context.Cobrancas.FindAsync(id);
+            if (cobranca == null) throw new Exception("Cobrança não encontrada!");
+
+            var client = new PaymentClient();
+            var payment = await client.GetAsync(Convert.ToInt64(cobranca.ChargeId));
+
+            if (payment == null) throw new Exception("Pagamento não encontrado no Mercado Pago!");
+
+            // Atualiza o status no banco de dados
+            cobranca.Status = payment.Status;
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

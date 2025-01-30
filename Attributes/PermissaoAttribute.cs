@@ -31,7 +31,7 @@ namespace SIGES.Attributes
             var permissoes = context.HttpContext.Items["Permissoes"] as List<PermissaoDetalheModel>;
 
             // Verificar se o usuário possui a permissão necessária
-            if (permissoes == null || (!permissoes.Any(p => p.NomePermissao == _permissao) || master == "N"))
+            if (permissoes == null || (!permissoes.Any(p => p.NomePermissao == _permissao) && master == "N"))
             {
                 if (!permissoes.Any(p => p.Ativo == 1))
                 {
@@ -48,8 +48,25 @@ namespace SIGES.Attributes
 
         private void RedirecionarComMensagem(AuthorizationFilterContext context, string mensagem)
         {
-            context.HttpContext.Session.SetString("PermissaoMensagem", mensagem);
-            context.Result = new RedirectToActionResult("Index", "Home", null);
+            if (context.HttpContext.Request.Path.StartsWithSegments("/api"))
+            {
+                // Retorna JSON se for uma API
+                context.Result = new JsonResult(new
+                {
+                    Status = "Erro!",
+                    Message = mensagem,
+                    Acao = "error"
+                })
+                {
+                    StatusCode = 403
+                };
+            }
+            else
+            {
+                // Redireciona para Home se for uma página normal
+                context.HttpContext.Session.SetString("PermissaoMensagem", mensagem);
+                context.Result = new RedirectToActionResult("Index", "Home", null);
+            }
         }
     }
 }

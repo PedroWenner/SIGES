@@ -5,6 +5,6 @@ namespace SIGES.ViewModel
 {
     public class CobrancaViewModel
     {
-        public IList<Cobranca> Cobrancas { get; set; } = new List<Cobranca>();
+        public List<CobrancaItemViewModel> Cobrancas { get; set; } = new List<CobrancaItemViewModel>();
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using SIGES.BackgroundJobs;
 using SIGES.Config;
 using SIGES.Data;
 using SIGES.Middleware;
@@ -56,6 +57,8 @@ builder.Services.AddSingleton<AppSettingsService>(provider =>
 builder.Services.AddSingleton<PaymentGatewaysService>();
 builder.Services.AddScoped<TemaService>();
 builder.Services.AddScoped<MercadoPagoService>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddHostedService<EmailSenderBackgroundService>();
 
 var app = builder.Build();
 

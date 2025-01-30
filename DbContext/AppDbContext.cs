@@ -49,5 +49,6 @@ namespace SIGES.Data
         public DbSet<GarantiaModel> Garantias { get; set; }
         public DbSet<ConfiguracaoModel> Configuracoes { get; set; }
         public DbSet<Cobranca> Cobrancas { get; set; }
+        public DbSet<EmailQueue> EmailQueue { get; set; }
     }
 }

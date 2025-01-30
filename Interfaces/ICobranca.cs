@@ -1,5 +1,6 @@
 ﻿using SIGES.Models;
 using SIGES.Models.Requests;
+using System.Threading.Tasks;
 
 namespace SIGES.Interfaces
 {
@@ -7,5 +8,6 @@ namespace SIGES.Interfaces
     {
         Task<object> ObterCobrancaPorId(int id);
         Task<IEnumerable<Cobranca>> Listar();
+        Task ExcluirCobranca(int id);
     }
 }

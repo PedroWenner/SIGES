@@ -31,5 +31,14 @@ namespace SIGES.Repositorios
                 .Include(c => c.Os)
                 .ToListAsync();
         }
+
+        public async Task ExcluirCobranca(int id)
+        {
+            var cobranca = await _context.Cobrancas.FindAsync(id);
+            if (cobranca == null) throw new Exception("Cobrança não encontrada!");
+
+            _context.Cobrancas.Remove(cobranca);
+            await _context.SaveChangesAsync();
+        }
     }
 }

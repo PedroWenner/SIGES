@@ -66,7 +66,14 @@ $("#formGerarCobranca").submit(function (e) {
         },
         error: function (xhr, status, error) {
             console.error("❌ Erro na requisição:", xhr.responseText);
-            Swal.fire("Erro!", "Erro ao criar cobrança!", "error");
+
+            if (xhr.status === 403) {
+                // Captura erro de permissão e exibe mensagem ao usuário
+                var resposta = JSON.parse(xhr.responseText);
+                Swal.fire(resposta.status, resposta.message, resposta.acao);
+            } else {
+                Swal.fire("Erro!", "Erro ao criar cobrança!", "error");
+            }
         }
     });
 });

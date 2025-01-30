@@ -245,6 +245,43 @@ namespace SIGES.Migrations
                     b.ToTable("Configuracoes");
                 });
 
+            modelBuilder.Entity("SIGES.Models.EmailQueue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Bcc")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Cc")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Headers")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("To")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailQueue");
+                });
+
             modelBuilder.Entity("SIGES.Models.EmitenteModel", b =>
                 {
                     b.Property<int>("Id")
@@ -673,7 +710,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$WpM90R22EE1x95NWFt0wSOOHPDLI7Nz25ABRN7kEluyhSXw8I6DkC",
+                            Senha = "$2a$11$JkJRk80vvCd8CitPsDy7EeweT7IXrEee0E2P9I3N9c0D7hN/Vk5vC",
                             Situacao = 1
                         });
                 });
