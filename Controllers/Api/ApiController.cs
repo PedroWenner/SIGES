@@ -44,99 +44,39 @@ namespace SIGES.Controllers.Api
                     return Ok(new { Status = "Erro!", Message = "Já existe cobrança!", Acao = "error" });
                 }
 
-                var produtos = request.Tipo == "venda" ? _vendaRepository.GetProdutos(request.Id) : _vendaRepository.GetProdutos(request.Id);
-
-                var paymentRequest = new PaymentRequest();
-                if (request.Tipo == "venda")
+                var (totalValor, cliente, errosCadastro, tipoDesconto, desconto, produtos, servicos) = await BuscarDadosVendaOuOS(request.Id, request.Tipo);
+                // Verifica se há erros no cadastro do cliente
+                if (errosCadastro.Any())
                 {
-                    var venda = await _vendaRepository.ObterPorId(request.Id);
-                    var produtos = _itensVendasRepository.ObterPorVendaId(request.Id);
-
-                    if (!produtos.Any())
-                    {
-                        return Ok(new { Status = "Erro!", Message = "Não existe produtos incluídos para a venda!", Acao = "error" });
-                    }
-
-                    var qtd = produtos.Sum(x => x.Quantidade) ?? 0;
-                    var valor = produtos.Sum(x => x.Preco) ?? 0;
-                    var desconto = venda.Desconto ?? 0;
-                    var tipoDesconto = venda.TipoDesconto ?? "";
-
-                    var totalProdutos = valor * qtd;
-                    var totalServicos = 0;
-
-                    if (totalProdutos <= 0)
-                    {
-                        return Ok(new { Status = "Erro!", Message = "OS ou venda com valor negativo ou zero!", Acao = "error" });
-                    }
-
-                    var totalValor = ValorTotal(totalProdutos, totalServicos, desconto, tipoDesconto);
-
-                    var cliente = await _clienteRepository.ObterPorId(venda.Cliente.Id);
-                    if (cliente == null)
-                    {
-                        return Ok(new { Status = "Erro!", Message = "OS ou venda sem cliente vinculado!", Acao = "error" });
-                    }
-
-                    List<string> errosCadastro = ErrosCadastro(cliente);
-                    if (errosCadastro.Any())
-                    {
-                        string mensagemErro = "Por favor, preencha os seguintes dados do(a) cliente:\n\n" + string.Join("\n", errosCadastro);
-                        return Ok(new { Status = "Erro!", Message = mensagemErro, Acao = "error" });
-                    }
-
-                    string documento = Regex.Replace(venda.Cliente.Documento, "[^0-9]", "");
-                    string name = venda.Cliente.Nome;
-                    string[] words = name.Split(' ');
-
-                    paymentRequest = new PaymentRequest
-                    {
-                        Id = request.Id,
-                        Tipo = request.Tipo,
-                        TransactionAmount = totalValor,
-                        Description = $"Venda #{request.Id}",
-                        PaymentMethodId = "bolbradesco",
-                        Identification = documento,
-                        ZipCode = Regex.Replace(venda.Cliente.Cep, "[^0-9]", ""),
-                        StreetName = venda.Cliente.Rua,
-                        StreetNumber = venda.Cliente.NumeroRua,
-                        Neighborhood = venda.Cliente.Bairro,
-                        City = venda.Cliente.Cidade,
-                        FederalUnit = venda.Cliente.Estado,
-                        Email = venda.Cliente.Email ?? "",
-                        ClienteId = venda.Cliente.Id,
-                        FirstName = words[1],
-                        LastName = words[words.Length - 1],
-                    };
+                    string mensagemErro = "Por favor, preencha os seguintes dados do(a) cliente:\n\n" + string.Join("\n", errosCadastro);
+                    return Ok(new { Status = "Erro!", Message = mensagemErro, Acao = "error" });
                 }
-                else
+
+                // Preparar os dados do cliente para pagamento
+                string documento = Regex.Replace(cliente.Documento, "[^0-9]", "");
+                string name = cliente.Nome;
+                string[] words = name.Split(' ');
+
+                // Criar o objeto de requisição de pagamento
+                var paymentRequest = new PaymentRequest
                 {
-                    var os = await _osRepository.ObterPorId(request.Id);
-
-                    string documento = Regex.Replace(os.Cliente.Documento, "[^0-9]", "");
-                    string name = os.Cliente.Nome;
-                    string[] words = name.Split(' ');
-
-                    paymentRequest = new PaymentRequest
-                    {
-                        Id = request.Id,
-                        Tipo = request.Tipo,
-                        //TransactionAmount = os.,
-                        Description = $"Ordem de Serviço #{request.Id}",
-                        PaymentMethodId = "bolbradesco",
-                        Identification = documento,
-                        ZipCode = Regex.Replace(os.Cliente.Cep, "[^0-9]", ""),
-                        StreetName = os.Cliente.Rua,
-                        StreetNumber = os.Cliente.NumeroRua,
-                        Neighborhood = os.Cliente.Bairro,
-                        City = os.Cliente.Cidade,
-                        FederalUnit = os.Cliente.Estado,
-                        Email = os.Cliente.Email ?? "",
-                        ClienteId = os.Cliente.Id,
-                        FirstName = words[0],
-                        LastName = words[words.Length - 1],
-                    };
-                }
+                    Id = request.Id,
+                    Tipo = request.Tipo,
+                    TransactionAmount = totalValor,
+                    Description = request.Tipo == "venda" ? $"Venda #{request.Id}" : $"Ordem de Serviço #{request.Id}",
+                    PaymentMethodId = "bolbradesco",
+                    Identification = documento,
+                    ZipCode = Regex.Replace(cliente.Cep, "[^0-9]", ""),
+                    StreetName = cliente.Rua,
+                    StreetNumber = cliente.NumeroRua,
+                    Neighborhood = cliente.Bairro,
+                    City = cliente.Cidade,
+                    FederalUnit = cliente.Estado,
+                    Email = cliente.Email ?? "",
+                    ClienteId = cliente.Id,
+                    FirstName = words.Length > 0 ? words[0] : "",
+                    LastName = words.Length > 1 ? words[words.Length - 1] : "",
+                };
 
                 var cobranca = await _paymentGateway.CriarCobranca(paymentRequest);
                 return Ok(cobranca);
@@ -145,6 +85,80 @@ namespace SIGES.Controllers.Api
             {
                 return StatusCode(500, new { message = ex.Message, stackTrace = ex.StackTrace });
             }
+        }
+
+        private async Task<(decimal TotalValor, ClienteModel Cliente, List<string> ErrosCadastro, string TipoDesconto, decimal Desconto, List<ItensVendaModel> Produtos, List<ItensVendaModel> Servicos)> BuscarDadosVendaOuOS(int id, string tipo)
+        {
+            // Buscar os dados da entidade (Venda ou OS)
+            object entidade = tipo == "venda"
+                ? await _vendaRepository.ObterPorId(id)
+                : await _osRepository.ObterPorId(id);
+
+            if (entidade == null)
+            {
+                throw new Exception("OS ou venda não encontrada!");
+            }
+
+            // Obter produtos e serviços
+            var produtos = (tipo == "venda"
+                ? _itensVendasRepository.ObterPorVendaId(id)
+                : _itensVendasRepository.ObterPorVendaId(id)
+            ).ToList();
+
+            var servicos = (tipo == "venda"
+                ? new List<ItensVendaModel>()
+                : _vendaRepository.GetProdutos(id)
+            )?.ToList() ?? new List<ItensVendaModel>();
+
+            if (!produtos.Any())
+            {
+                throw new Exception("Não existem produtos incluídos para a venda ou OS!");
+            }
+
+            decimal desconto = 0;
+            string tipoDesconto = "real";
+            int clienteId = 0;
+            if (tipo == "venda")
+            {
+                var venda = entidade as VendaModel;
+                desconto = venda?.Desconto ?? 0;
+                tipoDesconto = venda?.TipoDesconto ?? "real";
+                clienteId = venda?.ClienteId ?? 0;
+            }
+            else
+            {
+                var os = entidade as OsModel;
+                desconto = 0;
+                tipoDesconto = "real";
+                clienteId = os?.ClienteId ?? 0;
+                //var desconto = os?.Desconto ?? 0;
+                //string tipoDesconto = os?.TipoDesconto ?? "real";
+            }
+
+            decimal qtd = produtos.Sum(x => x.Quantidade) ?? 0;
+            decimal valor = produtos.Sum(x => x.Preco) ?? 0;
+
+            decimal totalProdutos = valor * qtd;
+            decimal totalServicos = 0; //servicos.Sum(x => x.Preco * x.Quantidade ?? 0);
+
+            if (totalProdutos <= 0)
+            {
+                throw new Exception("OS ou venda com valor negativo ou zero!");
+            }
+
+            decimal totalValor = ValorTotal(totalProdutos, totalServicos, desconto, tipoDesconto);
+
+            // Buscar cliente
+            var cliente = await _clienteRepository.ObterPorId(clienteId);
+            if (cliente == null)
+            {
+                throw new Exception("OS ou venda sem cliente vinculado!");
+            }
+
+            // Verificar erros no cadastro do cliente
+            List<string> errosCadastro = ErrosCadastro(cliente);
+
+            return (totalValor, cliente, errosCadastro, tipoDesconto, desconto, produtos, servicos);
         }
 
         [HttpPost("confirmar-pagamento/{id}")]
@@ -236,5 +250,6 @@ namespace SIGES.Controllers.Api
 
             return erros;
         }
+
     }
 }
