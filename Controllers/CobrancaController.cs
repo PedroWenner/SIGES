@@ -19,15 +19,17 @@ namespace SIGES.Controllers
         private readonly PaymentGatewaysService _paymentGatewaysService;
         private readonly IEmailQueueRepository _emailQueueRepository;
         private readonly IClienteRepositorio _clienteRepository;
+        private readonly IEmitente _emitenteRepository;
 
         public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, PaymentGatewaysService paymentGatewaysService,
-            IEmailQueueRepository emailQueueRepository, IClienteRepositorio clienteRepository)
+            IEmailQueueRepository emailQueueRepository, IClienteRepositorio clienteRepository, IEmitente emitenteRepository)
         {
             _cobrancaRepository = cobrancaRepository;
             _paymentGateway = paymentGateway;
             _paymentGatewaysService = paymentGatewaysService;
             _emailQueueRepository = emailQueueRepository;
             _clienteRepository = clienteRepository;
+            _emitenteRepository = emitenteRepository;
         }
 
         [HttpGet("")]
@@ -44,7 +46,11 @@ namespace SIGES.Controllers
                     ExpireAt = c.ExpireAt,
                     OsId = c.OsId,
                     Status = c.Status,
-                    StatusDescricao = GeneralHelpers.GetCobrancaTransactionStatus(_paymentGatewaysService, c.PaymentGateway, c.Status)
+                    StatusDescricao = GeneralHelpers.GetCobrancaTransactionStatus(_paymentGatewaysService, c.PaymentGateway, c.Status),
+                    Total = c.Total,
+                    VendasId = c.VendasId,
+                    Barcode = c.Barcode,
+                    Link = c.Link
                 }).ToList()
             };
 
@@ -191,7 +197,7 @@ namespace SIGES.Controllers
 
         [Permissao("vCobranca", "Você não tem permissão para enviar e-mail!")]
         [HttpPost("enviar-email/{id}")]
-        public async Task<IActionResult> EnviarEmail(int id)
+        public async Task<IActionResult> EnviarEmail(int id, [FromServices] IViewRenderService viewRenderService)
         {
             try
             {
@@ -216,11 +222,13 @@ namespace SIGES.Controllers
                     return RedirectToAction("Index");
                 }
 
-                string htmlBody = $@"
-                    <h2>Cobrança #{cobranca.Id}</h2>
-                    <p><strong>Vencimento:</strong> {cobranca.ExpireAt:dd/MM/yyyy}</p>
-                    <p><strong>Valor:</strong> {cobranca.Total}</p>
-                    <p><strong>Link de Pagamento:</strong> <a href='{cobranca.Link}'>Clique aqui</a></p>";
+                // **Renderizando a View HTML**
+                var model = new CobrancaEmailViewModel
+                {
+                    Cobranca = cobranca,
+                    Cliente = cliente
+                };
+                string htmlBody = await viewRenderService.RenderToStringAsync("Email/CobrancaEmail", model);
 
                 var email = new EmailQueue
                 {
@@ -232,13 +240,11 @@ namespace SIGES.Controllers
 
                 await _emailQueueRepository.AdicionarEmail(email);
 
-                TempData["Success"] = "E-mail adicionado à fila!";
-                return RedirectToAction("Index");
+                return Ok(new { status = "Sucesso!", message = "E-mail adicionado à fila!", acao = "success" });
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction("Index");
+                return StatusCode(500, new { status = "Erro!", message = ex.Message, acao = "error", stackTrace = ex.StackTrace });
             }
         }
     }

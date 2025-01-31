@@ -44,7 +44,7 @@ namespace SIGES.Controllers.Api
                     return Ok(new { Status = "Erro!", Message = "Já existe cobrança!", Acao = "error" });
                 }
 
-                var (totalValor, cliente, errosCadastro, tipoDesconto, desconto, produtos, servicos) = await BuscarDadosVendaOuOS(request.Id, request.Tipo);
+                var (totalValor, cliente, errosCadastro, tipoDesconto, desconto) = await BuscarDadosVendaOuOS(request.Id, request.Tipo);
                 // Verifica se há erros no cadastro do cliente
                 if (errosCadastro.Any())
                 {
@@ -87,7 +87,8 @@ namespace SIGES.Controllers.Api
             }
         }
 
-        private async Task<(decimal TotalValor, ClienteModel Cliente, List<string> ErrosCadastro, string TipoDesconto, decimal Desconto, List<ItensVendaModel> Produtos, List<ItensVendaModel> Servicos)> BuscarDadosVendaOuOS(int id, string tipo)
+        private async Task<(decimal TotalValor, ClienteModel Cliente, List<string> ErrosCadastro, string TipoDesconto, decimal Desconto)>
+            BuscarDadosVendaOuOS(int id, string tipo)
         {
             // Buscar os dados da entidade (Venda ou OS)
             object entidade = tipo == "venda"
@@ -106,9 +107,9 @@ namespace SIGES.Controllers.Api
             ).ToList();
 
             var servicos = (tipo == "venda"
-                ? new List<ItensVendaModel>()
-                : _vendaRepository.GetProdutos(id)
-            )?.ToList() ?? new List<ItensVendaModel>();
+                ? new List<ServicosOs>()
+                : _osRepository.GetServicos(id)
+            )?.ToList() ?? new List<ServicosOs>();
 
             if (!produtos.Any())
             {
@@ -130,7 +131,7 @@ namespace SIGES.Controllers.Api
                 var os = entidade as OsModel;
                 desconto = 0;
                 tipoDesconto = "real";
-                clienteId = os?.ClienteId ?? 0;
+                clienteId = os?.ClientesId ?? 0;
                 //var desconto = os?.Desconto ?? 0;
                 //string tipoDesconto = os?.TipoDesconto ?? "real";
             }
@@ -158,7 +159,7 @@ namespace SIGES.Controllers.Api
             // Verificar erros no cadastro do cliente
             List<string> errosCadastro = ErrosCadastro(cliente);
 
-            return (totalValor, cliente, errosCadastro, tipoDesconto, desconto, produtos, servicos);
+            return (totalValor, cliente, errosCadastro, tipoDesconto, desconto);
         }
 
         [HttpPost("confirmar-pagamento/{id}")]

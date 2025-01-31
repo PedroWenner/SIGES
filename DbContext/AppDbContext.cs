@@ -14,10 +14,7 @@ namespace SIGES.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Aplica todas as configurações de entidades definidas no assembly atual
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            // Aplica os seeders
             AplicarSeeders(modelBuilder);
         }
 
@@ -41,7 +38,7 @@ namespace SIGES.Data
         public DbSet<UsuarioModel> Usuarios { get; set; }
         public DbSet<LogAlteracaoModel> LogsOperacoes { get; set; }
         public DbSet<ServicoModel> Servicos { get; set; }
-        public DbSet<OsModel> Ordens { get; set; }
+        public DbSet<OsModel> Os { get; set; }
         public DbSet<VendaModel> Vendas { get; set; }
         public DbSet<LancamentoModel> Lancamentos { get; set; }
         public DbSet<ItensVendaModel> ItensVenda { get; set; }
@@ -50,5 +47,6 @@ namespace SIGES.Data
         public DbSet<ConfiguracaoModel> Configuracoes { get; set; }
         public DbSet<Cobranca> Cobrancas { get; set; }
         public DbSet<EmailQueue> EmailQueue { get; set; }
+        public DbSet<ServicosOs> ServicosOs { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using SIGES.Migrations;
-using SIGES.Models;
+﻿using SIGES.Models;
 
 namespace SIGES.ViewModel
 {

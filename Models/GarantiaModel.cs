@@ -11,15 +11,24 @@ namespace SIGES.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
         public DateTime? DataGarantia { get; set; }
+        
         public string? RefGarantia { set; get; }
+        
         [IgnoreLog]
         public string? TextoGarantia { get; set; }
+        
         [IgnoreLog]
         public int? UsuarioId { get; set; }
+        
         [IgnoreLog]
         [ValidateNever]
         public UsuarioModel Usuario { get; set; }
+        
+        [IgnoreLog]
+        [ValidateNever]
+        public OsModel Ordens { get; set; }
 
     }
 }

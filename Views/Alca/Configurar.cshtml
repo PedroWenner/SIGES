@@ -674,7 +674,8 @@
                             </div>
                             <div class="col-2">
                                 <div class="password-container">
-                                    <input id="EMAIL_SMTP_PASS" name="EMAIL_SMTP_PASS" type="password" class="password-input" />
+                                    <input id="EMAIL_SMTP_PASS" name="EMAIL_SMTP_PASS" type="password"
+                                           class="password-input" value="@Model.GetValueOrDefault("EMAIL_SMTP_PASS")" />
                                     <i class="fa fa-eye toggle-password" onclick="togglePassword('EMAIL_SMTP_PASS')"></i>
                                 </div>
                                 

@@ -59,6 +59,7 @@ builder.Services.AddScoped<TemaService>();
 builder.Services.AddScoped<MercadoPagoService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddHostedService<EmailSenderBackgroundService>();
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 
 var app = builder.Build();
 

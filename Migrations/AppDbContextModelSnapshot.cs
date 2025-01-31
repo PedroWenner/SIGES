@@ -353,6 +353,9 @@ namespace SIGES.Migrations
                     b.Property<DateTime?>("DataGarantia")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("OrdensId")
+                        .HasColumnType("int");
+
                     b.Property<string>("RefGarantia")
                         .HasColumnType("longtext");
 
@@ -363,6 +366,8 @@ namespace SIGES.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrdensId");
 
                     b.HasIndex("UsuarioId");
 
@@ -497,35 +502,88 @@ namespace SIGES.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id_os");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
+                    b.Property<int>("ClientesId")
+                        .HasColumnType("int")
+                        .HasColumnName("clientes_id");
 
                     b.Property<DateTime?>("DataFinal")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("data_final");
 
-                    b.Property<DateTime>("DataInicial")
-                        .HasColumnType("datetime(6)");
+                    b.Property<DateTime?>("DataInicial")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("data_inicial");
 
-                    b.Property<string>("Observacao")
-                        .HasColumnType("longtext");
+                    b.Property<string>("Defeito")
+                        .HasColumnType("longtext")
+                        .HasColumnName("defeito");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Desconto")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("desconto");
 
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
+                    b.Property<string>("DescricaoProduto")
+                        .HasColumnType("longtext")
+                        .HasColumnName("descricao_produto");
+
+                    b.Property<string>("Garantia")
+                        .HasColumnType("longtext")
+                        .HasColumnName("garantia");
+
+                    b.Property<int?>("GarantiasId")
+                        .HasColumnType("int")
+                        .HasColumnName("garantias_id");
+
+                    b.Property<int?>("Lancamento")
+                        .HasColumnType("int")
+                        .HasColumnName("lancamento");
+
+                    b.Property<string>("LaudoTecnico")
+                        .HasColumnType("longtext")
+                        .HasColumnName("laudo_tecnico");
+
+                    b.Property<string>("Observacoes")
+                        .HasColumnType("longtext")
+                        .HasColumnName("observacoes");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TipoDesconto")
+                        .HasColumnType("longtext")
+                        .HasColumnName("tipo_desconto");
+
+                    b.Property<int>("UsuariosId")
+                        .HasColumnType("int")
+                        .HasColumnName("usuarios_id");
+
+                    b.Property<decimal>("ValorDesconto")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("valor_desconto");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("valor_total");
+
+                    b.Property<int?>("faturado")
+                        .HasColumnType("int")
+                        .HasColumnName("faturado");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("ClientesId");
 
-                    b.HasIndex("UsuarioId");
+                    b.HasIndex("GarantiasId");
 
-                    b.ToTable("Ordens");
+                    b.HasIndex("UsuariosId");
+
+                    b.ToTable("Os");
                 });
 
             modelBuilder.Entity("SIGES.Models.PermissaoModel", b =>
@@ -633,6 +691,49 @@ namespace SIGES.Migrations
                     b.ToTable("Servicos");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ServicosOs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("idServicos");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OsId")
+                        .HasColumnType("int")
+                        .HasColumnName("os_id");
+
+                    b.Property<decimal?>("Preco")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("preco");
+
+                    b.Property<double?>("Quantidade")
+                        .HasColumnType("double")
+                        .HasColumnName("quantidade");
+
+                    b.Property<string>("Servico")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("servico");
+
+                    b.Property<int>("ServicosId")
+                        .HasColumnType("int")
+                        .HasColumnName("servicos_id");
+
+                    b.Property<decimal?>("SubTotal")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("subTotal");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OsId");
+
+                    b.HasIndex("ServicosId");
+
+                    b.ToTable("ServicosOs");
+                });
+
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
                 {
                     b.Property<int>("Id")
@@ -710,7 +811,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$JkJRk80vvCd8CitPsDy7EeweT7IXrEee0E2P9I3N9c0D7hN/Vk5vC",
+                            Senha = "$2a$11$0vJ6oLWEqZGcaH3iHAFBme24ICTR9sHHTJHhX5WrnBSOrP6nAZw1a",
                             Situacao = 1
                         });
                 });
@@ -803,10 +904,18 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.GarantiaModel", b =>
                 {
+                    b.HasOne("SIGES.Models.OsModel", "Ordens")
+                        .WithMany()
+                        .HasForeignKey("OrdensId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
                         .WithMany("Garantias")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Ordens");
 
                     b.Navigation("Usuario");
                 });
@@ -856,21 +965,47 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.OsModel", b =>
                 {
-                    b.HasOne("SIGES.Models.ClienteModel", "Cliente")
+                    b.HasOne("SIGES.Models.ClienteModel", "Clientes")
                         .WithMany("Ordens")
-                        .HasForeignKey("ClienteId")
+                        .HasForeignKey("ClientesId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
+                    b.HasOne("SIGES.Models.GarantiaModel", "Garantias")
+                        .WithMany()
+                        .HasForeignKey("GarantiasId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SIGES.Models.UsuarioModel", "Usuarios")
                         .WithMany("Ordens")
-                        .HasForeignKey("UsuarioId")
+                        .HasForeignKey("UsuariosId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Cliente");
+                    b.Navigation("Clientes");
 
-                    b.Navigation("Usuario");
+                    b.Navigation("Garantias");
+
+                    b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("SIGES.Models.ServicosOs", b =>
+                {
+                    b.HasOne("SIGES.Models.OsModel", "Os")
+                        .WithMany("Servicos")
+                        .HasForeignKey("OsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIGES.Models.ServicoModel", "Servicos")
+                        .WithMany()
+                        .HasForeignKey("ServicosId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Os");
+
+                    b.Navigation("Servicos");
                 });
 
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>
@@ -927,6 +1062,11 @@ namespace SIGES.Migrations
             modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
                 {
                     b.Navigation("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.OsModel", b =>
+                {
+                    b.Navigation("Servicos");
                 });
 
             modelBuilder.Entity("SIGES.Models.PermissaoModel", b =>

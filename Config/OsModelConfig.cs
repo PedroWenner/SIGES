@@ -9,16 +9,28 @@ namespace SIGES.Config
         public void Configure(EntityTypeBuilder<OsModel> builder)
         {
             // Relacionamento OS -> Cliente
-            builder.HasOne(o => o.Cliente)
-                   .WithMany(c => c.Ordens)
-                   .HasForeignKey(o => o.ClienteId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(s => s.Clientes)
+                .WithMany(u => u.Ordens)
+                .HasForeignKey(s => s.ClientesId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento OS -> Usuário
-            builder.HasOne(o => o.Usuario)
-                   .WithMany(u => u.Ordens)
-                   .HasForeignKey(o => o.UsuarioId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(o => o.Usuarios)
+                .WithMany(u => u.Ordens)
+                .HasForeignKey(o => o.UsuariosId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Relacionamento OS -> Garantia (Opcional)
+            builder.HasOne(o => o.Garantias)
+                .WithMany() // Garantia pode estar em várias OS, mas sem navegação reversa explícita
+                .HasForeignKey(o => o.GarantiasId)
+                .OnDelete(DeleteBehavior.SetNull); // Define como NULL se a garantia for excluída
+
+            // Relacionamento OS -> ServicosOs ()
+            builder.HasMany(o => o.Servicos)
+                .WithOne(s => s.Os)
+                .HasForeignKey(s => s.OsId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

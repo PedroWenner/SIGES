@@ -2,8 +2,6 @@
 using SIGES.Interfaces;
 using SIGES.Models;
 using Microsoft.EntityFrameworkCore;
-using SIGES.Models.Requests;
-using SIGES.Migrations;
 
 namespace SIGES.Repositorios
 {

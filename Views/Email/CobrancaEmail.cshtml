@@ -1,0 +1,104 @@
+﻿@model CobrancaEmailViewModel
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .invoice-box {
+            max-width: 1100px;
+            margin: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+        }
+
+        .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+        }
+
+        .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .invoice-box table tr td:nth-child(2) {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="~/img/AlcaLogo.png" style="width:100%; max-width:120px;">
+                            </td>
+                            <td style="text-align: right">
+                                Cobrança #@Model.Cobranca.Id<br>
+                                Data de vencimento: @Model.Cobranca.ExpireAt.ToString("dd/MM/yyyy")
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td>
+                                Cliente: @Model.Cliente.Nome<br>
+                                @Model.Cliente.Rua, @Model.Cliente.NumeroRua, @Model.Cliente.Bairro<br>
+                                @Model.Cliente.Cidade - @Model.Cliente.Estado <br>
+                                @Model.Cliente.Email <br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td colspan="4">
+                    <br>
+                </td>
+            </tr>
+
+            @if (!string.IsNullOrEmpty(Model.Cobranca.Pdf))
+            {
+                <tr>
+                    <td colspan="2">PDF</td>
+                    <td colspan="3">
+                        <a href="@Model.Cobranca.Pdf" target="_blank">Abrir em outra aba</a>
+                    </td>
+                </tr>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Cobranca.Link))
+            {
+                <tr>
+                    <td colspan="1">Link</td>
+                    <td colspan="3">
+                        <a href="@Model.Cobranca.Link" target="_blank">Abrir em outra aba</a>
+                    </td>
+                </tr>
+            }
+
+            <tr class="heading">
+                <td colspan="3"></td>
+                <td style="text-align: center">
+                    <strong>Total: R$ @Model.Cobranca.Total</strong>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

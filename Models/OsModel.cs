@@ -8,33 +8,67 @@ namespace SIGES.Models
     public class OsModel
     {
         [IgnoreLog]
+        [Column("id_os")]
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "Informar o cliente é obrigatório.")]
-        public int ClienteId { get; set; }
-
-        [Required(ErrorMessage = "Informar o técnico responsável pela OS.")]
-        public int UsuarioId { get; set; }
-
-        [Required(ErrorMessage = "Informar o status da OS.")]
-        public int Status {  get; set; }
-
-        [Required(ErrorMessage = "Informar a data inicial da OS.")]
-        public DateTime DataInicial { get; set; } = DateTime.Now;
-
+        
+        [Column("data_inicial")]
+        public DateTime? DataInicial { get; set; }
+        
+        [Column("data_final")]
         public DateTime? DataFinal { get; set; }
+        
+        [Column("garantia")]
+        public string? Garantia { get; set; }
+        
+        [Column("descricao_produto")]
+        public string? DescricaoProduto { get; set; }
+        
+        [Column("defeito")]
+        public string? Defeito { get; set; }
+        
+        [Column("status")]
+        public string? Status { get; set; }
 
-        public string? Observacao { get; set; }
+        [Column("observacoes")]
+        public string? Observacoes { get; set; }
 
-        [IgnoreLog]
+        [Column("laudo_tecnico")]
+        public string? LaudoTecnico { get; set; }
+
+        [Column("valor_total", TypeName = "decimal(15,2)")]
+        public decimal ValorTotal { get; set; } = 0;
+
+        [Column("desconto", TypeName = "decimal(15,2)")]
+        public decimal Desconto { get; set; } = 0;
+
+        [Column("valor_desconto", TypeName = "decimal(15,2)")]
+        public decimal ValorDesconto { get; set; } = 0;
+
+        [Column("tipo_desconto")]
+        public string? TipoDesconto { get; set; }
+
+        [Column("clientes_id")]
+        public int ClientesId { get; set; }
+
+        [Column("usuarios_id")]
+        public int UsuariosId { get; set; }
+
+        [Column("lancamento")]
+        public int? Lancamento { get; set; }
+
+        [Column("faturado")]
+        public int? faturado { get; set; }
+
+        [Column("garantias_id")]
+        public int? GarantiasId { get; set; }
+
+        public virtual ClienteModel? Clientes { get; set; }
+        public virtual UsuarioModel? Usuarios { get; set; }
+        public virtual GarantiaModel? Garantias { get; set; }
+
         [ValidateNever]
-        public ClienteModel Cliente { get; set; }
-
-        [IgnoreLog]
-        [ValidateNever]
-        public UsuarioModel Usuario { get; set; }
+        public List<ServicosOs> Servicos { get; set; } = new List<ServicosOs>();
 
     }
 }
