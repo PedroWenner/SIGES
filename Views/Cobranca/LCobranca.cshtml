@@ -60,7 +60,7 @@
                                 <td style="text-align: left">@cobranca.StatusDescricao</td>
                                 <td style="text-align: left">@cobranca.Total</td>
                                 <td style="text-align: left">
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))
+                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca"))
                                     {
                                         <a href="#modal-cancelar" data-id="@cobranca.Id" role="button" data-bs-target="#modal-cancelar" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Cancelar cobrança">
                                             <i class="bx bx-x bx-xs"></i>
@@ -77,13 +77,13 @@
                                         <a role="button" data-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe5 text-decoration-none btn-enviar-email" title="Enviar por e-mail">
                                             <i class="bx bx-envelope bx-xs"></i>
                                         </a>
-                                        @if ((PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext)) && !string.IsNullOrEmpty(cobranca.Barcode))
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCobranca") && !string.IsNullOrEmpty(cobranca.Barcode))
                                         {
                                             <a role="button" href="@cobranca.Link" target="_blank" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Visualizar boleto">
                                                 <i class="bx bx-barcode bx-xs"></i>
                                             </a>
                                         }
-                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCobranca"))
                                         {
                                             <a href="#modal-excluir" data-id="@cobranca.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir cobrança">
                                                 <i class="bx bx-trash-alt bx-xs"></i>

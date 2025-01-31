@@ -175,7 +175,7 @@
                     </li>
                 }
 
-                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca") || PermissaoHelper.EhMaster(ViewContext.HttpContext))
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca"))
                 {
                     <!--Bloco de Lancamentos-->
                     <li title="Lancamentos" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Cobranca" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">

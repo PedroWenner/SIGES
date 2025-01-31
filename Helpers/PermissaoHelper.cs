@@ -7,6 +7,11 @@ namespace SIGES.Helpers
         public static bool TemPermissao(HttpContext context, string nomePermissao)
         {
             var permissoes = context.Items["Permissoes"] as List<PermissaoDetalheModel>;
+            if (EhMaster(context))
+            {
+                return true;
+            }
+
             return permissoes != null && permissoes.Any(p => p.NomePermissao == nomePermissao && p.Ativo == 1);
         }
 
