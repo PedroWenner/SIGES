@@ -6,7 +6,7 @@ namespace SIGES.Models
     public class ServicosOs
     {
         [Key]
-        [Column("idServicos")]
+        [Column("id_servicos")]
         public int Id { get; set; }
 
         [Column("servico")]
@@ -27,7 +27,7 @@ namespace SIGES.Models
         [Required]
         public int ServicosId { get; set; }
 
-        [Column("subTotal", TypeName = "decimal(15,2)")]
+        [Column("sub-total", TypeName = "decimal(15,2)")]
         public decimal? SubTotal { get; set; } = 0;
 
         public virtual OsModel? Os { get; set; }
