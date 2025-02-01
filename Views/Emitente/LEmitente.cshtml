@@ -7,61 +7,63 @@
 }
 
 <div class="new122">
-    <div class="widget-title" style="margin: -20px 0 0">
-        <span class="icon">
-            <i class="fas fa-user"></i>
-        </span>
-        <h5>Emitente</h5>
-    </div>
-    <div class="span12" style="margin-left: 0">
-        <div class="span3">
-            <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Emitente" asp-action="Adicionar">
-                <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
-                <span class="button__text2">Emitente</span>
-            </a>
+    @if (Model.Emitente.Cnpj == "")
+    {
+        <div class="span12" style="margin-left: 0">
+            <div class="span3">
+                <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Emitente" asp-action="Adicionar">
+                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                    <span class="button__text2">Emitente</span>
+                </a>
+            </div>
         </div>
-    </div>
-
+    }
+    
     <div class="widget-box">
         <h5 style="padding: 3px 0"></h5>
         <div class="widget-content nopadding tab-content">
-            <table id="tabela">
-                <thead>
-                    <tr>
-                        <th style="width: 70%;">Nome</th>
-                        <th style="width: 10%;">Cnpj</th>
-                        <th style="width: 10%;">Ie</th>
-                        <th style="width: 10%;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Emitentes == null || Model.Emitentes.Count == 0)
-                    {
+            <div class="widget-title" style="margin: -20px 0 0">
+                <span class="icon">
+                    <i class="fas fa-align-justify"></i>
+                </span>
+                <h5>Dados do Emitente</h5>
+            </div>
+            <div class="widget-content ">
+                <div class="alert alert-info">Os dados abaixo serão utilizados no cabeçalho das telas de impressão.</div>
+                <table class="table table-borderless">
+                    <tbody>
                         <tr>
-                            <td colspan="4">Nenhum emitente cadastrada</td>
+                            <td style="width: 25%">
+                                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do emitente" style="max-width: 150px;" />
+                            </td>
+                            <td>
+                                <span style="font-size: 20px; "><b>@Model.Emitente.Nome</b></span>
+                                <br>
+                                <i class="fas fa-fingerprint" style="margin:5px 1px"></i> @Model.Emitente.Cnpj - IE @Model.Emitente.Ie
+                                <br>
+                                <i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> @Model.Emitente.Rua, @Model.Emitente.Numero, @Model.Emitente.Bairro - @Model.Emitente.Cep, @Model.Emitente.Cidade/@Model.Emitente.Uf
+                                <br>
+                                <i class="fas fa-phone" style="margin:5px 1px"></i> @Model.Emitente.Telefone
+                                <br>
+                            <i class="fas fa-envelope" style="margin:5px 1px"></i> @Model.Emitente.Email
+                                <br>
+                            </td>
                         </tr>
-                    }
-                    else
-                    {
-                        @foreach (var emitente in Model.Emitentes)
-                        {
-                            <tr>
-                                <td>@emitente.Nome</td>
-                                <td>@emitente.Cnpj</td>
-                                <td>@emitente.Ie</td>
-                                <td>
-                                    <a href="#" data-entidade="EmitenteModel" data-id="@emitente.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
-                                        <i class='bx bx-history'></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-            
+                    </tbody>
+                </table>
+
+                <br />
+                <div style="display:flex">
+                    <a asp-controller="Emitente" asp-action="Editar" asp-route-id="@Model.Emitente.Id" role="button" class="button btn btn-success">
+                        <span class="button__icon"><i class="bx bx-edit"></i></span>
+                        <span class="button__text2">Atualizar Dados</span>
+                    </a>
+                    <a href="#modalLogo" data-toggle="modal" role="button" class="button btn btn-secondary"><span class="button__icon"><i class="bx bx-upload"></i></span> <span class="button__text2">Alterar Logo</span></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 
 @await Html.PartialAsync("_ModalLog")

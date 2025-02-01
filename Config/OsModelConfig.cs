@@ -22,7 +22,7 @@ namespace SIGES.Config
 
             // Relacionamento OS -> Garantia (Opcional)
             builder.HasOne(o => o.Garantias)
-                .WithMany() // Garantia pode estar em várias OS, mas sem navegação reversa explícita
+                .WithMany(g => g.Ordens) // Garantia pode estar em várias OS, mas sem navegação reversa explícita
                 .HasForeignKey(o => o.GarantiasId)
                 .OnDelete(DeleteBehavior.SetNull); // Define como NULL se a garantia for excluída
 

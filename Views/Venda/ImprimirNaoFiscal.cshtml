@@ -87,9 +87,15 @@
 
         @if (Model.Venda.Desconto != null || Model.Venda.Desconto > 0)
         {
-            <span class="float-end"><strong>Desconto:</strong> @Convert.ToDecimal(Model.Venda.Desconto).ToString("C")</span>
+            <span class="float-end">
+                <strong>Desconto:</strong>
+                @(Model.Venda.TipoDesconto == "real" ? Convert.ToDecimal(Model.Venda.Desconto).ToString("C") : Convert.ToDecimal(Model.Venda.Desconto).ToString("N2") + " %")
+            </span>
             <br />
-            <span class="float-end"><strong>Total com desconto:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto).ToString("C")</span>
+            <span class="float-end">
+                <strong>Total com desconto:</strong>
+                @Convert.ToDecimal(Model.Venda.ValorDesconto ?? Model.ItensVenda.Sum(i => i.Preco * i.Quantidade)).ToString("C")
+            </span>
             <br />
         }
 

@@ -256,6 +256,12 @@ namespace SIGES.Controllers
 
             var emitente = await _vendaRepositorio.ObterEmitente();
 
+            if (emitente == null)
+            {
+                TempData["Error"] = "Emitente não configurado.";
+                return RedirectToAction("Index");
+            }
+
             var viewModel = new VendaImprimirViewModel
             {
                 Venda = venda,
@@ -337,6 +343,13 @@ namespace SIGES.Controllers
 
             var itens = _itensVendaRepositorio.Listar().Where(i => i.VendaId == vendaId).ToList();
 
+            decimal total = Convert.ToDecimal(itens.Sum(i => i.Preco * i.Quantidade));
+            decimal desconto = venda.Desconto ?? 0;
+            string tipoDesconto = venda.TipoDesconto ?? "real";
+            decimal totalDesconto = ValorComDesconto(total, desconto, tipoDesconto);
+
+            string descontoValor = tipoDesconto == "real" ? "R$ " + desconto.ToString("N2") : desconto.ToString("N2") + "%";
+
             return Json(new
             {
                 result = true,
@@ -349,9 +362,33 @@ namespace SIGES.Controllers
                     SubTotal = Convert.ToDecimal((i.Preco * i.Quantidade).ToString()).ToString()
                 }),
                 total = Convert.ToDecimal(itens.Sum(i => i.Preco * i.Quantidade).ToString()).ToString(),
-                desconto = venda.Desconto.HasValue ? Convert.ToDecimal(venda.Desconto.ToString()).ToString() : "0",
-                totalComDesconto = (itens.Sum(i => i.Preco * i.Quantidade) - (venda.Desconto ?? 0)).ToString()
+                desconto = descontoValor,
+                descontoValor = desconto,
+                totalComDesconto = totalDesconto.ToString("N2")
             });
+        }
+
+        public decimal ValorComDesconto(decimal valor, decimal desconto, string tipoDesconto)
+        {
+            decimal defDesconto = 0;
+
+            if (desconto > 0)
+            {
+                if (tipoDesconto == "porcento")
+                {
+                    defDesconto = desconto * (valor) / 100;
+                }
+                else if (tipoDesconto == "real")
+                {
+                    defDesconto = desconto;
+                }
+                else
+                {
+                    defDesconto = 0;
+                }
+            }
+            
+            return (valor) - defDesconto;
         }
     }
 }

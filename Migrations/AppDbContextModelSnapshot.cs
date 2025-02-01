@@ -353,9 +353,6 @@ namespace SIGES.Migrations
                     b.Property<DateTime?>("DataGarantia")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("OrdensId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RefGarantia")
                         .HasColumnType("longtext");
 
@@ -366,8 +363,6 @@ namespace SIGES.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrdensId");
 
                     b.HasIndex("UsuarioId");
 
@@ -696,7 +691,7 @@ namespace SIGES.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("idServicos");
+                        .HasColumnName("id_servicos");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
@@ -723,7 +718,7 @@ namespace SIGES.Migrations
 
                     b.Property<decimal?>("SubTotal")
                         .HasColumnType("decimal(15,2)")
-                        .HasColumnName("subTotal");
+                        .HasColumnName("sub-total");
 
                     b.HasKey("Id");
 
@@ -811,7 +806,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$0vJ6oLWEqZGcaH3iHAFBme24ICTR9sHHTJHhX5WrnBSOrP6nAZw1a",
+                            Senha = "$2a$11$EqUikjHYKXlQLVhjrSWIsO/Mre9t69t3/o/r1./Sp6bH4PRItridO",
                             Situacao = 1
                         });
                 });
@@ -904,18 +899,10 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.GarantiaModel", b =>
                 {
-                    b.HasOne("SIGES.Models.OsModel", "Ordens")
-                        .WithMany()
-                        .HasForeignKey("OrdensId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
                         .WithMany("Garantias")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Ordens");
 
                     b.Navigation("Usuario");
                 });
@@ -972,7 +959,7 @@ namespace SIGES.Migrations
                         .IsRequired();
 
                     b.HasOne("SIGES.Models.GarantiaModel", "Garantias")
-                        .WithMany()
+                        .WithMany("Ordens")
                         .HasForeignKey("GarantiasId")
                         .OnDelete(DeleteBehavior.SetNull);
 
@@ -1057,6 +1044,11 @@ namespace SIGES.Migrations
                     b.Navigation("Ordens");
 
                     b.Navigation("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.GarantiaModel", b =>
+                {
+                    b.Navigation("Ordens");
                 });
 
             modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>

@@ -25,10 +25,10 @@ namespace SIGES.Models
         [IgnoreLog]
         [ValidateNever]
         public UsuarioModel Usuario { get; set; }
-        
+
         [IgnoreLog]
         [ValidateNever]
-        public OsModel Ordens { get; set; }
+        public ICollection<OsModel> Ordens { get; set; } = new List<OsModel>();
 
     }
 }

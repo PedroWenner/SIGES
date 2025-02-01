@@ -137,6 +137,12 @@ namespace SIGES.Controllers
 
             var emitente = await _garantiaRepositorio.ObterEmitente();
 
+            if (emitente == null)
+            {
+                TempData["Error"] = "Emitente não configurado.";
+                return RedirectToAction("Index");
+            }
+
             var viewModel = new GarantiaImprimirViewModel
             {
                 Garantia = garantia,

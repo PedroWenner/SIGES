@@ -28,10 +28,10 @@ namespace SIGES.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var emitentes = _emitenteRepositorio.Listar();
+            var emitentes = await _emitenteRepositorio.ObterEmitente();
             var viewModel = new EmitenteViewModel
             {
-                Emitentes = emitentes.ToList()
+                Emitente = emitentes ?? new EmitenteModel()
             };
 
             return View("LEmitente", viewModel);

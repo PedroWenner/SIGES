@@ -34,7 +34,7 @@
                                 <h6>Venda: <span>@ViewData["VendaId"]</span></h6>
                             </div>
                         </div>
-                        
+
 
                         <div class="row mb-3 mt-3">
                             <div class="col-2">
@@ -141,18 +141,18 @@
                                 </form>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-12">
                                 <form id="formDesconto" method="post" asp-controller="Venda" asp-action="AdicionarDesconto">
                                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                                     <input type="hidden" asp-for="Venda.Id" />
-                                    
+
                                     <div class="row">
                                         <div class="col-2">
                                             <label for="desconto" class="form-label">Desconto</label>                                            
                                             <input id="desconto" type="text" asp-for="Venda.Desconto" class="money" required placeholder="0,00"
-                                                onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;" />
+                                            onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;" />
                                         </div>
                                         <div class="col-1">
                                             <label for="tipoDesconto" class="form-label">Tipo desc.</label>
@@ -232,13 +232,13 @@
                                     <tr>
                                         <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
                                         <td colspan="2" class="text-start">
-                                            R$ @Model.Venda.Desconto
+                                            @Model.Venda.Desconto @Model.Venda.TipoDesconto
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-end"><strong>Total com desconto:</strong></td>
                                         <td colspan="2" class="text-start">
-                                            R$ @(Model.Itens.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto)
+                                            R$ @(Model.Venda.ValorDesconto ?? Model.Itens.Sum(i => i.Preco * i.Quantidade))
                                         </td>
                                     </tr>
                                 }
@@ -742,7 +742,7 @@
         if (tipoDesconto === 'real') {
             if (valor > valorComDesconto) {
                 Swal.fire("Erro!", "Não é possível aplicar um desconto maior que o valor total da venda.", "error");
-                $("#desconto").val(''); // Limpa o campo desconto em caso de erro
+                $("#desconto").val('');
                 return false;
             }
                 
@@ -754,6 +754,8 @@
                 return false;
             }
             
+            console.log(valorComDesconto);
+            console.log(valor);
             valorComDesconto -= (valorComDesconto * valor) / 100;
         }
 
@@ -868,7 +870,7 @@
                     `);
                 }
 
-                let valorDesconto = response.desconto.replace('.','').replace(',','.');
+                let valorDesconto = response.descontoValor.replace('.','').replace(',','.');
                 // Atualiza os totais na tabela
                 $("#tabela tfoot").html(`
                     <tr>
@@ -878,7 +880,7 @@
                     ${valorDesconto > 0 ? `
                     <tr>
                         <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
-                        <td colspan="2" class="text-start">R$ ${response.desconto}</td>
+                        <td colspan="2" class="text-start">${response.desconto}</td>
                     </tr>
                     <tr>
                         <td colspan="3" class="text-end"><strong>Total com desconto:</strong></td>
