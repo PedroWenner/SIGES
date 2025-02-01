@@ -38,9 +38,9 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th style="text-align: center;">Cód</th>
+                        <th>Cód</th>
                         <th>Descrição</th>
-                        <th></th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,9 +55,9 @@
                         @foreach (var categoria in Model.Categorias)
                         {
                             <tr>
-                                <td style="width: 5%; text-align: center;">@categoria.Id</td>
-                                <td style="width: 80%;">@categoria.Descricao</td>
-                                <td style="width: 15%;">
+                                <td>@categoria.Id</td>
+                                <td>@categoria.Descricao</td>
+                                <td>
                                     <a href="#" data-entidade="CategoriaModel" data-id="@categoria.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
                                     </a>

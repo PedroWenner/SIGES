@@ -38,13 +38,13 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th class="cabecalho">Cod.</th>
+                        <th>Cod.</th>
                         <th>Nome</th>
                         <th>CPF/CNPJ</th>
                         <th>Celular</th>
                         <th>Email</th>
                         <th>Fornecedor</th>
-                        <th></th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,13 +59,13 @@
                         @foreach (var cliente in Model.Clientes)
                         {
                             <tr>
-                                <td style="width: 5%; text-align: center;">@cliente.Id</td>
-                                <td style="width: 30%;">@cliente.Nome</td>
-                                <td style="width: 10%;">@cliente.Documento</td>
-                                <td style="width: 10%;">@cliente.Celular</td>
-                                <td style="width: 20%;">@cliente.Email</td>
-                                <td style="width: 10%;">@(cliente.Fornecedor.Equals(0) ? "Não" : "Sim")</td>
-                                <td style="width: 15%;">
+                                <td>@cliente.Id</td>
+                                <td>@cliente.Nome</td>
+                                <td>@cliente.Documento</td>
+                                <td>@cliente.Celular</td>
+                                <td>@cliente.Email</td>
+                                <td>@(cliente.Fornecedor.Equals(0) ? "Não" : "Sim")</td>
+                                <td>
                                     <a href="#" data-entidade="ClienteModel" data-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
                                     </a>

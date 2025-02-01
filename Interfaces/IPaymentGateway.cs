@@ -9,7 +9,7 @@ namespace SIGES.Interfaces
     {
         Task<object> CriarCobranca(PaymentRequest request);
         Task<bool> CancelarCobranca(int id);
-        Task<bool> ConfirmarPagamento(int id);
+        Task<(bool confirm, string msg)> ConfirmarPagamento(int id);
         Task<bool> AtualizarStatus(int id);
     }
 }

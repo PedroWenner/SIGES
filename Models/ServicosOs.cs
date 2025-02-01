@@ -14,7 +14,7 @@ namespace SIGES.Models
         public string? Servico { get; set; }
 
         [Column("quantidade")]
-        public double? Quantidade { get; set; }
+        public double? Quantidade { get; set; } = 0;
 
         [Column("preco", TypeName = "decimal(15,2)")]
         public decimal? Preco { get; set; } = 0;

@@ -40,11 +40,11 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th class="cabecalho">#</th>
+                        <th>#</th>
                         <th>Nome</th>
                         <th>Data de Criação</th>
                         <th>Situação</th>
-                        <th></th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,15 +59,15 @@
                         @foreach (var permissao in Model.Permissoes)
                         {
                             <tr>
-                                <td style="width: 5%; text-align: center;">@permissao.Id</td>
-                                <td style="width: 70%;">@permissao.Nome</td>
-                                <td style="width: 10%;">@permissao.Data</td>
-                                <td style="width: 5%;">
-                                    <span class="badge @(permissao.Situacao.Equals(0) ? "situacao-inativo" : "situacao-ativo")">
+                                <td>@permissao.Id</td>
+                                <td>@permissao.Nome</td>
+                                <td>@permissao.Data?.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="badge rounded-pill @(permissao.Situacao.Equals(0) ? "text-bg-danger" : "text-bg-success")">
                                         @(permissao.Situacao.Equals(0) ? "Inativo" : "Ativo")
                                     </span>
                                 </td>
-                                <td style="width: 10%;">
+                                <td>
                                     <a href="#" data-entidade="PermissaoModel" data-id="@permissao.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
                                     </a>

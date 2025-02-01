@@ -15,7 +15,7 @@
                             <a class="dropdown-item" href="#" target="_blank" title="Área do cliente">Área do cliente</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#" title="Meu perfil">Meu perfil</a>
+                            <a class="dropdown-item" asp-controller="Sistema" asp-action="MinhaConta" title="Meu perfil">Meu perfil</a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -54,7 +54,7 @@
                         <li><a class="dropdown-item" asp-controller="Emitente" asp-action="Index">Emitente</a></li>
                         <li><a class="dropdown-item" asp-controller="Permissao" asp-action="Index">Permissões</a></li>
                         <li><a class="dropdown-item" asp-controller="Log" asp-action="Index">Auditoria</a></li>
-                        <li><a class="dropdown-item" asp-controller="Mensagem" asp-action="Index">E-mails</a></li>
+                        <li><a class="dropdown-item" asp-controller="Email" asp-action="Index">E-mails</a></li>
                     </ul>
                 </li>
             </ul>
@@ -63,17 +63,31 @@
 
     <!-- User Section -->
     <div id="userr" style="padding-right:45px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;">
-        <div class="user-names userT0">
+        <div class="user-names userT0 me-4">
             @SaudeHelper.ObterSaudacao(),
         </div>
-        <div class="userT">
+        <div class="userT me-4">
             @User.Identity.Name.ToString()
         </div>
 
-        <section style="display:block;position:absolute;right:10px">
+        <section style="display:block;position:absolute;right:5px">
             <div class="profile">
                 <div class="profile-img">
-                    <a href="#"><img src="" alt=""></a>
+                    @{
+                        var userImage = Context.Session.GetString("UserImage");
+                        if (!string.IsNullOrEmpty(userImage))
+                        {
+                            <a asp-controller="Sistema" asp-action="MinhaConta">
+                                <img src="data:image/png;base64,@userImage" alt="Foto do Usuário" style="width: 100%; height: 100%;">
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Sistema" asp-action="MinhaConta">
+                                <img src="~/img/User.png" alt="Usuário" style="width: 100%; height: 100%;">
+                            </a>
+                        }
+                    }
                 </div>
             </div>
         </section>

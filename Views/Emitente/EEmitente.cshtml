@@ -1,45 +1,104 @@
-﻿@model CategoriaModel
+﻿@model EmitenteModel
 
 @{
-    ViewData["Titulo"] = "Editar categoria";
+    ViewData["Titulo"] = "Editar emitente";
 }
 
-<style>
-    input.is-invalid::placeholder {
-        color: #dc3545; /* Vermelho para erro */
-        opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
-        font-size: 12px;
-    }
-</style>
+<script src="~/js/funcoes.js"></script>
+
 
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex align-items-center">
-            <h5 class="mb-0">Alteração de categoria</h5>
+            <h5 class="mb-0">Atualizar emitente</h5>
         </div>
         <div class="card-body">
-            <form id="formCategoria" method="post" enctype="multipart/form-data" asp-controller="Categoria" asp-action="Editar">
+            <form id="formEmitente" method="post" enctype="multipart/form-data" asp-controller="Emitente" asp-action="Editar">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <!-- Código -->
-                <div class="mb-3">
-                    <label for="codigo" class="form-label">Código</label>
-                    <input type="text" asp-for="Id" disabled />
-                    <input type="hidden" asp-for="Id" />
-                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 col-md-12">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="documento" class="form-label">CNPJ</label>
+                                    <input id="documento" type="text" asp-for="Cnpj" class="cpfcnpj" required />
+                                    <span asp-validation-for="Cnpj" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4 d-flex align-content-end flex-wrap">
+                                    <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Descrição -->
-                <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição <span class="text-danger">*</span></label>
-                    <input type="text" asp-for="Descricao" required />
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <div class="mb-3 col-md-4">
+                            <label for="nomeCliente" class="form-label">Nome</label>
+                            <input id="nomeCliente" type="text" asp-for="Nome" required />
+                            <span asp-validation-for="Nome" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="ie" class="form-label">Ie</label>
+                            <input id="ie" type="text" asp-for="Ie" class="cnpj" required />
+                            <span asp-validation-for="Ie" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="cep" class="form-label">CEP</label>
+                            <input id="cep" type="text" asp-for="Cep" required />
+                            <span asp-validation-for="Cep" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="rua" class="form-label">Rua</label>
+                            <input id="rua" type="text" asp-for="Rua" required />
+                            <span asp-validation-for="Rua" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="numero" class="form-label">Número</label>
+                            <input id="numero" type="text" asp-for="Numero" required />
+                            <span asp-validation-for="Numero" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 col-md-4">
+                            <label for="bairro" class="form-label">Bairro</label>
+                            <input id="bairro" type="text" asp-for="Bairro" required />
+                            <span asp-validation-for="Bairro" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input id="cidade" type="text" asp-for="Cidade" required />
+                            <span asp-validation-for="Cidade" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select id="estado" asp-for="Uf">
+                                <option value="">Selecione...</option>
+                            </select>
+                            <span asp-validation-for="Uf" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input id="telefone" type="text" asp-for="Telefone" required />
+                            <span asp-validation-for="Telefone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-4">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input id="email" type="text" asp-for="Email" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Imagem -->
-                <div class="mb-3">
+                <div class="mb-3 col-md-6">
                     <label for="imagem" class="form-label">Imagem</label>
-                    <input type="file" id="imagem" name="imagemCategoria" accept="image/*"
-                           data-imagem-cadastrada="@(Model.ImagemBlob != null)" onchange="previewImage(event)" required />
+                    <input type="file" id="imagem" name="imagemEmitente" accept="image/*" onchange="previewImage(event)" required
+                        data-imagem-cadastrada="@(Model.ImagemBlob != null)" />
                     @if (Model.ImagemBlob != null)
                     {
                         <p class="mt-2">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>
@@ -64,7 +123,7 @@
 
                 <!-- Botões -->
                 <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Categoria" asp-action="Index">
+                    <a title="Voltar" class="button btn btn-warning" asp-controller="Emitente" asp-action="Index">
                         <span class="button__icon"><i class="bx bx-undo"></i></span>
                         <span class="button__text2">Voltar</span>
                     </a>
@@ -78,7 +137,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="~/js/jquery.validate.js"></script>
 <script type="text/javascript">
 
     function previewImage(event) {
@@ -86,7 +145,7 @@
         if (event.target.files.length > 0) {
             img.src = URL.createObjectURL(event.target.files[0]);
             img.onload = () => {
-                URL.revokeObjectURL(img.src); // Libera memória
+                URL.revokeObjectURL(img.src);
                 img.style.display = "block";
             };
         } else {
@@ -95,15 +154,31 @@
     }
 
     $(document).ready(function () {
+        var valorSelecionado = '@Model.Uf';
+        // Carrega os estados do arquivo JSON
+        $.getJSON('@Url.Content("~/json/estados.json")', function (data) {
+            if (data && data.estados && data.estados.length > 0) {
+                for (var i = 0; i < data.estados.length; i++) {
+                    $('#estado').append(new Option(data.estados[i].nome, data.estados[i].sigla));
+                }
+
+                if (valorSelecionado) {
+                    $('#estado').val(valorSelecionado);
+                }
+            } else {
+                console.error('Arquivo JSON não possui as medidas esperadas.');
+            }
+        });
+
         $.validator.addMethod("extension", function (value, element, param) {
             var extension = value.split('.').pop().toLowerCase();
             return this.optional(element) || param.split('|').indexOf(extension) !== -1;
         }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
 
-        $('#formCategoria').validate({
+        $('#formEmitente').validate({
             rules: {
                 'Descricao': { required: true },
-                'imagemCategoria': {
+                'imagemEmitente': {
                     required: function (element) {
                         return $(element).data('imagem-cadastrada') === false;
                     },
@@ -112,13 +187,12 @@
             },
             messages: {
                 'Descricao': { required: 'Campo descrição é obrigatório.' },
-                'imagemCategoria': {
-                    required: 'É obrigatório adicionar uma imagem.',
+                'imagemEmitente': {
+                    required: 'Obrigatório selecionar imagem para categoria.',
                     extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
                 }
             },
             errorPlacement: function (error, element) {
-                // Insere o texto do erro como placeholder dentro do input
                 element.attr("placeholder", error.text());
             },
             highlight: function (element, errorClass, validClass) {
@@ -126,8 +200,6 @@
             },
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass("is-invalid").addClass("is-valid");
-
-                // Remove o placeholder ao corrigir o campo
                 $(element).attr("placeholder", "");
             }
         });

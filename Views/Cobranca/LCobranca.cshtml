@@ -20,14 +20,14 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th style="text-align: left;width:5%">#</th>
-                        <th style="text-align: left;width:10%">Gateway</th>
-                        <th style="text-align: left;width:5%">Tipo</th>
-                        <th style="text-align: left;width:5%">Data de Vencimento</th>
-                        <th style="text-align: left;width:5%">Referência</th>
-                        <th style="text-align: left;width:40%">Status</th>
-                        <th style="text-align: left;width:10%">Valor</th>
-                        <th style="text-align: left;width:20%">Ações</th>
+                        <th>#</th>
+                        <th>Gateway</th>
+                        <th>Tipo</th>
+                        <th>Data de Vencimento</th>
+                        <th>Referência</th>
+                        <th>Status</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,11 +42,11 @@
                         @foreach (var cobranca in Model.Cobrancas)
                         {
                             <tr>
-                                <td style="text-align: left">@cobranca.Id</td>
-                                <td style="text-align: left">@cobranca.PaymentGateway</td>
-                                <td style="text-align: left">@cobranca.PaymentMethod</td>
-                                <td style="text-align: left">@cobranca.ExpireAt.ToString("dd/MM/yyyy")</td>
-                                <td style="text-align: left">
+                                <td>@cobranca.Id</td>
+                                <td>@cobranca.PaymentGateway</td>
+                                <td>@cobranca.PaymentMethod</td>
+                                <td>@cobranca.ExpireAt.ToString("dd/MM/yyyy")</td>
+                                <td>
                                     @if (!string.IsNullOrEmpty(cobranca.OsId.ToString()))
                                     {
                                         <a href="#">Ordem de serviço: #@cobranca.OsId</a>
@@ -57,9 +57,9 @@
                                         <a href="#">Venda: #@cobranca.VendasId</a>
                                     }
                                 </td>
-                                <td style="text-align: left">@cobranca.StatusDescricao</td>
-                                <td style="text-align: left">@cobranca.Total</td>
-                                <td style="text-align: left">
+                                <td>@cobranca.StatusDescricao</td>
+                                <td>@cobranca.Total</td>
+                                <td>
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca"))
                                     {
                                         <a href="#modal-cancelar" data-id="@cobranca.Id" role="button" data-bs-target="#modal-cancelar" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Cancelar cobrança">

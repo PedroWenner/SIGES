@@ -174,7 +174,7 @@ namespace SIGES.Controllers
                 }
 
                 // Verifica o status da cobrança no Mercado Pago e atualiza no banco
-                var atualizado = await _paymentGateway.ConfirmarPagamento(id);
+                var (atualizado, msg) = await _paymentGateway.ConfirmarPagamento(id);
 
                 if (atualizado)
                 {
@@ -183,7 +183,7 @@ namespace SIGES.Controllers
                 }
                 else
                 {
-                    TempData["Error"] = "Erro ao confirmar cobrança!";
+                    TempData["Error"] = msg;
                 }
 
                 return RedirectToAction("Index");

@@ -1,0 +1,106 @@
+﻿@using SIGES.Helpers
+@using SIGES.ViewModel
+@model EmailViewModel
+
+@{
+    ViewData["Titulo"] = "Fila de e-mails";
+}
+
+<div class="new122">
+    <div class="widget-title" style="margin: -20px 0 0">
+        <span class="icon">
+            <i class="fas fa-user"></i>
+        </span>
+        <h5>Lista de envio de e-mails</h5>
+    </div>
+
+    <div class="widget-box">
+        <h5 style="padding: 3px 0"></h5>
+        <div class="widget-content nopadding tab-content">
+            <table id="tabela">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Para</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Emails == null || Model.Emails.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5">Nenhum e-mail na fila</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var email in Model.Emails)
+                        {
+                            var status = new Dictionary<string, string>
+                            {
+                                { "pending", "<span class='badge rounded-pill text-bg-secondary'>Pendente</span>" },
+                                { "sending", "<span class='badge rounded-pill text-bg-info'>Enviando</span>" },
+                                { "sent", "<span class='badge rounded-pill text-bg-success'>Enviado</span>" },
+                                { "failed", "<span class='badge rounded-pill text-bg-warning'>Falhou</span>" }
+                            };
+                            <tr>
+                                <td>@email.Id</td>
+                                <td>@email.To</td>
+                                <td>@Html.Raw(status[email.Status])</td>
+                                <td>@email.Date.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a href="#modal-excluir" data-id="@email.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal"
+                                        style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir item  ">
+                                        <i class="bx bx-trash-alt bx-xs"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal excluir -->
+<div id="modal-excluir" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" asp-controller="Email" asp-action="Excluir">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Excluir e-mail da lista</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="idEmail" name="id" />
+                    <h6 style="text-align: center">
+                        Deseja realmente excluir este email da lista de envio?
+                    </h6>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-danger">
+                        <span class="button__icon"><i class='bx bx-trash'></i></span>
+                        <span class="button__text2">Excluir</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on('click', 'a', function(event) {
+            var email = $(this).attr('email');
+            $('#idEmail').val(email);
+        });
+    });
+</script>

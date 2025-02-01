@@ -23,7 +23,9 @@ namespace SIGES.Repositorios
 
         public async Task<UsuarioModel?> ObterPorId(int id)
         {
-            return await _context.Usuarios.FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Usuarios
+                .Include(u => u.Permissao)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task Adicionar(UsuarioModel usuario)

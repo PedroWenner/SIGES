@@ -38,14 +38,14 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th class="cabecalho">#</th>
+                        <th>#</th>
                         <th>Nome</th>
                         <th>CPF</th>
                         <th>Telefone</th>
                         <th>Nível</th>
                         <th>Situação</th>
                         <th>Validade</th>
-                        <th></th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,18 +60,18 @@
                         @foreach (var usuario in Model.Usuarios)
                         {
                             <tr>
-                                <td style="width: 5%; text-align: center;">@usuario.Id</td>
-                                <td style="width: 35%;">@usuario.Nome</td>
-                                <td style="width: 10%;">@usuario.Cpf</td>
-                                <td style="width: 10%;">@usuario.Telefone</td>
-                                <td style="width: 10%;">@usuario.Permissao.Nome</td>
-                                <td style="width: 10%;">
-                                    <span class="badge @(usuario.Situacao.Equals(0) ? "situacao-inativo" : "situacao-ativo")">
+                                <td>@usuario.Id</td>
+                                <td>@usuario.Nome</td>
+                                <td>@usuario.Cpf</td>
+                                <td>@usuario.Telefone</td>
+                                <td>@usuario.Permissao.Nome</td>
+                                <td>
+                                    <span class="badge rounded-pill @(usuario.Situacao.Equals(0) ? "text-bg-danger" : "text-bg-success")">
                                         @(usuario.Situacao.Equals(0) ? "Inativo" : "Ativo")
                                     </span>
                                 </td>
-                                <td style="width: 10%;">@Convert.ToDateTime(usuario.DataExpiracao).ToString("dd/MM/yyyy")</td>
-                                <td style="width: 15%;">
+                                <td>@Convert.ToDateTime(usuario.DataExpiracao).ToString("dd/MM/yyyy")</td>
+                                <td>
                                     <a href="#" data-entidade="UsuarioModel" data-id="@usuario.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
                                     </a>

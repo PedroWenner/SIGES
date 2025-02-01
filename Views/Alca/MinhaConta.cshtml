@@ -1,0 +1,305 @@
+﻿@model UsuarioModel
+@{
+    ViewData["Titulo"] = "Minha conta";
+}
+
+<style type="text/css">
+    .profile-img-container {
+        position: relative;
+        display: inline-block;
+        margin: 20px 0;
+    }
+
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #e6e9f3;
+        background-color: #f0f0f0;
+    }
+
+    .edit-icon {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 8px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .edit-icon:hover {
+        background: rgba(200, 200, 200, 0.9);
+    }
+
+    .user-info p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        border: none;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #888;
+    }
+
+    .toggle-password:hover {
+        color: #333;
+    }
+</style>
+
+<div class="mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Minha conta</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="profile-img-container">
+                        @if (Model.ImagemBlob != null)
+                        {
+                            <img src="data:image/png;base64,@Convert.ToBase64String(Model.ImagemBlob)" class="profile-img" alt="Foto do Usuário">
+                        }
+                        else
+                        {
+                            <img src="~/img/User.png" class="profile-img" alt="Foto do Usuário">
+                        }
+                        <a href="#modalImageUser" data-bs-target="#modalImageUser" data-bs-toggle="modal" role="button" class="edit-icon" style="text-decoration: none;">
+                            <i class='bx bxs-camera'></i>
+                        </a>
+                    </div>
+
+                    <div class="user-info mt-3 text-left">
+                        <p><strong>Nome:</strong> @Model.Nome</p>
+                        <p><strong>Telefone:</strong> @Model.Telefone</p>
+                        <p><strong>Email:</strong> @Model.Email</p>
+                        <p><strong>Permissão:</strong> @Model.Permissao?.Nome</p>
+                        <p><strong>Acesso expira em:</strong> @Model.DataExpiracao?.ToString("dd/MM/yyyy")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Alterar minha senha</h6>
+                </div>
+                <div class="card-body">
+                    <form id="formMinhaConta">
+                        <div class="alert alert-danger d-flex align-items-center d-none" id="errorMessage">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div id="errorMessageText">
+                            </div>
+                        </div>
+                        <div class="alert alert-success d-flex align-items-center d-none" id="successMessage">
+                            <i class="fas fa-check-circle"></i>
+                            <div id="successMessageText">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="oldSenha">Senha atual</label>
+                            <div class="password-container">
+                                <input type="password" id="oldSenha" name="oldSenha" class="form-control" required>
+                                <i class="fa fa-eye toggle-password" onclick="togglePassword('oldSenha')"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="novaSenha">Nova senha</label>
+                            <div class="password-container">
+                                <input type="password" id="novaSenha" name="novaSenha" required>
+                                <i class="fa fa-eye toggle-password" onclick="togglePassword('novaSenha')"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmarSenha">Confirmar senha</label>
+                            <div class="password-container">
+                                <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+                                <i class="fa fa-eye toggle-password" onclick="togglePassword('confirmarSenha')"></i>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-left mt-2">
+                            <button type="submit" class="button btn btn-mini btn-primary">
+                                <span class="button__icon"><i class='bx bx-lock-alt'></i></span>
+                                <span class="button__text2">Alterar senha</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalImageUser" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formImageUser" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Atualizar imagem do usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 alert alert-info">Selecione uma nova imagem do usuario. Tamanho indicado (130 X 130).</div>
+                    <div class="control-group">
+                        <label for="userfile" class="control-label"><span class="required">Foto*</span></label>
+                        <div class="controls">
+                            <input type="file" name="userfile" value="" />
+                        </div>
+                    </div>
+                    <div class="alert alert-danger d-none mt-2" id="errorUpload"></div>
+                    <div class="alert alert-success d-none mt-2" id="successUpload"></div>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-primary">
+                        <span class="button__icon"><i class='bx bx-sync'></i></span>
+                        <span class="button__text2">Atualizar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script>
+    function togglePassword(id) {
+        var input = document.getElementById(id);
+        var icon = document.querySelector(".toggle-password");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+
+    $(document).ready(function () {
+        $("#formImageUser").validate({
+            rules: {
+                userfile: {
+                    required: true
+                }
+            },
+            messages: {
+                userfile: {
+                    required: 'Campo requerido.'
+                }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            },
+            submitHandler: function (form) {
+                // Envio via AJAX após a validação
+                var formData = new FormData(form);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/configurar/upload-imagem-usuario",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.status === "success") {
+                            $("#successUpload").removeClass("d-none").text(response.message);
+                            $("#errorUpload").addClass("d-none");
+
+                            // Recarregar a página após 1,5 segundos
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            $("#errorUpload").removeClass("d-none").text(response.message);
+                            $("#successUpload").addClass("d-none");
+                        }
+                    },
+                    error: function () {
+                        $("#errorUpload").removeClass("d-none").text("Erro ao enviar a imagem.");
+                        $("#successUpload").addClass("d-none");
+                    }
+                });
+            }
+        });
+
+        $("#formMinhaConta").submit(function (event) {
+            event.preventDefault(); // Evita o reload da página
+
+            const oldSenha = $("#oldSenha").val();
+            const novaSenha = $("#novaSenha").val();
+            const confirmarSenha = $("#confirmarSenha").val();
+
+            if (novaSenha !== confirmarSenha) {
+                $("#errorMessage").removeClass("d-none").text(" As senhas não coincidem!");
+                $("#successMessage").addClass("d-none");
+                return;
+            }
+
+            var formData = {
+                oldSenha: $("#oldSenha").val(),
+                novaSenha: $("#novaSenha").val(),
+                confirmarSenha: $("#confirmarSenha").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/configurar/atualizar-senha",
+                data: formData,
+                success: function (response) {
+                    if (response.status === "success") {
+                        $("#successMessage").removeClass("d-none");
+                        $("#successMessageText").text(response.message);
+                        $("#errorMessage").addClass("d-none");
+                        $("#formMinhaConta")[0].reset();
+                    } else {
+                        $("#errorMessage").removeClass("d-none");
+                        $("#errorMessageText").text(response.message);
+                        $("#successMessage").addClass("d-none");
+                    }
+                },
+                error: function () {
+                    $("#errorMessage").removeClass("d-none");
+                    $("#errorMessageText").text("Erro ao atualizar senha.");
+                    $("#successMessage").addClass("d-none");
+                }
+            });
+        });
+    });
+</script>

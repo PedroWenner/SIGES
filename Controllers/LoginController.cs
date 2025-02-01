@@ -60,6 +60,16 @@ namespace SIGES.Controllers
             // Armazenar dados adicionais na sessão
             HttpContext.Session.SetString("UserName", usuario.Nome);
             HttpContext.Session.SetString("UserCpf", usuario.Cpf);
+            // Armazenar a imagem do usuário na sessão (caso exista)
+            if (usuario.ImagemBlob != null)
+            {
+                var base64Image = Convert.ToBase64String(usuario.ImagemBlob);
+                HttpContext.Session.SetString("UserImage", base64Image);
+            }
+            else
+            {
+                HttpContext.Session.Remove("UserImage");
+            }
 
             return Json(new { sucesso = true });
         }

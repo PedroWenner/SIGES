@@ -129,8 +129,11 @@ namespace SIGES.Services
         /// <summary>
         /// Confirma um pagamento no MercadoPago.
         /// </summary>
-        public async Task<bool> ConfirmarPagamento(int id)
+        public async Task<(bool confirm, string msg)> ConfirmarPagamento(int id)
         {
+            bool confirm = false;
+            string msg = string.Empty;
+            
             try
             {
                 var cobranca = await _context.Cobrancas.FindAsync(id);
@@ -143,14 +146,19 @@ namespace SIGES.Services
                 {
                     cobranca.Status = "Pago";
                     await _context.SaveChangesAsync();
-                    return true;
+                    confirm = true;
                 }
 
-                return false;
+                msg = "Status do pagamento na operadora mercado pago não está aprovado.";
+
+                confirm = false;
+
+                return (confirm, msg);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                msg = e.Message;
+                return (confirm, msg);
             }
         }
 

@@ -34,5 +34,10 @@ namespace SIGES.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<EmailQueue>> Listar()
+        {
+            return await _context.EmailQueue.ToListAsync();
+        }
     }
 }

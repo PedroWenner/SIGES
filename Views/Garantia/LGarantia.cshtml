@@ -28,12 +28,12 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th style="width: 5%;">#</th>
-                        <th style="width: 10%;">Data</th>
-                        <th style="width: 10%;">Ref. garantia</th>
-                        <th style="width: 55%;">Termo</th>
-                        <th style="width: 10%;">Usuário</th>
-                        <th style="width: 10%;"></th>
+                        <th>#</th>
+                        <th>Data</th>
+                        <th>Ref. garantia</th>
+                        <th>Termo</th>
+                        <th>Usuário</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,9 +50,9 @@
                             <tr>
                                 <td>@garantia.Id</td>
                                 <td>@Convert.ToDateTime(garantia.DataGarantia).ToString("dd/MM/yyyy")</td>
-                                <td>@garantia.RefGarantia</td>
+                                <td>@HtmlHelpers.TruncateString(@garantia.RefGarantia ?? "", 50)</td>
                                 <td>
-                                    @HtmlHelpers.TruncateString(HtmlHelpers.RemoverTagsHtml(@garantia.TextoGarantia), 50)
+                                    @HtmlHelpers.TruncateString(HtmlHelpers.RemoverTagsHtml(@garantia.TextoGarantia ?? ""), 50)
                                 </td>
                                 <td>@garantia.Usuario.Nome</td>
                                 <td>

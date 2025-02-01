@@ -38,7 +38,7 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th class="cabecalho">#</th>
+                        <th>#</th>
                         <th>Nome</th>
                         <th>Valor</th>
                         <th></th>
@@ -56,10 +56,10 @@
                         @foreach (var servico in Model.Servicos)
                         {
                             <tr>
-                                <td style="width: 5%; text-align: center;">@servico.Id</td>
-                                <td style="width: 70%;">@servico.Nome</td>
-                                <td style="width: 15%;">@servico.Valor.ToString("C")</td>
-                                <td style="width: 10%;">
+                                <td>@servico.Id</td>
+                                <td>@servico.Nome</td>
+                                <td>@servico.Valor.ToString("C")</td>
+                                <td>
                                     <a href="#" data-entidade="ServicoModel" data-id="@servico.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>
                                     </a>

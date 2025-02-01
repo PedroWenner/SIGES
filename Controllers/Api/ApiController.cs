@@ -129,18 +129,16 @@ namespace SIGES.Controllers.Api
             else
             {
                 var os = entidade as OsModel;
-                desconto = 0;
-                tipoDesconto = "real";
                 clienteId = os?.ClientesId ?? 0;
-                //var desconto = os?.Desconto ?? 0;
-                //string tipoDesconto = os?.TipoDesconto ?? "real";
+                desconto = os?.Desconto ?? 0;
+                tipoDesconto = os?.TipoDesconto ?? "real";
             }
 
             decimal qtd = produtos.Sum(x => x.Quantidade) ?? 0;
             decimal valor = produtos.Sum(x => x.Preco) ?? 0;
 
             decimal totalProdutos = valor * qtd;
-            decimal totalServicos = 0; //servicos.Sum(x => x.Preco * x.Quantidade ?? 0);
+            decimal totalServicos = servicos.Sum(x => x.Preco * Convert.ToDecimal(x.Quantidade) ?? 0);
 
             if (totalProdutos <= 0)
             {
@@ -160,23 +158,6 @@ namespace SIGES.Controllers.Api
             List<string> errosCadastro = ErrosCadastro(cliente);
 
             return (totalValor, cliente, errosCadastro, tipoDesconto, desconto);
-        }
-
-        [HttpPost("confirmar-pagamento/{id}")]
-        public async Task<IActionResult> ConfirmarPagamento(int id)
-        {
-            try
-            {
-                bool confirmado = await _paymentGateway.ConfirmarPagamento(id);
-                if (confirmado)
-                    return Ok(new { message = "Pagamento confirmado!" });
-
-                return BadRequest(new { message = "Pagamento não confirmado." });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
         }
 
         [HttpPost("cancelar/{id}")]

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Interfaces;
+using SIGES.Models.Requests;
 using SIGES.Repositorios;
 using SIGES.Services;
 using System.Text.Json;
@@ -14,12 +15,14 @@ namespace SIGES.Controllers
         private readonly ILogService _logServiceRepositorio;
         private readonly IConfiguracao _configuracaoRepositorio;
         private readonly AppSettingsService _appSettingsService;
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
 
-        public SistemaController(ILogService logServiceRepositorio, IConfiguracao configuracaoRepositorio, AppSettingsService appSettingsService)
+        public SistemaController(ILogService logServiceRepositorio, IConfiguracao configuracaoRepositorio, AppSettingsService appSettingsService, IUsuarioRepositorio usuarioRepositorio)
         {
             _logServiceRepositorio = logServiceRepositorio;
             _configuracaoRepositorio = configuracaoRepositorio;
             _appSettingsService = appSettingsService;
+            _usuarioRepositorio = usuarioRepositorio;
         }
 
         [HttpGet("")]
@@ -200,6 +203,102 @@ namespace SIGES.Controllers
             }
 
             return Json(configuracoesViewModel);
+        }
+
+        [HttpGet("minha-conta")]
+        public async Task<IActionResult> MinhaConta()
+        {
+            var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int id))
+            {
+                TempData["Error"] = "Usuário não identificado!";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var usuario = await _usuarioRepositorio.ObterPorId(id);
+            if (usuario == null)
+            {
+                TempData["Error"] = "Usuário não encontrado!";
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View("~/Views/Alca/MinhaConta.cshtml", usuario);
+        }
+
+        [HttpPost("atualizar-senha")]
+        public async Task<IActionResult> AtualizarSenha([FromForm] string oldSenha, [FromForm] string novaSenha, [FromForm] string confirmarSenha)
+        {
+            try
+            {
+                var usuarioId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+                if (usuarioId == null)
+                {
+                    return Json(new { status = "error", message = "Usuário não autenticado." });
+                }
+
+                var usuario = await _usuarioRepositorio.ObterPorId(int.Parse(usuarioId));
+                if (usuario == null)
+                {
+                    return Json(new { status = "error", message = "Usuário não encontrado." });
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(oldSenha, usuario.Senha))
+                {
+                    return Json(new { status = "error", message = "Senha atual incorreta." });
+                }
+
+                if (novaSenha != confirmarSenha)
+                {
+                    return Json(new { status = "error", message = "As senhas não coincidem." });
+                }
+
+                usuario.Senha = BCrypt.Net.BCrypt.HashPassword(novaSenha);
+                await _usuarioRepositorio.Atualizar(usuario);
+
+                return Json(new { status = "success", message = "Senha atualizada com sucesso!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [HttpPost("upload-imagem-usuario")]
+        public async Task<IActionResult> UploadUserImage(IFormFile? userfile)
+        {
+            try
+            {
+                var usuarioId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+                if (usuarioId == null)
+                {
+                    return Json(new { status = "error", message = "Usuário não autenticado." });
+                }
+
+                var usuario = await _usuarioRepositorio.ObterPorId(int.Parse(usuarioId));
+                if (usuario == null)
+                {
+                    return Json(new { status = "error", message = "Usuário não encontrado." });
+                }
+
+                if (userfile != null && userfile.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await userfile.CopyToAsync(memoryStream);
+                        usuario.ImagemBlob = memoryStream.ToArray();
+                    }
+
+                    await _usuarioRepositorio.Atualizar(usuario);
+                    return Json(new { status = "success", message = "Imagem atualizada com sucesso!" });
+                }
+
+                return Json(new { status = "error", message = "Nenhuma imagem selecionada!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = $"Erro ao processar a imagem: {ex.Message}" });
+            }
         }
     }
 }
