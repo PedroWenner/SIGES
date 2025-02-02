@@ -30,13 +30,12 @@
             </div>
             <div>
                 <ul style="padding-left: 0; list-style: none;">
-                    <li><strong>Nome:</strong> @Model.Emitente.Nome</li>
-                    <li><strong>CNPJ:</strong> @Model.Emitente.Cnpj</li>
-                    <li><strong>Endereço:</strong> @Model.Emitente.Rua, @Model.Emitente.Numero</li>
-                    <li><strong>Bairro:</strong> @Model.Emitente.Bairro</li>
-                    <li><strong>Cidade - UF:</strong> @Model.Emitente.Cidade, @Model.Emitente.Uf</li>
-                    <li><strong>E-mail:</strong> @Model.Emitente.Email</li>
-                    <li><strong>Celular:</strong> @Model.Emitente.Telefone</li>
+                    <li style="font-size: 20px;">@Model.Emitente.Nome</li>
+                    <li><i class="fas fa-fingerprint" style="margin:5px 1px"></i> @Model.Emitente.Cnpj</li>
+                    <li><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> @Model.Emitente.Rua, @Model.Emitente.Numero, @Model.Emitente.Bairro</li>
+                    <li><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> @Model.Emitente.Cidade - @Model.Emitente.Uf</li>
+                    <li><i class="fas fa-envelope" style="margin:5px 1px"></i> @Model.Emitente.Email</li>
+                    <li><i class="fas fa-phone" style="margin:5px 1px"></i> @Model.Emitente.Telefone</li>
                 </ul>
             </div>
         </div>

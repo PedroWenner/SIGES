@@ -9,6 +9,10 @@ using System.Globalization;
 using System.Net;
 using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using SIGES.Helpers;
+using SIGES.Attributes;
+using SIGES.Models.Requests;
+using SIGES.Services;
+using ZXing.QrCode.Internal;
 
 
 namespace SIGES.Controllers
@@ -21,15 +25,22 @@ namespace SIGES.Controllers
         private readonly ILogService _logServiceRepositorio;
         private readonly IItensVenda _itensVendaRepositorio;
         private readonly IProdutoRepositorio _produtoRepositorio;
+        private readonly ILancamento _lancamentoRepository;
+        private readonly IConfiguracao _configuracaoRepositorio;
 
-        public VendaController(IVenda vendaRepositorio, ILogService logServiceRepositorio, IItensVenda itensVendaRepositorio, IProdutoRepositorio produtoRepositorio)
+        public VendaController(IVenda vendaRepositorio, ILogService logServiceRepositorio,
+            IItensVenda itensVendaRepositorio, IProdutoRepositorio produtoRepositorio,
+            ILancamento lancamentoRepository, IConfiguracao configuracao)
         {
             _vendaRepositorio = vendaRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
             _itensVendaRepositorio = itensVendaRepositorio;
             _produtoRepositorio = produtoRepositorio;
+            _lancamentoRepository = lancamentoRepository;
+            _configuracaoRepositorio = configuracao;
         }
 
+        [Permissao("vVenda", "Você não possui permissão para visualizar vendas.")]
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -44,12 +55,14 @@ namespace SIGES.Controllers
             return View("LVenda", viewModel);
         }
 
+        [Permissao("aVenda", "Você não possui permissão para adicionar vendas.")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
             return View("AVenda");
         }
 
+        [Permissao("aVenda", "Você não possui permissão para adicionar vendas.")]
         [HttpPost("adicionar")]
         public async Task<IActionResult> Adicionar(VendaModel venda)
         {
@@ -71,6 +84,7 @@ namespace SIGES.Controllers
             return RedirectToAction("Editar", new { id = venda.Id });
         }
 
+        [Permissao("eVenda", "Você não possui permissão para editar vendas.")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
@@ -100,6 +114,7 @@ namespace SIGES.Controllers
             return View("EVenda", viewModel);
         }
 
+        [Permissao("eVenda", "Você não possui permissão para editar vendas.")]
         [HttpPost("editar/{id}")]
         public async Task<IActionResult> Editar(int id, VendaModel venda)
         {
@@ -142,6 +157,7 @@ namespace SIGES.Controllers
             return RedirectToAction("Index");
         }
 
+        [Permissao("eVenda", "Você não possui permissão para editar vendas.")]
         [HttpPost("adicionarProduto")]
         public async Task<IActionResult> AdicionarProduto(ItensVendaModel item)
         {
@@ -149,6 +165,11 @@ namespace SIGES.Controllers
             if (venda == null)
             {
                 return Json(new { result = false, messages = "A venda especificada não existe." });
+            }
+
+            if (venda.Faturado == 1)
+            {
+                return Json(new { result = false, messages = "Não é possivel adicionar produtos. Venda já faturada!" });
             }
 
             var produto = await _produtoRepositorio.ObterPorId(item.ProdutoId);
@@ -201,9 +222,21 @@ namespace SIGES.Controllers
             }
         }
 
+        [Permissao("eVenda", "Você não possui permissão para editar vendas.")]
         [HttpPost("removerProduto")]
         public async Task<IActionResult> RemoverProduto(int itemId, int vendaId)
         {
+            var venda = await _vendaRepositorio.ObterPorId(vendaId);
+            if (venda == null)
+            {
+                return Json(new { result = false, message = "A venda especificada não existe." });
+            }
+
+            if (venda.Faturado == 1)
+            {
+                return Json(new { result = false, message = "Não é possivel excluir produtos. Venda já faturada!" });
+            }
+
             var item = await _itensVendaRepositorio.ObterPorId(itemId);
             if (item == null)
             {
@@ -240,6 +273,7 @@ namespace SIGES.Controllers
             }
         }
 
+        [Permissao("vVenda", "Você não possui permissão para visualizar vendas.")]
         [HttpGet("imprimir/{id}")]
         public async Task<IActionResult> Imprimir(int id, string tipo = "a4")
         {
@@ -250,23 +284,33 @@ namespace SIGES.Controllers
                 return RedirectToAction("Index");
             }
 
-            var itensVenda = _itensVendaRepositorio.Listar()
-                .Where(i => i.VendaId == id)
-                .ToList();
-
             var emitente = await _vendaRepositorio.ObterEmitente();
-
             if (emitente == null)
             {
                 TempData["Error"] = "Emitente não configurado.";
                 return RedirectToAction("Index");
             }
 
+            var itensVenda = _itensVendaRepositorio.Listar().Where(i => i.VendaId == id).ToList();
+            var pixService = new PixService();
+            var chavePix = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
+            string qrCode = string.Empty;
+            string chaveFormatada = string.Empty;
+
+            decimal? valorTotal = itensVenda.Sum(i => i.Quantidade * i.Preco);
+            if (valorTotal > 0 && !string.IsNullOrEmpty(chavePix))
+            {
+                qrCode = pixService.GerarQrCode(chavePix, valorTotal, $"Venda {id}", emitente.Nome, emitente.Cidade);
+                chaveFormatada = pixService.FormatarChavePix(chavePix);
+            }
+
             var viewModel = new VendaImprimirViewModel
             {
                 Venda = venda,
                 ItensVenda = itensVenda,
-                Emitente = emitente
+                Emitente = emitente,
+                QrCodeBase64 = qrCode,
+                ChavePixFormatada = chaveFormatada
             };
 
             if (tipo.ToLower() == "nao-fiscal")
@@ -277,6 +321,7 @@ namespace SIGES.Controllers
             return View("Imprimir", viewModel);
         }
 
+        [Permissao("vVenda", "Você não possui permissão para visualizar vendas.")]
         [HttpGet("visualizar/{id}")]
         public async Task<IActionResult> Visualizar(int id)
         {
@@ -301,13 +346,19 @@ namespace SIGES.Controllers
             return View("VVenda", viewModel);
         }
 
+        [Permissao("eVenda", "Você não possui permissão para editar vendas.")]
         [HttpPost("adicionarDesconto")]
         public async Task<IActionResult> AdicionarDesconto(VendaModel venda)
         {
             var vendaExistente = await _vendaRepositorio.ObterPorId(venda.Id);
             if (vendaExistente == null)
             {
-                return Json(new { result = false, message = "Venda não encontrada." });
+                return Json(new { sucesso = false, message = "Venda não encontrada." });
+            }
+
+            if (vendaExistente.Faturado == 1)
+            {
+                return Json(new { sucesso = false, message = "Não é possivel adicionar desconto. Venda já faturada!" });
             }
 
             try
@@ -390,5 +441,66 @@ namespace SIGES.Controllers
             
             return (valor) - defDesconto;
         }
+
+        [HttpPost("faturar")]
+        [Permissao("eVenda", "Você não tem permissão para editar venda!")]
+        public async Task<IActionResult> Faturar([FromForm] FaturarVendaRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { result = false, mensagem = "Dados inválidos!" });
+            }
+
+            var venda = await _vendaRepositorio.ObterPorId(request.VendaId);
+            if (venda == null)
+            {
+                return Json(new { result = false, mensagem = "Venda não encontrada!" });
+            }
+
+            decimal valorTotal = request.Valor;
+            decimal valorDesconto = request.FaturarDesconto;
+            decimal valorComDesconto = valorTotal - valorDesconto;
+
+            if (valorComDesconto < 0)
+                valorComDesconto = 0;
+
+            var lancamento = new LancamentoModel
+            {
+                VendasId = request.VendaId,
+                Descricao = request.Descricao,
+                Valor = valorTotal,
+                Desconto = valorDesconto,
+                ValorDesconto = valorComDesconto,
+                ClientesId = request.ClienteId,
+                DataVencimento = request.DataVencimento,
+                DataPagamento = request.Recebido == 1 ? request.Recebimento : null,
+                Baixado = request.Recebido,
+                FormaPgto = request.FormaPgto,
+                Tipo = request.Tipo,
+                UsuariosId = int.Parse(User.FindFirst("UserId")?.Value ?? "0")
+            };
+
+            try
+            {
+                await _lancamentoRepository.Adicionar(lancamento);
+
+                venda.Faturado = 1;
+                venda.ValorTotal = valorTotal;
+                venda.Desconto = valorDesconto;
+                venda.ValorDesconto = valorComDesconto;
+                venda.LancamentoId = lancamento.Id;
+                venda.Status = "Faturado";
+
+                await _vendaRepositorio.Atualizar(venda);
+
+                return Json(new { result = true, mensagem = "Venda faturada com sucesso!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, mensagem = "Erro ao faturar venda: " + ex.Message });
+            }
+        }
+
+        
     }
 }

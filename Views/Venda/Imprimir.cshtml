@@ -11,125 +11,144 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="@Url.Content("~/bootstrap-5.3.3/css/bootstrap.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/css/matrix-style.css")" />
     <link href="@Url.Content("~/font-awesome/css/font-awesome.css")" rel="stylesheet" />
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700,800" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="~/js/jquery-3.7.1.min.js"></script>
     <title>Imprimir Venda</title>
 </head>
 <body>
     @{
         string garantia = Model.Venda.GarantiaDias.ToString();
         DateTime vencGarantia = Model.Venda.DataVenda.AddDays(double.Parse(string.IsNullOrEmpty(garantia) ? "0" : garantia));
+        decimal totalProdutos = 0;
+        string[] status = new[] { "Finalizado", "Orçamento", "Faturado", "Aberto", "Em Andamento", "Aguardando Peças" };
     }
 
-    <div class="d-flex align-items-start">
-        <div class="me-4">
-            @if (Model.Emitente.ImagemBlob != null)
-            {
-                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do emitente" style="max-width: 150px;" />
-            }
-            else
-            {
-                <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 150px; display:none;" />
-            }
-        </div>
-        <div>
-            <ul style="padding-left: 0; list-style: none;">
-                <li><strong>Nome:</strong> @Model.Emitente.Nome</li>
-                <li><strong>CNPJ:</strong> @Model.Emitente.Cnpj</li>
-                <li><strong>Endereço:</strong> @Model.Emitente.Rua, @Model.Emitente.Numero</li>
-                <li><strong>Bairro:</strong> @Model.Emitente.Bairro</li>
-                <li><strong>Cidade - UF:</strong> @Model.Emitente.Cidade, @Model.Emitente.Uf</li>
-                <li><strong>E-mail:</strong> @Model.Emitente.Email</li>
-                <li><strong>Celular:</strong> @Model.Emitente.Telefone</li>
-            </ul>
+    <div class="container-fluid">
+        <div class="col-lg-12">
+            <div class="invoice-content">
+                <div class="invoice-head">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td style="width: 25%;">
+                                    @if (Model.Emitente.ImagemBlob != null)
+                                    {
+                                        <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" style="max-height: 100px" alt="Imagem do emitente" />
+                                    }
+                                    else
+                                    {
+                                        <img src="" id="previewImg" style="max-height: 100px;display:none;" alt="Imagem do emitente" />
+                                    }
+                                </td>
+                                <td colspan="4" style="text-align: center;">
+                                    <span style="font-size: 20px;"><b>@Model.Emitente.Nome</b></span><br>
+                                    <span><i class="fas fa-fingerprint" style="margin:5px 1px"></i> @Model.Emitente.Cnpj</span><br>
+                                    <span><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> @Model.Emitente.Rua, @Model.Emitente.Numero, @Model.Emitente.Bairro</span><br>
+                                    <span><i class="fas fa-map-marker-alt" style="margin:4px 3px"></i> @Model.Emitente.Cidade - @Model.Emitente.Uf</span><br>
+                                    <span><i class="fas fa-envelope" style="margin:5px 1px"></i> @Model.Emitente.Email</span><br>
+                                    <span><i class="fas fa-phone" style="margin:5px 1px"></i> @Model.Emitente.Telefone</span><br>
+                                    <span class="icon">
+                                        <i class="fas fa-user-check"></i>
+                                        Vendedor: @Model.Venda.Usuario.Nome
+                                    </span>
+                                </td>
+                                <td style="width: 18%; text-align: center">
+                                    <b>#Orçamento: </b><span> @Model.Venda.Id</span><br><br>
+                                    <span>
+                                        <b>Emissão: </b>@DateTime.Now.ToString("dd/MM/yyyy")<br>
+                                        <b>Válido por até 10 dias.</b>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td style="width: 85%; padding-left: 0">
+                                    <ul>
+                                        <li>
+                                            <span>
+                                                <h5><b><b>CLIENTE</b></b></h5>
+                                                <span>
+                                                    @Model.Venda.Cliente.Nome
+                                                </span><br />
+                                                <span>
+                                                    @Model.Venda.Cliente.Rua, @Model.Venda.Cliente.NumeroRua<br>
+                                                    @Model.Venda.Cliente.Bairro
+                                                </span><br />
+                                                <span>
+                                                    @Model.Venda.Cliente.Cidade - @Model.Venda.Cliente.Estado - CEP: @Model.Venda.Cliente.Cep
+                                                </span><br />
+                                                <span>
+                                                    Email: @Model.Venda.Cliente.Email
+                                                </span><br />
+                                                @if (!string.IsNullOrEmpty(@Model.Venda.Cliente.Contato))
+                                                {
+                                                    <span>Contato: @Model.Venda.Cliente.Contato </span>
+                                                }
+                                                <span>Celular: @Model.Venda.Cliente.Celular</span>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </td>
+                                @if (status.Contains(Model.Venda.Status) && !string.IsNullOrEmpty(Model.QrCodeBase64))
+                                {
+                                    <td style="width: 25%; padding: 0; text-align: center;">
+                                        <img style="margin: 12px 0 0 0;" src="~/img/logo_pix.png" width="64px" alt="QR Code de Pagamento" /><br>
+                                        <img style="margin: 5px 0 0 0;" src="data:image/png;base64,@Model.QrCodeBase64" width="94" alt="QR Code de Pagamento" /><br>
+                                        <span style="margin: 0; font-size: 80%; text-align: center;">Chave PIX: @Model.ChavePixFormatada</span>
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 0; padding-top: 0">
+                        <table class="table table-condensed">
+                            <tbody>
+                                @if (Model.Venda.DataVenda != null)
+                                {
+                                    <tr>
+                                        <td>
+                                            <b>Status Venda: </b> @Model.Venda.Status
+                                        </td>
+
+                                        <td>
+                                            <b>Data da Venda: </b> @Model.Venda.DataVenda.ToString("dd/MM/yyyy")
+                                        </td>
+
+                                        <td>
+                                            @if (@Model.Venda.GarantiaDias != null && Model.Venda.GarantiaDias > 0)
+                                            {
+                                                <b>Garantia: </b> @Model.Venda.GarantiaDias.ToString()
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @if (status.Contains(Model.Venda.Status))
+                                            {
+                                                <b>Venc. Garantia: </b> @Model.Venda.DataVenda.AddDays(Model.Venda.GarantiaDias ?? 0).ToString("dd/MM/yyyy")
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <b>Observações: </b>
+                                            @HtmlHelpers.RemoverTagsHtml(Model.Venda.Observacao)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>                    
+                </div>
+            </div>
         </div>
     </div>
-    <hr />
-
-    <h5>CLIENTE</h5>
-    <ul>
-        <li style="list-style: none;">
-            <span><strong>Nome:</strong> @Model.Venda.Cliente.Nome</span><br />
-            <span><strong>Endereço:</strong> @Model.Venda.Cliente.Rua, @Model.Venda.Cliente.NumeroRua</span><br />
-            <span><strong>Bairro:</strong> @Model.Venda.Cliente.Bairro</span><br />
-            <span><strong>Cidade - UF:</strong> @Model.Venda.Cliente.Cidade, @Model.Venda.Cliente.Estado</span><br />
-            <span><strong>E-mail:</strong> @Model.Venda.Cliente.Email</span><br />
-            <span><strong>Celular:</strong> @Model.Venda.Cliente.Celular</span><br />
-        </li>
-    </ul>
-
-    <table class="table table-borderless table-condensed">
-        <tbody>
-            <tr>
-                <td>
-                    <b>Status:</b>
-                    @Model.Venda.Status
-                </td>
-                <td>
-                    <b>Data da venda:</b>
-                    @Model.Venda.DataVenda.ToString("dd/MM/yyyy")
-                </td>
-                @if (Model.Venda.GarantiaDias != null && Model.Venda.GarantiaDias > 0)
-                {
-                    <td>
-                        <b>Garantia:</b>
-                        @Model.Venda.GarantiaDias (dias)
-                    </td>
-                    <td>
-                        <b>Venc. da garantia:</b>
-                        @vencGarantia.ToString("dd/MM/yyyy")
-                    </td>
-                }
-            </tr>
-            <tr>
-                <td colspan="4">
-                    <hr />
-                    <b>Observações:</b>
-                    @HtmlHelpers.RemoverTagsHtml(Model.Venda.Observacao);
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th style="width: 10%">Cód</th>
-                <th style="width: 10%">Produto</th>
-                <th style="width: 10%">Qtd</th>
-                <th style="width: 10%">Preço Unitário</th>
-                <th style="width: 10%">Sub-total</th>
-            </tr>
-        </thead>
-        <tbody class="table-group-divider">
-            @foreach (var item in Model.ItensVenda)
-            {
-                <tr>
-                    <td>@item.Produto.CodigoBarras</td>
-                    <td>@item.Produto.Descricao</td>
-                    <td>@item.Quantidade</td>
-                    <td>@Convert.ToDecimal(item.Preco).ToString("C")</td>
-                    <td>@Convert.ToDecimal((item.Preco * item.Quantidade)).ToString("C")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <span class="float-end"><strong>Total:</strong> @Convert.ToDecimal(Model.ItensVenda.Sum(i => i.Preco * i.Quantidade)).ToString("C")</span>
-    <br />
-
-    @if (Model.Venda.Desconto != null || Model.Venda.Desconto > 0)
-    {
-        <span class="float-end">
-            <strong>Desconto:</strong>
-            @(Model.Venda.TipoDesconto == "real" ? Convert.ToDecimal(Model.Venda.Desconto).ToString("C") : Convert.ToDecimal(Model.Venda.Desconto).ToString("N2") + " %")
-        </span>
-        <br />
-        <span class="float-end">
-            <strong>Total com desconto:</strong>
-            @Convert.ToDecimal(Model.Venda.ValorDesconto ?? Model.ItensVenda.Sum(i => i.Preco * i.Quantidade)).ToString("C")
-        </span>
-        <br />
-    }
+    <script src="~/bootstrap-5.3.3/js/bootstrap.min.js"></script>
+    <script src="~/js/matrix.js"></script>
 
     <script>
         window.print();

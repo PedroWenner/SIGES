@@ -24,6 +24,7 @@ namespace SIGES.Config
             services.AddScoped<ICobranca, CobrancaRepository>();
             services.AddScoped<IPaymentGateway, MercadoPagoService>();
             services.AddScoped<IEmailQueueRepository, EmailQueueRepository>();
+            services.AddScoped<ILancamento, LancamentoRepositorio>();
         }
     }
 }

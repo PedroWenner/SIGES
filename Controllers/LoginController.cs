@@ -27,7 +27,7 @@ namespace SIGES.Controllers
         [HttpPost("Login/Autenticar")]
         public async Task<JsonResult> Autenticar(string login, string senha)
         {
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login || u.Nome == login);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login);
             if (usuario == null || !_authService.VerificarSenha(usuario.Senha, senha))
             {
                 return Json(new { sucesso = false, mensagem = "Os dados de acesso estão incorretos. Por favor, tente novamente." });

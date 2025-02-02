@@ -69,5 +69,9 @@ namespace SIGES.Models
         [IgnoreLog]
         [ValidateNever]
         public ICollection<GarantiaModel> Garantias { get; set; } = new List<GarantiaModel>();
+
+        [IgnoreLog]
+        [ValidateNever]
+        public ICollection<LancamentoModel> Lancamentos { get; set; } = new List<LancamentoModel>();
     }
 }

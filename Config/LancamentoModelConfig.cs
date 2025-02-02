@@ -9,25 +9,35 @@ namespace SIGES.Config
         public void Configure(EntityTypeBuilder<LancamentoModel> builder)
         {
             // Relacionamento Lançamento -> Cliente
-            builder.HasOne(o => o.Cliente)
+            builder.HasOne(o => o.Clientes)
                    .WithMany(c => c.Lancamentos)
-                   .HasForeignKey(o => o.ClienteId)
+                   .HasForeignKey(o => o.ClientesId)
                    .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Categorias
-            builder.HasOne(o => o.Categoria)
+            builder.HasOne(o => o.Categorias)
                    .WithMany(u => u.Lancamentos)
-                   .HasForeignKey(o => o.CategoriaId)
+                   .HasForeignKey(o => o.CategoriasId)
                    .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Vendas
             builder.HasOne(o => o.Venda)
                    .WithMany(l => l.Lancamentos)
-                   .HasForeignKey(o => o.VendaId)
+                   .HasForeignKey(o => o.VendasId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(e => e.Valor)
-                .HasPrecision(15, 2);
+            // Relacionamento Lançamento -> Vendas
+            builder.HasOne(o => o.Contas)
+                   .WithMany(l => l.Lancamentos)
+                   .HasForeignKey(o => o.ContasId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Relacionamento Lançamento -> Vendas
+            builder.HasOne(o => o.Usuarios)
+                   .WithMany(l => l.Lancamentos)
+                   .HasForeignKey(o => o.UsuariosId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

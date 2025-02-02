@@ -67,7 +67,11 @@
             @SaudeHelper.ObterSaudacao(),
         </div>
         <div class="userT me-4">
-            @User.Identity.Name.ToString()
+            @{
+                string name = User.Identity.Name.ToString();
+                string[] words = name.Split(' ');
+            }
+            @words[0]
         </div>
 
         <section style="display:block;position:absolute;right:5px">
