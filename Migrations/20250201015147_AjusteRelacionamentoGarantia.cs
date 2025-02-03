@@ -10,24 +10,24 @@ namespace SIGES.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Garantias_Os_OrdensId",
-                table: "Garantias");
+            //migrationBuilder.DropForeignKey(
+            //    name: "FK_Garantias_Os_OrdensId",
+            //    table: "Garantias");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Garantias_OrdensId",
-                table: "Garantias");
+            //migrationBuilder.DropIndex(
+            //    name: "IX_Garantias_OrdensId",
+            //    table: "Garantias");
 
-            migrationBuilder.DropColumn(
-                name: "OrdensId",
-                table: "Garantias");
+            //migrationBuilder.DropColumn(
+            //    name: "OrdensId",
+            //    table: "Garantias");
 
-            migrationBuilder.UpdateData(
-                table: "Usuarios",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "Senha",
-                value: "$2a$11$EqUikjHYKXlQLVhjrSWIsO/Mre9t69t3/o/r1./Sp6bH4PRItridO");
+            //migrationBuilder.UpdateData(
+            //    table: "Usuarios",
+            //    keyColumn: "Id",
+            //    keyValue: 1,
+            //    column: "Senha",
+            //    value: "$2a$11$EqUikjHYKXlQLVhjrSWIsO/Mre9t69t3/o/r1./Sp6bH4PRItridO");
         }
 
         /// <inheritdoc />
