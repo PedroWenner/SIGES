@@ -22,6 +22,58 @@ namespace SIGES.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("SIGES.Models.ArquivoModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("idDocumentos");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Cadastro")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("cadastro");
+
+                    b.Property<string>("Descricao")
+                        .HasColumnType("longtext")
+                        .HasColumnName("descricao");
+
+                    b.Property<string>("Documento")
+                        .HasMaxLength(70)
+                        .HasColumnType("varchar(70)")
+                        .HasColumnName("documento");
+
+                    b.Property<string>("File")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("file");
+
+                    b.Property<string>("Path")
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)")
+                        .HasColumnName("path");
+
+                    b.Property<string>("Tamanho")
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)")
+                        .HasColumnName("tamanho");
+
+                    b.Property<string>("Tipo")
+                        .HasMaxLength(15)
+                        .HasColumnType("varchar(15)")
+                        .HasColumnName("tipo");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)")
+                        .HasColumnName("url");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Documentos");
+                });
+
             modelBuilder.Entity("SIGES.Models.CategoriaModel", b =>
                 {
                     b.Property<int>("Id")
@@ -888,7 +940,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$uckBe1VCbewl0jzxKkqYc.EKIBKPaHTNJ5f5muG67M5kRhfuxeBCy",
+                            Senha = "$2a$11$M23G/larOVLwytbWeWvfHOM8aashiP/zc2XIpPuB7kgbzHpuQuMWC",
                             Situacao = 1
                         });
                 });

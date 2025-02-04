@@ -163,6 +163,18 @@
                     </li>
                 }
 
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vArquivo"))
+                {
+                    <!--Bloco de OS-->
+                    <li title="OS" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Arquivo" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
+                        <a asp-controller="Arquivo" asp-action="Index">
+                            <i class='bx bx-box iconX'></i>
+                            <span class="title">Arquivos</span>
+                            <span class="title-tooltip">Ordens</span>
+                        </a>
+                    </li>
+                }
+
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vLancamento"))
                 {
                     <!--Bloco de Lancamentos-->

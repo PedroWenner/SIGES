@@ -49,5 +49,6 @@ namespace SIGES.Data
         public DbSet<EmailQueue> EmailQueue { get; set; }
         public DbSet<ServicosOs> ServicosOs { get; set; }
         public DbSet<ContasModel> Contas { get; set; }
+        public DbSet<ArquivoModel> Documentos { get; set; }
     }
 }

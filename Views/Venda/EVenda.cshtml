@@ -189,11 +189,11 @@
                         <table id="tabela" class="tblProdutos">
                             <thead>
                                 <tr>
-                                    <th style="width: 70%; text-align: left;">Produto</th>
-                                    <th style="width: 5%; text-align: left;">Quantidade</th>
-                                    <th style="width: 10%; text-align: left;">Preço Unitário</th>
-                                    <th style="width: 10%; text-align: left;">Sub-total</th>
-                                    <th style="width: 5%; text-align: left;">Ações</th>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Unitário</th>
+                                    <th>Sub-total</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -202,13 +202,13 @@
                                     foreach (var item in Model.Itens)
                                     {
                                         <tr>
-                                            <td style="text-align: left;">@item.Produto.Descricao</td>
-                                            <td style="text-align: left;">@item.Quantidade</td>
-                                            <td style="text-align: left;">R$ @item.Preco</td>
-                                            <td style="text-align: left;">
+                                            <td>@item.Produto.Descricao</td>
+                                            <td>@item.Quantidade</td>
+                                            <td>R$ @item.Preco</td>
+                                            <td>
                                                 R$ @(item.Preco * item.Quantidade)
                                             </td>
-                                            <td style="text-align: left;">
+                                            <td>
                                                 <a role="button" data-item-id="@item.Id" data-venda-id="@Model.Venda.Id" class="btn-remover btn-nwe4 text-decoration-none">
                                                     <i class="bx bx-trash-alt bx-xs"></i>
                                                 </a>
@@ -602,11 +602,11 @@
                                     response.items.forEach(item => {
                                         tbody.append(`
                                             <tr>
-                                                <td style="text-align: left;">${item.produtoNome}</td>
-                                                <td style="text-align: left;">${item.quantidade}</td>
-                                                <td style="text-align: left;">${item.preco}</td>
-                                                <td style="text-align: left;">${item.subTotal}</td>
-                                                <td style="text-align: left;">
+                                                <td>${item.produtoNome}</td>
+                                                <td>${item.quantidade}</td>
+                                                <td>${item.preco}</td>
+                                                <td>${item.subTotal}</td>
+                                                <td>
                                                     <a href="#" data-item-id="${item.id}" data-venda-id="${@Model.Venda.Id}" class="btn-remover btn-nwe4 text-decoration-none">
                                                         <i class="bx bx-trash-alt bx-xs"></i>
                                                     </a>
@@ -853,11 +853,11 @@
                     response.items.forEach(item => {
                         tbody.append(`
                             <tr>
-                                <td style="text-align: left;">${item.produtoNome}</td>
-                                <td style="text-align: left;">${item.quantidade}</td>
-                                <td style="text-align: left;">${item.preco}</td>
-                                <td style="text-align: left;">${item.subTotal}</td>
-                                <td style="text-align: left;">
+                                <td>${item.produtoNome}</td>
+                                <td>${item.quantidade}</td>
+                                <td>${item.preco}</td>
+                                <td>${item.subTotal}</td>
+                                <td>
                                     <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
                                         <i class="bx bx-trash-alt bx-xs"></i>
                                     </a>
