@@ -86,7 +86,7 @@
                                             <i class="bx bx-download bx-xs"></i>
                                         </a>
                                     }
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vArquivo"))
+                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eArquivo"))
                                     {
                                         <a asp-controller="Arquivos" asp-action="Editar" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar">
                                             <i class="bx bx-edit bx-xs"></i>

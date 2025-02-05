@@ -156,5 +156,19 @@ namespace SIGES.Controllers
 
             return View("Imprimir", viewModel);
         }
+
+        [HttpGet("listarGarantias")]
+        public JsonResult ListarGarantias(string term)
+        {
+            var garantias = _garantiaRepositorio.Listar()
+                .Where(c => c.RefGarantia.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Select(c => new
+                {
+                    value = c.Id,
+                    nome = c.RefGarantia
+                }).ToList();
+
+            return Json(garantias);
+        }
     }
 }

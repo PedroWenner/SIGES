@@ -13,12 +13,7 @@
             <form id="formArquivo" method="post" enctype="multipart/form-data" asp-controller="Arquivo" asp-action="Editar">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <div class="mb-3">
-                    <label for="arquivoFile" class="form-label">Arquivo</label>
-                    <input type="file" id="arquivoFile" name="file" accept=".txt,.pdf,.gif,.png,.jpg,.jpeg" required />
-                    <small class="form-text text-muted">(Arquivos suportados: .txt, .pdf, .gif, .png, .jpg, .jpeg)</small>
-                </div>
-
+                <input type="hidden" asp-for="Id" />
                 <div class="mb-3">
                     <label for="documento" class="form-label">Nome do Arquivo</label>
                     <input id="documento" type="text" asp-for="Documento" required />
@@ -31,9 +26,9 @@
                     <span asp-validation-for="Descricao" class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 col-md-2">
                     <label for="cadastro" class="form-label">Data de cadastro</label>
-                    <input id="cadastro" type="text" asp-for="Cadastro" class="datetime" required />
+                    <input id="cadastro" type="date" asp-for="Cadastro" class="datetime" disabled />
                     <span asp-validation-for="Cadastro" class="text-danger"></span>
                 </div>
 
@@ -44,7 +39,7 @@
                     </a>
                     <button type="submit" class="button btn btn-mini btn-success">
                         <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Adicionar</span>
+                        <span class="button__text2">Atualizar</span>
                     </button>
                 </div>
             </form>
@@ -57,17 +52,10 @@
     $(document).ready(function () {
         $('#formArquivo').validate({
             rules: {
-                'Documento': { required: true },
-                'file': { required: true, extension: "txt|pdf|gif|png|jpg|jpeg" },
-                'Cadastro': { required: true }
+                'Documento': { required: true }
             },
             messages: {
-                'Documento': { required: 'Campo nome do arquivo é obrigatório.' },
-                'file': {
-                    required: 'Obrigatório selecionar um arquivo.',
-                    extension: 'Por favor, insira um arquivo com uma extensão válida (txt, pdf, gif, png, jpg, jpeg).'
-                },
-                'Cadastro': { required: 'Campo data de cadastro é obrigatório.' }
+                'Documento': { required: 'Campo nome do arquivo é obrigatório.' }
             },
             errorPlacement: function (error, element) {
                 element.attr("placeholder", error.text());

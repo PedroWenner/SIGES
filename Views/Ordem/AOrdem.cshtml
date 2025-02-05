@@ -1,5 +1,459 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model OsModel
+
 @{
+    ViewData["Titulo"] = "Adicionar OS";
 }
+
+<link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
+
+<style>
+    .custom-counter {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        max-width: 180px;
+        justify-content: space-between;
+        transition: border 0.3s ease;
+    }
+
+    .custom-counter:focus-within {
+        border: 1px solid #aaa;
+    }
+
+    .custom-counter input[type="number"] {
+        border: none;
+        outline: none;
+        width: 60px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+        background: transparent;
+    }
+
+    .custom-counter input::placeholder {
+        color: #bbb;
+        font-style: italic;
+    }
+
+    .counter-buttons {
+        display: flex;
+        gap: 8px;
+        padding-right: 10px;
+    }
+
+    .counter-buttons button {
+        background: none;
+        border: none;
+        color: #aaa;
+        font-size: 18px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        padding: 0;
+    }
+
+    .counter-buttons button:hover {
+        color: #333;
+    }
+
+    .counter-buttons button:disabled {
+        color: #ddd;
+        cursor: default;
+    }
+
+    #ui-datepicker-div {
+        z-index: 999!important;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Cadastro de OS</h5>
+        </div>
+        <div class="card-body">
+
+            <ul class="nav nav-tabs" id="myTabOs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="navLinkDetalheOs" data-bs-toggle="tab" data-bs-target="#venda-tab-pane" type="button" role="tab" aria-controls="venda-tab-pane" aria-selected="true">Detalhes da OS</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="venda-tab-pane" role="tabpanel" aria-labelledby="navLinkDetalheOs" tabindex="0">
+                    <form id="formOs" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <label for="cliente" class="form-label">Cliente</label>
+                                <input id="cliente" type="text" placeholder="Digite o nome do cliente" required />
+                                <input id="cliente-id" type="hidden" asp-for="ClientesId" />
+                                <span asp-validation-for="ClientesId" class="text-danger"></span>
+                            </div>
+                            <div class="col-6">
+                                <label for="tecnico" class="form-label">Técnico / Responsável</label>
+                                <input id="tecnico" type="text" placeholder="Técnico / Responsável" required value="@Context.Session.GetString("UserName")" />
+                                <input id="usuario-id" type="hidden" asp-for="UsuariosId" value="@Context.Session.GetString("UserId")" />
+                                <span asp-validation-for="UsuariosId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select asp-for="Status" id="status" required>
+                                    <option value="Orçamento">Orçamento</option>
+                                    <option value="Aberto">Aberto</option>
+                                    <option value="Em Andamento">Em Andamento</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Aguardando Peças">Aguardando Peças</option>
+                                    <option value="Aprovado">Aprovado</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="data-inicial" class="form-label">Data inicial</label>
+                                <input id="data-inicial" type="text" asp-for="DataInicial" required class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                <span asp-validation-for="DataInicial" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="data-final" class="form-label">Data final</label>
+                                <input id="data-final" type="text" asp-for="DataFinal" class="datetime" required />
+                                <span asp-validation-for="DataFinal" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="garantia" class="form-label">Garantia (dias)</label>
+                                <div class="custom-counter">
+                                    <input id="garantia" type="number" min="0" asp-for="Garantia" readonly />
+                                    <div class="counter-buttons">
+                                        <button type="button" class="decrement">–</button>
+                                        <button type="button" class="increment">+</button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Garantia" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-6 mt-3">
+                                <label for="garantias" class="form-label">Termo de garantia</label>
+                                <input id="garantias" type="text" />
+                                <input id="garantias-id" type="hidden" asp-for="GarantiasId" />
+                                <span asp-validation-for="GarantiasId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <h6>Descrição produto/serviço</h6>
+                                <textarea asp-for="DescricaoProduto" id="descricao-produto"></textarea>
+                            </div>
+                            <div class="col-6">
+                                <h6>Defeito</h6>
+                                <textarea asp-for="Defeito" id="defeito"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <h6>Observações</h6>
+                                <textarea asp-for="Observacoes" id="observacoes"></textarea>
+                            </div>
+                            <div class="col-6">
+                                <h6>Laudo técnico</h6>
+                                <textarea asp-for="LaudoTecnico" id="laudo-tecnico"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-center">
+                            <a title="Voltar" class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
+                                <span class="button__icon"><i class="bx bx-undo"></i></span>
+                                <span class="button__text2">Voltar</span>
+                            </a>
+                            <button type="submit" class="button btn btn-mini btn-success">
+                                <span class="button__icon"><i class='bx bx-chevrons-right'></i></span>
+                                <span class="button__text2">Continuar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js"></script>
+<script src="~/trumbowyg/dist/langs/pt_br.js"></script>
+<script>
+    $('#descricao-produto').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $('#defeito').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $('#observacoes').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $('#laudo-tecnico').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $(function () {
+        $("#cliente").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/clientes/ListarClientes",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        if (data.length === 0) {
+                            response([{
+                                nome: "Adicionar cliente",
+                                value: "add",
+                                adicionar: true
+                            }]);
+                        } else {
+                            response(data);
+                        }
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                if (!ui.item.adicionar) {
+                    $("#cliente").val(ui.item.nome);
+                }
+
+                return false;
+            },
+            select: function (event, ui) {
+                if (ui.item.adicionar) {
+                    window.location.href = "/clientes/adicionar";
+                } else {
+                    $("#cliente").val(ui.item.nome);
+                    $("#cliente-id").val(ui.item.value);
+                }
+
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            if (item.adicionar) {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-add">➕ ${item.nome}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            } else {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-title">${item.nome}</span>
+                            <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            }
+        };
+    });
+
+    $(function () {
+        $("#vendedor").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/usuarios/listarUsuarios",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                $("#vendedor-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Celular: ${item.celular}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(function () {
+        $("#garantias").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/garantias/listarGarantias",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#garantias").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#garantias").val(ui.item.nome);
+                $("#garantias-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(document).ready(function () {
+        $('#formVenda').validate({
+            rules: {
+                'DataVenda': { required: true },
+            },
+            messages: {
+                'DataVenda': { required: 'Campo requerido.' },
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            }
+        });
+    });
+</script>
+
+<script>
+    const incrementBtn = document.querySelector('.increment');
+    const decrementBtn = document.querySelector('.decrement');
+    const garantiaInput = document.getElementById('garantia');
+
+    incrementBtn.addEventListener('click', () => {
+        garantiaInput.value = parseInt(garantiaInput.value || 0) + 1;
+        updateButtons();
+    });
+
+    decrementBtn.addEventListener('click', () => {
+        garantiaInput.value = Math.max(0, parseInt(garantiaInput.value || 0) - 1);
+        updateButtons();
+    });
+
+    function updateButtons() {
+        decrementBtn.disabled = garantiaInput.value <= 0;
+    }
+
+    updateButtons();
+</script>

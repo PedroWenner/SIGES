@@ -58,6 +58,7 @@ namespace SIGES.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
             // Armazenar dados adicionais na sessão
+            HttpContext.Session.SetString("UserId", usuario.Id.ToString());
             HttpContext.Session.SetString("UserName", usuario.Nome);
             HttpContext.Session.SetString("UserCpf", usuario.Cpf);
             // Armazenar a imagem do usuário na sessão (caso exista)

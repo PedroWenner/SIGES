@@ -4,6 +4,7 @@ using SIGES.Attributes;
 using SIGES.Interfaces;
 using SIGES.Models;
 using SIGES.ViewModel;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SIGES.Controllers
 {
@@ -28,7 +29,7 @@ namespace SIGES.Controllers
 
         [Permissao("aArquivo", "Você não tem permissão para adicionar arquivo")]
         [HttpGet("adicionar")]
-        public IActionResult Adicionar()
+        public async Task<IActionResult> Adicionar()
         {
             return View("AArquivo");
         }
@@ -65,6 +66,40 @@ namespace SIGES.Controllers
             await _repositorio.Adicionar(arquivo);
 
             TempData["Success"] = "Arquivo adicionado com sucesso!";
+            return RedirectToAction("Index");
+        }
+
+        [Permissao("eArquivo", "Você não tem permissão para editar arquivo")]
+        [HttpGet("editar/{id}")]
+        public async Task<IActionResult> Editar(int id)
+        {
+            var arquivo = await _repositorio.ObterPorId(id);
+            if (arquivo == null)
+            {
+                TempData["Error"] = "Arquivo não encontrado.";
+                return RedirectToAction("Index");
+            }
+
+            return View("EArquivo", arquivo);
+        }
+
+        [Permissao("eArquivo", "Você não tem permissão para editar arquivo")]
+        [HttpPost("editar/{id}")]
+        public async Task<IActionResult> Editar(ArquivoModel arquivo)
+        {
+            var arquivoExistente = await _repositorio.ObterPorId(arquivo.Id);
+            if (arquivoExistente == null)
+            {
+                TempData["Error"] = "Arquivo não encontrado.";
+                return RedirectToAction("Editar", arquivo);
+            }
+
+            arquivoExistente.Documento = arquivo.Documento;
+            arquivoExistente.Descricao = arquivo.Descricao;
+
+            await _repositorio.Atualizar(arquivoExistente);
+
+            TempData["Success"] = "Arquivo atualizado com sucesso!";
             return RedirectToAction("Index");
         }
 

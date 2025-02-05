@@ -4,6 +4,8 @@
     $("input[type='file']").addClass("form-control form-control-sm");
     $("input[type='password']").addClass("form-control form-control-sm");
     $("input[type='date']").addClass("form-control form-control-sm");
+    $("input[type='number']").addClass("form-control form-control-sm");
+    $("textarea").addClass("form-control form-control-sm");
     $("select").addClass("form-select form-select-sm");
 
     $('.datetime').datepicker();
