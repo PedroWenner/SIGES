@@ -10,5 +10,6 @@ namespace SIGES.Interfaces
         Task Atualizar(OsModel os);
         Task Excluir(int id);
         IEnumerable<ServicosOs?> GetServicos(int id);
+        IEnumerable<ProdutosOs?> GetProdutos(int id);
     }
 }

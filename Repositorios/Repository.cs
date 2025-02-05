@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIGES.Data;
 using SIGES.Interfaces;
+using SIGES.Models;
 
 namespace SIGES.Repositorios
 {
@@ -12,6 +13,11 @@ namespace SIGES.Repositorios
         {
             _context = context;
             _dbSet = _context.Set<T>();
+        }
+
+        public async Task<T?> GetLastRegister()
+        {
+            return await _dbSet.OrderByDescending(e => EF.Property<int>(e, "Id")).FirstOrDefaultAsync();
         }
 
         public async Task Adicionar(T entidade)

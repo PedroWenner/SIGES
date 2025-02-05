@@ -796,6 +796,49 @@ namespace SIGES.Migrations
                     b.ToTable("Produtos");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ProdutosOs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("idProdutos_os");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)")
+                        .HasColumnName("descricao");
+
+                    b.Property<int>("OsId")
+                        .HasColumnType("int")
+                        .HasColumnName("os_id");
+
+                    b.Property<decimal?>("Preco")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("preco");
+
+                    b.Property<int>("ProdutosId")
+                        .HasColumnType("int")
+                        .HasColumnName("produtos_id");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int")
+                        .HasColumnName("quantidade");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("sub_total");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OsId");
+
+                    b.HasIndex("ProdutosId");
+
+                    b.ToTable("ProdutosOs");
+                });
+
             modelBuilder.Entity("SIGES.Models.ServicoModel", b =>
                 {
                     b.Property<int>("Id")
@@ -837,8 +880,8 @@ namespace SIGES.Migrations
                         .HasColumnType("decimal(15,2)")
                         .HasColumnName("preco");
 
-                    b.Property<double?>("Quantidade")
-                        .HasColumnType("double")
+                    b.Property<int?>("Quantidade")
+                        .HasColumnType("int")
                         .HasColumnName("quantidade");
 
                     b.Property<string>("Servico")
@@ -852,7 +895,7 @@ namespace SIGES.Migrations
 
                     b.Property<decimal?>("SubTotal")
                         .HasColumnType("decimal(15,2)")
-                        .HasColumnName("sub-total");
+                        .HasColumnName("sub_total");
 
                     b.HasKey("Id");
 
@@ -940,7 +983,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$M23G/larOVLwytbWeWvfHOM8aashiP/zc2XIpPuB7kgbzHpuQuMWC",
+                            Senha = "$2a$11$YQwGsKgUfX0lbcXcjreRZelxiiJFwfD3Gv1r3FeBpi8NLoVhXMR/2",
                             Situacao = 1
                         });
                 });
@@ -1124,6 +1167,25 @@ namespace SIGES.Migrations
                     b.Navigation("Usuarios");
                 });
 
+            modelBuilder.Entity("SIGES.Models.ProdutosOs", b =>
+                {
+                    b.HasOne("SIGES.Models.OsModel", "Os")
+                        .WithMany("Produtos")
+                        .HasForeignKey("OsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SIGES.Models.ProdutoModel", "Produtos")
+                        .WithMany()
+                        .HasForeignKey("ProdutosId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Os");
+
+                    b.Navigation("Produtos");
+                });
+
             modelBuilder.Entity("SIGES.Models.ServicosOs", b =>
                 {
                     b.HasOne("SIGES.Models.OsModel", "Os")
@@ -1211,6 +1273,8 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.OsModel", b =>
                 {
+                    b.Navigation("Produtos");
+
                     b.Navigation("Servicos");
                 });
 

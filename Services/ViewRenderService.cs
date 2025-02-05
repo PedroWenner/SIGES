@@ -4,14 +4,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc;
+using SIGES.Interfaces;
 
 namespace SIGES.Services
 {
-    public interface IViewRenderService
-    {
-        Task<string> RenderToStringAsync(string viewName, object model);
-    }
-
     public class ViewRenderService : IViewRenderService
     {
         private readonly ICompositeViewEngine _viewEngine;

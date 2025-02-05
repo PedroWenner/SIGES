@@ -58,7 +58,7 @@ namespace SIGES.Models
         public int? Lancamento { get; set; }
 
         [Column("faturado")]
-        public int? faturado { get; set; }
+        public int? faturado { get; set; } = 0;
 
         [Column("garantias_id")]
         public int? GarantiasId { get; set; }
@@ -69,6 +69,9 @@ namespace SIGES.Models
 
         [ValidateNever]
         public List<ServicosOs> Servicos { get; set; } = new List<ServicosOs>();
+
+        [ValidateNever]
+        public List<ProdutosOs> Produtos { get; set; } = new List<ProdutosOs>();
 
     }
 }

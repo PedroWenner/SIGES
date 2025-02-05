@@ -50,5 +50,6 @@ namespace SIGES.Data
         public DbSet<ServicosOs> ServicosOs { get; set; }
         public DbSet<ContasModel> Contas { get; set; }
         public DbSet<ArquivoModel> Documentos { get; set; }
+        public DbSet<ProdutosOs> ProdutosOs { get; set; }
     }
 }

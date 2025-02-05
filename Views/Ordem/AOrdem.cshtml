@@ -88,13 +88,13 @@
                         <div class="row mb-3 mt-3">
                             <div class="col-6">
                                 <label for="cliente" class="form-label">Cliente</label>
-                                <input id="cliente" type="text" placeholder="Digite o nome do cliente" required />
+                                <input id="cliente" type="text" placeholder="Digite o nome do cliente" name="cliente" required />
                                 <input id="cliente-id" type="hidden" asp-for="ClientesId" />
                                 <span asp-validation-for="ClientesId" class="text-danger"></span>
                             </div>
                             <div class="col-6">
                                 <label for="tecnico" class="form-label">Técnico / Responsável</label>
-                                <input id="tecnico" type="text" placeholder="Técnico / Responsável" required value="@Context.Session.GetString("UserName")" />
+                                <input id="tecnico" type="text" placeholder="Técnico / Responsável" required name="tecnico" value="@Context.Session.GetString("UserName")" />
                                 <input id="usuario-id" type="hidden" asp-for="UsuariosId" value="@Context.Session.GetString("UserId")" />
                                 <span asp-validation-for="UsuariosId" class="text-danger"></span>
                             </div>
@@ -415,12 +415,18 @@
     });
 
     $(document).ready(function () {
-        $('#formVenda').validate({
+        $('#formOs').validate({
             rules: {
-                'DataVenda': { required: true },
+                'DataInicial': { required: true },
+                'DataFinal': { required: true },
+                'cliente': { required: true },
+                'tecnico': { required: true }
             },
             messages: {
-                'DataVenda': { required: 'Campo requerido.' },
+                'DataInicial': { required: 'Campo requerido.' },
+                'DataFinal': { required: 'Campo requerido.' },
+                'cliente': { required: 'Campo requerido.' },
+                'tecnico': { required: 'Campo requerido.' }
             },
             errorPlacement: function (error, element) {
                 element.attr("placeholder", error.text());
@@ -431,6 +437,35 @@
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass("is-invalid").addClass("is-valid");
                 $(element).attr("placeholder", "");
+            },
+            submitHandler: function (form) {
+                var dados = $(form).serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/os/adicionar",
+                    data: dados,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === "success") {
+                            Swal.fire({
+                                icon: response.status,
+                                title: "Sucesso",
+                                text: "Produto adicionado com sucesso!"
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: response.status,
+                                title: "Atenção",
+                                text: "Produto adicionado com sucesso!"
+                            });
+                        }
+                    },
+                    error: function () {
+                        $("#errorUpload").removeClass("d-none").text("Erro ao enviar a imagem.");
+                        $("#successUpload").addClass("d-none");
+                    }
+                });
             }
         });
     });

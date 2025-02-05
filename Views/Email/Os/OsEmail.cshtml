@@ -1,0 +1,314 @@
+﻿@using SIGES.Helpers
+@model OsEmailViewModel
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        .invoice-box {
+            max-width: 1100px;
+            margin: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+        }
+
+        .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+        }
+
+        .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .invoice-box table tr td:nth-child(2) {
+            text-align: right;
+        }
+
+        .invoice-box table tr.top table td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.top table td.title {
+            font-size: 45px;
+            line-height: 45px;
+            color: #333;
+        }
+
+        .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+        }
+
+        .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+
+        .invoice-box table tr.details td {
+            padding-bottom: 20px;
+        }
+
+        .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-box table tr.item.last td {
+            border-bottom: none;
+        }
+
+        .invoice-box table tr.total td:nth-child(2) {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+        }
+
+        @@media only screen and (max-width: 600px) {
+            .invoice-box table tr.top table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+
+            .invoice-box table tr.information table td {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+        }
+
+        .rtl {
+            direction: rtl;
+            font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        }
+
+        .rtl table {
+            text-align: right;
+        }
+
+        .rtl table tr td:nth-child(2) {
+            text-align: left;
+        }
+
+        .justify {
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+    @{
+        decimal totalProdutos = 0;
+        decimal totalServicos = 0;
+    }
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" style="width:100%; max-width:120px;">
+                            </td>
+                            <td style="text-align: right">
+                                OS #: @Model.Os.Id <br>
+                                Data Inicial: @Model.Os.DataInicial?.ToString("dd/MM/yyyy") <br>
+                                Data Final: @Model.Os.DataFinal?.ToString("dd/MM/yyyy") ?>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="information">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td>
+                                Cliente: @Model.Os.Clientes?.Nome <br>
+                                @Model.Os.Clientes?.Rua, @Model.Os.Clientes?.NumeroRua, @Model.Os.Clientes?.Bairro <br>
+                                @Model.Os.Clientes?.Cidade - @Model.Os.Clientes?.Estado <br>
+                                @Model.Os.Clientes?.Email <br>
+                                @Model.Os.Clientes?.Celular <br>
+                            </td>
+
+                            <td style="text-align: right">
+                                @Model.Emitente.Nome <br>
+                                @Model.Emitente.Rua, @Model.Emitente.Numero, @Model.Emitente.Bairro <br>
+                                @Model.Emitente.Cidade - @Model.Emitente.Uf CEP: @Model.Emitente.Cep <br>
+                                Responsável: @Model.Os.Usuarios?.Nome
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td colspan="2">
+                    Status
+                </td>
+                <td colspan="2" style="text-align: center">
+                    @Model.Os.Status
+                </td>
+            </tr>
+
+            @if (!string.IsNullOrEmpty(Model.Os.Garantia))
+            {
+                <tr class="details">
+                    <td colspan="2">
+                        Garantia
+                    </td>
+
+                    <td colspan="2" style="text-align: center">
+                        @Model.Os.Garantia
+                    </td>
+                </tr>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Os.DescricaoProduto))
+            {
+                <tr class="heading">
+                    <td colspan="4">
+                        <b>Descrição</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="justify" colspan="4">
+                        @HtmlHelpers.RemoverTagsHtml(Model.Os.DescricaoProduto)
+                    </td>
+                </tr>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Os.Defeito))
+            {
+                <tr class="heading">
+                    <td colspan="4">
+                        <b>Descrição</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="justify" colspan="4">
+                        @HtmlHelpers.RemoverTagsHtml(Model.Os.Defeito)
+                    </td>
+                </tr>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Os.Observacoes))
+            {
+                <tr class="heading">
+                    <td colspan="4">
+                        <b>Descrição</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="justify" colspan="4">
+                        @HtmlHelpers.RemoverTagsHtml(Model.Os.Observacoes)
+                    </td>
+                </tr>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Os.LaudoTecnico))
+            {
+                <tr class="heading">
+                    <td colspan="4">
+                        <b>Descrição</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="justify" colspan="4">
+                        @HtmlHelpers.RemoverTagsHtml(Model.Os.LaudoTecnico)
+                    </td>
+                </tr>
+            }
+
+            @if (Model.Produtos != null)
+            {
+                <tr class="heading">
+                    <td>Produto</td>
+                    <td>Quantidade</td>
+                    <td>Preço unit.</td>
+                    <td style="text-align: center">Sub-total</td>
+                </tr>
+                @foreach(var p in Model.Produtos)
+                {
+                    totalProdutos = totalProdutos + p.SubTotal;
+                    <tr class="item">
+                        <td>@p.Descricao</td>
+                        <td>@p.Quantidade</td>
+                        <td>@(p.Preco ?? p.Produtos?.PrecoVenda)</td>
+                        <td style="text-align: center">R$ @p.SubTotal.ToString("N2")</td>
+                    </tr>
+                }
+                <tr class="item">
+                    <td colspan="3"></td>
+                    <td style="text-align: center"><strong>Total em Produtos: R$ @totalProdutos.ToString("N2")</strong></td>
+                </tr>
+            }
+
+            @if (Model.Servicos != null)
+            {
+                <tr class="heading">
+                    <td>Produto</td>
+                    <td>Quantidade</td>
+                    <td>Preço unit.</td>
+                    <td style="text-align: center">Sub-total</td>
+                </tr>
+                @foreach(var s in Model.Servicos)
+                {
+                    decimal preco = s.Preco ?? 0;
+                    decimal subtotal = preco * s.Quantidade ?? 1;
+                    totalServicos = totalServicos + subtotal;
+
+                    <tr class="item">
+                        <td>@s.Servico</td>
+                        <td>@s.Quantidade ?? 1</td>
+                        <td>R$ @preco.ToString("N2")</td>
+                        <td style="text-align: center">R$ @subtotal.ToString("N2")</td>
+                    </tr>
+                }
+                <tr class="item">
+                    <td colspan="3"></td>
+                    <td style="text-align: center"><strong>Total em Produtos: R$ @totalServicos.ToString("N2")</strong></td>
+                </tr>
+            }
+
+            <tr class="heading">
+                <td colspan="4">
+                    <br>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td colspan="3"></td>
+                <td style="text-align: center">
+                    <strong>Total: R$ @((totalProdutos + totalServicos).ToString("N2"))</strong>
+                </td>
+            </tr>
+
+            @if (Model.Os.Desconto > 0 && Model.Os.ValorDesconto > 0)
+            {
+                <tr class="heading">
+                    <td colspan="3"></td>
+                    <td style="text-align: center">
+                        <strong>Desconto: R$ @((Model.Os.ValorDesconto - (totalProdutos + totalServicos)).ToString("N2"))</strong>
+                    </td>
+                </tr>
+                <tr class="heading">
+                    <td colspan="3"></td>
+                    <td style="text-align: center">
+                        <strong>Total com Desconto: R$ @((Model.Os.ValorDesconto).ToString("N2"))</strong>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</body>
+
+</html>

@@ -19,17 +19,17 @@ namespace SIGES.Controllers
         private readonly PaymentGatewaysService _paymentGatewaysService;
         private readonly IEmailQueueRepository _emailQueueRepository;
         private readonly IClienteRepositorio _clienteRepository;
-        private readonly IEmitente _emitenteRepository;
+        private readonly IViewRenderService _viewRenderService;
 
         public CobrancaController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, PaymentGatewaysService paymentGatewaysService,
-            IEmailQueueRepository emailQueueRepository, IClienteRepositorio clienteRepository, IEmitente emitenteRepository)
+            IEmailQueueRepository emailQueueRepository, IClienteRepositorio clienteRepository, IViewRenderService viewRenderService)
         {
             _cobrancaRepository = cobrancaRepository;
             _paymentGateway = paymentGateway;
             _paymentGatewaysService = paymentGatewaysService;
             _emailQueueRepository = emailQueueRepository;
             _clienteRepository = clienteRepository;
-            _emitenteRepository = emitenteRepository;
+            _viewRenderService = viewRenderService;
         }
 
         [HttpGet("")]
@@ -197,7 +197,7 @@ namespace SIGES.Controllers
 
         [Permissao("vCobranca", "Você não tem permissão para enviar e-mail!")]
         [HttpPost("enviar-email/{id}")]
-        public async Task<IActionResult> EnviarEmail(int id, [FromServices] IViewRenderService viewRenderService)
+        public async Task<IActionResult> EnviarEmail(int id)
         {
             try
             {
@@ -228,7 +228,8 @@ namespace SIGES.Controllers
                     Cobranca = cobranca,
                     Cliente = cliente
                 };
-                string htmlBody = await viewRenderService.RenderToStringAsync("Email/CobrancaEmail", model);
+                var htmlBody = await _viewRenderService.RenderToStringAsync("Email/CobrancaEmail", model);
+                //string htmlBody = await viewRenderService.RenderToStringAsync("Email/CobrancaEmail", model);
 
                 var email = new EmailQueue
                 {

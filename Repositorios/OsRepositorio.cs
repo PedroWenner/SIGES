@@ -8,7 +8,6 @@ namespace SIGES.Repositorios
     public class OsRepositorio : IOs
     {
         private readonly AppDbContext _context;
-        public DbSet<OsModel> Clientes { get; set; }
         public OsRepositorio(AppDbContext context)
         {
             _context = context;
@@ -56,6 +55,13 @@ namespace SIGES.Repositorios
         {
             return _context.ServicosOs
                 .Include(s => s.Servicos)
+                .Where(s => s.OsId == id)
+                .ToList();
+        }
+        public IEnumerable<ProdutosOs?> GetProdutos(int id)
+        {
+            return _context.ProdutosOs
+                .Include(s => s.Produtos)
                 .Where(s => s.OsId == id)
                 .ToList();
         }

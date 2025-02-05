@@ -14,7 +14,7 @@ namespace SIGES.Models
         public string? Servico { get; set; }
 
         [Column("quantidade")]
-        public double? Quantidade { get; set; } = 0;
+        public int? Quantidade { get; set; } = 0;
 
         [Column("preco", TypeName = "decimal(15,2)")]
         public decimal? Preco { get; set; } = 0;
@@ -27,7 +27,7 @@ namespace SIGES.Models
         [Required]
         public int ServicosId { get; set; }
 
-        [Column("sub-total", TypeName = "decimal(15,2)")]
+        [Column("sub_total", TypeName = "decimal(15,2)")]
         public decimal? SubTotal { get; set; } = 0;
 
         public virtual OsModel? Os { get; set; }
