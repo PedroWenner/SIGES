@@ -1,6 +1,7 @@
 ﻿using SIGES.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace SIGES.Models
 {
@@ -19,5 +20,7 @@ namespace SIGES.Models
         [Required(ErrorMessage = "Valor é obrigatório.")]
         [Column(TypeName = "decimal(15,2)")]
         public decimal Valor { get; set; }
+        [ValidateNever]
+        public ICollection<ServicosOs> ServicosOs { get; set; } = new List<ServicosOs>();
     }
 }

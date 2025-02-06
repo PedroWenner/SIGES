@@ -983,7 +983,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$YQwGsKgUfX0lbcXcjreRZelxiiJFwfD3Gv1r3FeBpi8NLoVhXMR/2",
+                            Senha = "$2a$11$MIGU6WC.3RIB3KqRVnX.g.CG6x0cfD9m8m1mLuNrWwOHbslQccsvu",
                             Situacao = 1
                         });
                 });
@@ -1176,7 +1176,7 @@ namespace SIGES.Migrations
                         .IsRequired();
 
                     b.HasOne("SIGES.Models.ProdutoModel", "Produtos")
-                        .WithMany()
+                        .WithMany("ProdutosOs")
                         .HasForeignKey("ProdutosId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1195,7 +1195,7 @@ namespace SIGES.Migrations
                         .IsRequired();
 
                     b.HasOne("SIGES.Models.ServicoModel", "Servicos")
-                        .WithMany()
+                        .WithMany("ServicosOs")
                         .HasForeignKey("ServicosId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1286,6 +1286,13 @@ namespace SIGES.Migrations
             modelBuilder.Entity("SIGES.Models.ProdutoModel", b =>
                 {
                     b.Navigation("Itens");
+
+                    b.Navigation("ProdutosOs");
+                });
+
+            modelBuilder.Entity("SIGES.Models.ServicoModel", b =>
+                {
+                    b.Navigation("ServicosOs");
                 });
 
             modelBuilder.Entity("SIGES.Models.UsuarioModel", b =>

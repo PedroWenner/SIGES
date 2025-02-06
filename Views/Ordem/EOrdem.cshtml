@@ -254,20 +254,20 @@
                                 <form id="formProdutos" method="post">
                                     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                                    <input type="hidden" name="os-id" value="@Model.Os.Id" />
+                                    <input type="hidden" name="OsId" value="@Model.Os.Id" />
                                     <div class="row mb-3 mt-3">
                                         <div class="col-5">
                                             <label for="produto" class="form-label">Produto</label>
                                             <input id="produto" type="text" placeholder="Digite o nome do produto" />
-                                            <input id="produto-id" type="hidden" name="produto-id" />
+                                            <input id="produto-id" type="hidden" name="ProdutosId" />
                                         </div>
                                         <div class="col-2">
                                             <label for="produto-preco" class="form-label">Preço</label>
-                                            <input id="produto-preco" type="text" name="produto-preco" class="money" placeholder="Preço" />
+                                            <input id="produto-preco" type="text" name="Preco" class="money" placeholder="Preço" />
                                         </div>
                                         <div class="col-2">
                                             <label for="produto-quantidade" class="form-label">Quantidade</label>
-                                            <input id="produto-quantidade" type="text" name="produto-quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                            <input id="produto-quantidade" type="text" name="Quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
                                         </div>
                                         <div class="col-2 align-content-end flex-wrap">
                                             <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
@@ -280,7 +280,7 @@
                             </div>
                             <div class="widget-box" id="divProdutos">
                                 <div class="widget_content nopadding">
-                                    <div id="progressBarProdutos" class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="display: none;">
+                                    <div id="progressBarProdutos" class="progress mt-4" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="display: none;">
                                         <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
                                     </div>
 
@@ -300,7 +300,7 @@
                                             {
                                                 total += p.SubTotal;
                                                 <tr>
-                                                    <td>@p.Descricao</td>
+                                                    <td>@p.Produtos?.Descricao</td>
                                                     <td>@p.Quantidade</td>
                                                     <td>R$ @(p.Preco?.ToString("N2") ?? p.Produtos?.PrecoVenda.ToString("N2"))</td>
                                                     <td>
@@ -709,18 +709,18 @@
 
     $("#formProdutos").validate({
         rules: {
-            produto-preco: {
+            Preco: {
                 required: true
             },
-            produto-quantidade: {
+            Quantidade: {
                 required: true
             }
         },
         messages: {
-            produto-preco: {
+            Preco: {
                 required: 'Inserir o preço'
             },
-            produto-quantidade: {
+            Quantidade: {
                 required: 'Insira a quantidade'
             }
         },
@@ -735,98 +735,82 @@
             $(element).attr("placeholder", "");
         },
         submitHandler: function (form) {
-            var quantidade = parseInt($("#produto-quantidade").val());
-            var estoque = parseInt($("#produto-estoque").val());
+            var dados = $(form).serialize();
+            $("#progressBarProdutos").show();
+            $.ajax({
+                type: "POST",
+                url: "/os/adicionar-produtos",
+                data: dados,
+                dataType: "json",
+                success: function (response) {
+                    if (response.status) {
+                        let tbody = $("#tabela tbody");
+                        tbody.empty();
 
-            // <?php if (!$configuration['control_estoque']) {
-            //     echo 'estoque = 1000000';
-            // }
-            // ; ?>
-
-            if (estoque < quantidade) {
-                Swal.fire({
-                    type: "error",
-                    title: "Atenção",
-                    text: "Você não possui estoque suficiente."
-                });
-            } else {
-                var dados = $(form).serialize();
-                $("#progressBarProdutos").show();
-                $.ajax({
-                    type: "POST",
-                    url: "/os/adicionar-produtos",
-                    data: dados,
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.result) {
-                            let tbody = $("#tabela tbody");
-                            tbody.empty();
-
-                            if (response.items && Array.isArray(response.items)) {
-                                response.items.forEach(item => {
-                                    tbody.append(`
-                                        <tr>
-                                            <td>${item.produtoNome}</td>
-                                            <td>${item.quantidade}</td>
-                                            <td>${item.preco}</td>
-                                            <td>${item.subTotal}</td>
-                                            <td>
-                                                <a data-id="${item.id}" role="button" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir produto">
-                                                    <i class="bx bx-trash-alt bx-xs"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    `);
-                                });
-                            }
-
-                            $("#tabela tfoot").html(`
-                                <tr>
-                                    <td colspan="4" style="text-align: right">
-                                        <strong>Total:</strong>
-                                    </td>
-                                    <td>
-                                        <div align="center">
-                                            <strong>
-                                                ${response.total || "R$ 0,00"}
-                                                <input type="hidden" id="total-venda" value="${response.total || "R$ 0,00"}">
-                                            </strong>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `);
-
-                            Swal.fire({
-                                icon: "success",
-                                title: "Sucesso",
-                                text: "Produto adicionado com sucesso!"
-                            });
-
-                            $("#produto-quantidade").val("");
-                            $("#produto-preco").val("");
-                            $("#produto").val("").focus();
-                        } else {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Erro",
-                                text: response.messages
+                        if (response.produtos && Array.isArray(response.produtos)) {
+                            response.produtos.forEach(produto => {
+                                tbody.append(`
+                                    <tr>
+                                        <td>${produto.produtoNome}</td>
+                                        <td>${produto.quantidade}</td>
+                                        <td>${produto.preco}</td>
+                                        <td>${produto.subTotal}</td>
+                                        <td>
+                                            <a data-id="${produto.id}" role="button" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir produto">
+                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `);
                             });
                         }
-                    },
-                    error: function () {
+
+                        $("#tabela tfoot").html(`
+                            <tr>
+                                <td colspan="4" style="text-align: right">
+                                    <strong>Total:</strong>
+                                </td>
+                                <td>
+                                    <div align="center">
+                                        <strong>
+                                            ${response.total || "R$ 0,00"}
+                                            <input type="hidden" id="total-venda" value="${response.total || "R$ 0,00"}">
+                                        </strong>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Sucesso",
+                            text: "Produto adicionado com sucesso!"
+                        });
+
+                        $("#produto-quantidade").val("");
+                        $("#produto-preco").val("");
+                        $("#produto").val("").focus();
+                    } else {
                         Swal.fire({
                             icon: "error",
                             title: "Erro",
-                            text: "Não foi possível adicionar o produto. Tente novamente."
+                            text: response.message
                         });
-                    },
-                    complete: function () {
-                        $("#progressBarProdutos").hide();
                     }
-                });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro",
+                        text: "Não foi possível adicionar o produto. Tente novamente."
+                    });
+                },
+                complete: function () {
+                    $("#progressBarProdutos").hide();
+                }
+            });
 
-                return false;
-            }
+            return false;
         }
     });
 

@@ -10,7 +10,7 @@ namespace SIGES.Config
         {
             // Relacionamento ServiçoOs -> Servico
             builder.HasOne(s => s.Servicos)
-                .WithMany()
+                .WithMany(o => o.ServicosOs)
                 .HasForeignKey(s => s.ServicosId)
                 .OnDelete(DeleteBehavior.Restrict);
 

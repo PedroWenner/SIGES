@@ -500,7 +500,5 @@ namespace SIGES.Controllers
                 return Json(new { result = false, mensagem = "Erro ao faturar venda: " + ex.Message });
             }
         }
-
-        
     }
 }

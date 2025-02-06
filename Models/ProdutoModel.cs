@@ -42,5 +42,7 @@ namespace SIGES.Models
         [IgnoreLog]
         [ValidateNever]
         public ICollection<ItensVendaModel> Itens { get; set; } = new List<ItensVendaModel>();
+        [ValidateNever]
+        public ICollection<ProdutosOs> ProdutosOs { get; set; } = new List<ProdutosOs>();
     }
 }

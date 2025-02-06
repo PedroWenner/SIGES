@@ -229,7 +229,6 @@ namespace SIGES.Controllers
                     Cliente = cliente
                 };
                 var htmlBody = await _viewRenderService.RenderToStringAsync("Email/CobrancaEmail", model);
-                //string htmlBody = await viewRenderService.RenderToStringAsync("Email/CobrancaEmail", model);
 
                 var email = new EmailQueue
                 {

@@ -10,7 +10,7 @@ namespace SIGES.Config
         {
             // Relacionamento ProdutosOs -> Produtos
             builder.HasOne(s => s.Produtos)
-                .WithMany()
+                .WithMany(o => o.ProdutosOs)
                 .HasForeignKey(s => s.ProdutosId)
                 .OnDelete(DeleteBehavior.Restrict);
 

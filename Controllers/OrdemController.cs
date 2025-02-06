@@ -4,6 +4,7 @@ using SIGES.Attributes;
 using SIGES.Helpers;
 using SIGES.Interfaces;
 using SIGES.Models;
+using SIGES.Repositorios;
 using SIGES.Services;
 using SIGES.ViewModel;
 
@@ -20,10 +21,14 @@ namespace SIGES.Controllers
         private readonly IConfiguracao _configuracaoRepositorio;
         private readonly IEmailQueueRepository _emailQueueRepository;
         private readonly Interfaces.IViewRenderService _viewRenderService;
+        private readonly IRepository<ProdutoModel> _repositorioProdutos;
+        private readonly IRepository<ProdutosOs> _repositorioProdutosOs;
+        private readonly IRepository<ServicosOs> _repositorioServicosOs;
 
         public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio, IRepository<EmitenteModel> repositorioEmitente,
             IRepository<UsuarioModel> repositorioUsuario, IConfiguracao configuracaoRepositorio, IEmailQueueRepository emailQueueRepository,
-            Interfaces.IViewRenderService viewRenderService)
+            Interfaces.IViewRenderService viewRenderService, IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
+            IRepository<ProdutoModel> repositorioProdutos)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
@@ -32,6 +37,9 @@ namespace SIGES.Controllers
             _configuracaoRepositorio = configuracaoRepositorio;
             _emailQueueRepository = emailQueueRepository;
             _viewRenderService = viewRenderService;
+            _repositorioProdutosOs = repositorioProdutosOs;
+            _repositorioServicosOs = repositorioServicosOs;
+            _repositorioProdutos = repositorioProdutos;
         }
 
         [HttpGet("")]
@@ -134,8 +142,6 @@ namespace SIGES.Controllers
             var usuarioAtual = User.Identity.IsAuthenticated ? User.Identity.Name : "Usuário";
             await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, osExistente, os);
 
-            //servicoExistente.ImagemBlob = produto.ImagemBlob;
-
             // Salva as alterações
             await _osRepositorio.Atualizar(osExistente);
 
@@ -213,7 +219,6 @@ namespace SIGES.Controllers
                 Servicos = servicos.ToList(),
             };
             var htmlBody = await _viewRenderService.RenderToStringAsync("Email/Os/OsEmail", model);
-            //string htmlBody = await viewRenderService.RenderToStringAsync("Email/Os/OsEmail", model);
 
             foreach (var remetente in remetentes.Where(r => !string.IsNullOrEmpty(r)))
             {
@@ -278,6 +283,78 @@ namespace SIGES.Controllers
             }
 
             return Json(new { status = "error", message = "Número de WhatsApp não encontrado para o cliente." });
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("adicionar-produtos")]
+        public async Task<IActionResult> AdicionarProdutos(ProdutosOs produtoOs)
+        {
+            var os = await _osRepositorio.ObterPorId(produtoOs.OsId);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            if (os.faturado == 1)
+            {
+                return Json(new { status = "error", message = "Não é possivel adicionar produtos. OS já faturada!" });
+            }
+
+            produtoOs.SubTotal = (produtoOs.Preco ?? 0) * (produtoOs.Quantidade);
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { status = "error", message = "Validar campos antes de continuar." });
+            }
+
+            var produto = await _repositorioProdutos.ObterPorId(produtoOs.ProdutosId);
+            if (produto == null)
+            {
+                return Json(new { status = "error", message = "Produto não encontrado." });
+            }
+
+            if (_configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque").ToString() == "1")
+            {
+                if (produtoOs.Quantidade > produto.Estoque)
+                {
+                    return Json(new { status = "error", message = "A quantidade não pode ser maior que o estoque disponível." });
+                }
+            }
+
+            try
+            {
+                await _repositorioProdutosOs.Adicionar(produtoOs);
+
+                if (_configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque").ToString() == "1")
+                {
+                    produto.Estoque = produto.Estoque - produtoOs.Quantidade;
+                    await _repositorioProdutos.Atualizar(produto);
+                }
+
+                os.Desconto = 0;
+                os.ValorDesconto = 0;
+                await _osRepositorio.Atualizar(os);
+
+                var produtosAdicionados = await _repositorioProdutosOs.Listar();
+
+                return Json(new 
+                {
+                    status = "success",
+                    produtos = produtosAdicionados.Select(i => new
+                    {
+                        i.Id,
+                        ProdutoNome = i.Produtos?.Descricao,
+                        i.Quantidade,
+                        Preco = i.Preco?.ToString("C"),
+                        SubTotal = i.SubTotal.ToString("C")
+                    }),
+                    total = produtosAdicionados.Sum(i => i.SubTotal).ToString("C")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
         }
     }
 }
