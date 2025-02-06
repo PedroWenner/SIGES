@@ -451,19 +451,26 @@
                             Swal.fire({
                                 icon: response.status,
                                 title: "Sucesso",
-                                text: "Produto adicionado com sucesso!"
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.href = `/os/editar/${response.id}`;
                             });
                         } else {
                             Swal.fire({
                                 icon: response.status,
                                 title: "Atenção",
-                                text: "Produto adicionado com sucesso!"
+                                text: response.message
                             });
                         }
                     },
                     error: function () {
-                        $("#errorUpload").removeClass("d-none").text("Erro ao enviar a imagem.");
-                        $("#successUpload").addClass("d-none");
+                        Swal.fire({
+                            icon: "error",
+                            title: "Erro",
+                            text: "Ocorreu um erro ao tentar salvar a OS."
+                        });
                     }
                 });
             }

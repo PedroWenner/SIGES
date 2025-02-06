@@ -29,6 +29,7 @@ namespace SIGES.Repositorios
                 .Include(o => o.Clientes)
                 .Include(o => o.Servicos)
                     .ThenInclude(s => s.Servicos)
+                .Include(o => o.Garantias)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
         public async Task Adicionar(OsModel os)

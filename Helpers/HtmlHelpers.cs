@@ -2,6 +2,7 @@
 using System.Net;
 using Microsoft.Security.Application;
 using System.Text;
+using System.Web;
 
 namespace SIGES.Helpers
 {
@@ -70,6 +71,34 @@ namespace SIGES.Helpers
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Método que retorna o texto base da notificação formatado.
+        /// </summary>
+        /// <param name="textoBase"></param>
+        /// <param name="troca"></param>
+        /// <returns></returns>
+        public static string CriarTextoWhats(string textoBase, List<string> troca)
+        {
+            textoBase = RemoverTagsHtml(textoBase);
+            var procura = new List<string>
+            {
+                "{CLIENTE_NOME}", "{NUMERO_OS}", "{STATUS_OS}", "{VALOR_OS}",
+                "{DESCRI_PRODUTOS}", "{EMITENTE}", "{TELEFONE_EMITENTE}",
+                "{OBS_OS}", "{DEFEITO_OS}", "{LAUDO_OS}", "{DATA_FINAL}",
+                "{DATA_INICIAL}", "{DATA_GARANTIA}"
+            };
+
+            for (int i = 0; i < procura.Count; i++)
+            {
+                textoBase = textoBase.Replace(procura[i], troca.ElementAtOrDefault(i) ?? "");
+            }
+
+            textoBase = System.Text.RegularExpressions.Regex.Replace(textoBase, "<.*?>", "");
+            textoBase = HttpUtility.UrlEncode(textoBase);
+
+            return textoBase;
         }
     }
 }

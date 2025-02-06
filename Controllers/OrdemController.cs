@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Attributes;
-using SIGES.Classes;
+using SIGES.Helpers;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
 using SIGES.Services;
 using SIGES.ViewModel;
-using System.Text.Json;
 
 namespace SIGES.Controllers
 {
@@ -21,11 +19,11 @@ namespace SIGES.Controllers
         private readonly IRepository<UsuarioModel> _repositorioUsuario;
         private readonly IConfiguracao _configuracaoRepositorio;
         private readonly IEmailQueueRepository _emailQueueRepository;
-        private readonly IViewRenderService _viewRenderService;
+        private readonly Interfaces.IViewRenderService _viewRenderService;
 
         public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio, IRepository<EmitenteModel> repositorioEmitente,
             IRepository<UsuarioModel> repositorioUsuario, IConfiguracao configuracaoRepositorio, IEmailQueueRepository emailQueueRepository,
-            IViewRenderService viewRenderService)
+            Interfaces.IViewRenderService viewRenderService)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
@@ -61,7 +59,7 @@ namespace SIGES.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Json(new { status = "Error", message = "Favor validar todos os campos obrigatórios." });
+                return Json(new { status = "error", message = "Favor validar todos os campos obrigatórios." });
             }
 
             os.faturado = 0;
@@ -79,37 +77,43 @@ namespace SIGES.Controllers
                 if (osNotification != "nenhum" && emailAutomatico == "1")
                 {
                     List<string> remetentes = DefinirRemetentes(osNotification, osCadastrada.Clientes.Email, tecnico.Email, emitente.Email);
-
                     string status = await EnviarEmail(os.Id, remetentes, "Ordem de Serviço - Criada");
                 }
-                
-                TempData["Success"] = "OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de produtos e serviços!";
-                return RedirectToAction("Editar", new { id = os.Id });
 
+                return Json(new { status = "success", message = "OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de produtos e serviços!", id = os.Id.ToString() });
             }
             catch(Exception)
             {
-                return Json(new { status = "Error", message = "Ocorreu um erro." });
+                return Json(new { status = "error", message = "Ocorreu um erro." });
             }
         }
 
-        [Permissao("eOrdem")]
+        [Permissao("eOrdem", "Você não tem permissão para editar OS.")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
             // Busca pelo ID
             var os = await _osRepositorio.ObterPorId(id);
-
             if (os == null)
             {
                 TempData["Error"] = "OS não encontrada.";
                 return RedirectToAction("Index");
             }
 
-            // Retorna a View com o modelo populado
-            return View("EOrdem", os);
+            var produtos = _osRepositorio.GetProdutos(id);
+            var servicos = _osRepositorio.GetServicos(id);
+
+            var viewmodel = new OsEmailViewModel
+            {
+                Os = os,
+                Produtos = produtos.ToList(),
+                Servicos = servicos.ToList(),
+            };
+
+            return View("EOrdem", viewmodel);
         }
 
+        [Permissao("eOrdem", "Você não tem permissão para editar OS.")]
         [HttpPost("editar/{id}")]
         public async Task<IActionResult> Editar(int id, OsModel os)
         {
@@ -223,6 +227,57 @@ namespace SIGES.Controllers
             }
 
             return "success";
+        }
+
+        [Permissao("eOs", "Você não tem permissão para enviar mensagens.")]
+        [HttpPost("enviar-whatsapp/{id}")]
+        public async Task<IActionResult> EnviarWhatsApp(int id)
+        {
+            var os = await _osRepositorio.ObterPorId(id);
+            if (os == null)
+            {
+                return Json(new { status = "Error", message = "OS não encontrada." });
+            }
+
+            var emitente = (await _repositorioEmitente.Listar()).FirstOrDefault();
+            var textoBase = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("notifica_whats");
+
+            if (string.IsNullOrEmpty(textoBase))
+            {
+                return Json(new { status = "error", message = "O texto base para notificação não está configurado." });
+            }
+
+            var zapnumber = new string(os.Clientes?.Telefone?.Where(char.IsDigit).ToArray());
+
+            List<string> troca = new List<string>
+            {
+                os.Clientes?.Nome ?? "",
+                os.Id.ToString() ?? "",
+                os.Status ?? "",
+                "R$ " + (os.Desconto > 0 && os.ValorDesconto > 0
+                    ? os.ValorDesconto.ToString("N2")
+                    : (os.Produtos?.Sum(x => x.Preco ?? 0) + os.Servicos?.Sum(x => x.Preco ?? 0)).ToString()),
+                os.DescricaoProduto ?? "",
+                emitente?.Nome ?? "",
+                emitente?.Telefone ?? "",
+                os.Observacoes ?? "",
+                os.Defeito ?? "",
+                os.LaudoTecnico ?? "",
+                os.DataFinal?.ToString("dd/MM/yyyy") ?? "",
+                os.DataInicial?.ToString("dd/MM/yyyy") ?? "",
+                $"{os.Garantia} dias"
+            };
+
+            string textoDeNotificacao = HtmlHelpers.CriarTextoWhats(textoBase, troca);
+
+            if (!string.IsNullOrEmpty(zapnumber))
+            {
+
+                string linkWhatsApp = $"https://wa.me/55{zapnumber}?text={textoDeNotificacao}";
+                return Json(new { status = "success", link = linkWhatsApp });
+            }
+
+            return Json(new { status = "error", message = "Número de WhatsApp não encontrado para o cliente." });
         }
     }
 }

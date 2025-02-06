@@ -1,5 +1,855 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using SIGES.Helpers
+@using SIGES.Interfaces
+@model OsEmailViewModel
+
 @{
+    ViewData["Titulo"] = "Editar OS";
+    decimal total = 0;
 }
+
+<link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
+
+<style>
+    .custom-counter {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    max-width: 180px;
+    justify-content: space-between;
+    transition: border 0.3s ease;
+    }
+
+    .custom-counter:focus-within {
+    border: 1px solid #aaa;
+    }
+
+    .custom-counter input[type="number"] {
+    border: none;
+    outline: none;
+    width: 60px;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    background: transparent;
+    }
+
+    .custom-counter input::placeholder {
+    color: #bbb;
+    font-style: italic;
+    }
+
+    .counter-buttons {
+    display: flex;
+    gap: 8px;
+    padding-right: 10px;
+    }
+
+    .counter-buttons button {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0;
+    }
+
+    .counter-buttons button:hover {
+    color: #333;
+    }
+
+    .counter-buttons button:disabled {
+    color: #ddd;
+    cursor: default;
+    }
+
+    #ui-datepicker-div {
+    z-index: 999 !important;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Editar ordem de serviço</h5>
+        </div>
+        <div class="card-body">
+
+            <div class="buttons d-flex">
+                @if (Model.Os.faturado == 0)
+                {
+                    <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
+                        <span class="button__icon"><i class='bx bx-dollar'></i></span>
+                        <span class="button__text">Faturar</span>
+                    </a>
+                }
+
+                <a title="Visualizar OS" class="button btn btn-mini btn-primary" href="#">
+                    <span class="button__icon"><i class="bx bx-show"></i></span>
+                    <span class="button__text">Visualizar OS</span>
+                </a>
+                <div class="button-container">
+                    <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                        <span class="button__icon"><i class="bx bx-printer"></i></span>
+                        <span class="button__text">Imprimir</span>
+                    </a>
+                    <div class="cascading-buttons">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                            <span class="button__icon"><i class='bx bx-file'></i></span>
+                            <span class="button__text">Papel A4</span>
+                        </a>
+                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                            <span class="button__icon"><i class='bx bx-receipt'></i></span>
+                            <span class="button__text">Cupom 80mm</span>
+                        </a>
+                        @if (Model.Os.GarantiasId == null)
+                        {
+                            <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-mini btn-secondary" href="#">
+                                <span class="button__icon"><i class="bx bx-paperclip"></i></span>
+                                <span class="button__text">Termo Garantia</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
+                {
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-os-id="@Model.Os.Id">
+                        <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
+                        <span class="button__text">WhatsApp</span>
+                    </button>
+                }
+            </div>
+
+            <ul class="nav nav-tabs" id="myTabOs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="navLinkDetalheOs" data-bs-toggle="tab" data-bs-target="#os-tab-pane" type="button" role="tab" aria-controls="os-tab-pane" aria-selected="true">Detalhes da OS</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navLinkDescontoOs" data-bs-toggle="tab" data-bs-target="#desconto-tab-pane" type="button" role="tab" aria-controls="desconto-tab-pane">Descontos</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navLinkProdutosOs" data-bs-toggle="tab" data-bs-target="#produtos-tab-pane" type="button" role="tab" aria-controls="produtos-tab-pane">Produtos</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navLinkServicosOs" data-bs-toggle="tab" data-bs-target="#servicos-tab-pane" type="button" role="tab" aria-controls="servicos-tab-pane">Serviços</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navLinkAnexosOs" data-bs-toggle="tab" data-bs-target="#anexos-tab-pane" type="button" role="tab" aria-controls="anexos-tab-pane">Anexos</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="navLinkAnotacoesOs" data-bs-toggle="tab" data-bs-target="#anotacao-tab-pane" type="button" role="tab" aria-controls="anotacao-tab-pane">Anotações</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="os-tab-pane" role="tabpanel" aria-labelledby="navLinkDetalheOs" tabindex="0">
+                    <form id="formOs" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="Os.Id" />
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <label for="cliente" class="form-label">Cliente</label>
+                                <input id="cliente" type="text" placeholder="Digite o nome do cliente" name="cliente" required value="@Model.Os?.Clientes?.Nome" />
+                                <input id="cliente-id" type="hidden" asp-for="Os.ClientesId" />
+                                <span asp-validation-for="Os.ClientesId" class="text-danger"></span>
+                            </div>
+                            <div class="col-6">
+                                <label for="tecnico" class="form-label">Técnico / Responsável</label>
+                                <input id="tecnico" type="text" placeholder="Técnico / Responsável" required name="tecnico" value="@Model.Os?.Usuarios?.Nome" />
+                                <input id="usuario-id" type="hidden" asp-for="Os.UsuariosId" />
+                                <span asp-validation-for="Os.UsuariosId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select asp-for="Os.Status" id="status" required>
+                                    <option value="Orçamento">Orçamento</option>
+                                    <option value="Aberto">Aberto</option>
+                                    <option value="Em Andamento">Em Andamento</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Aguardando Peças">Aguardando Peças</option>
+                                    <option value="Aprovado">Aprovado</option>
+                                </select>
+                                <span asp-validation-for="Os.Status" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="data-inicial" class="form-label">Data inicial</label>
+                                <input id="data-inicial" type="date" asp-for="Os.DataInicial" required class="datetime" />
+                                <span asp-validation-for="Os.DataInicial" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="data-final" class="form-label">Data final</label>
+                                <input id="data-final" type="date" asp-for="Os.DataFinal" class="datetime" required />
+                                <span asp-validation-for="Os.DataFinal" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-3 mt-3">
+                                <label for="garantia" class="form-label">Garantia (dias)</label>
+                                <div class="custom-counter">
+                                    <input id="garantia" type="number" min="0" asp-for="Os.Garantia" readonly />
+                                    <div class="counter-buttons">
+                                        <button type="button" class="decrement">–</button>
+                                        <button type="button" class="increment">+</button>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Os.Garantia" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-6 mt-3">
+                                <label for="garantias" class="form-label">Termo de garantia</label>
+                                <input id="garantias" type="text" value="@Model.Os?.Garantias?.RefGarantia" />
+                                <input id="garantias-id" type="hidden" asp-for="Os.GarantiasId" />
+                                <span asp-validation-for="Os.GarantiasId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <h6>Descrição produto/serviço</h6>
+                                <textarea asp-for="Os.DescricaoProduto" id="descricao-produto"></textarea>
+                            </div>
+                            <div class="col-6">
+                                <h6>Defeito</h6>
+                                <textarea asp-for="Os.Defeito" id="defeito"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 mt-3">
+                            <div class="col-6">
+                                <h6>Observações</h6>
+                                <textarea asp-for="Os.Observacoes" id="observacoes"></textarea>
+                            </div>
+                            <div class="col-6">
+                                <h6>Laudo técnico</h6>
+                                <textarea asp-for="Os.LaudoTecnico" id="laudo-tecnico"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex justify-content-center">
+                            <a title="Voltar" class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
+                                <span class="button__icon"><i class="bx bx-undo"></i></span>
+                                <span class="button__text2">Voltar</span>
+                            </a>
+                            <button type="submit" class="button btn btn-mini btn-primary">
+                                <span class="button__icon"><i class='bx bx-sync'></i></span>
+                                <span class="button__text2">Atualizar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade show" id="desconto-tab-pane" role="tabpanel" aria-labelledby="navLinkDescontoOs" tabindex="1">
+
+                </div>
+                <div class="tab-pane fade show" id="produtos-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutosOs" tabindex="2">
+                    <div class="col-lg-12 mt-3 p-3 text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form id="formProdutos" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                                    <input type="hidden" name="os-id" value="@Model.Os.Id" />
+                                    <div class="row mb-3 mt-3">
+                                        <div class="col-5">
+                                            <label for="produto" class="form-label">Produto</label>
+                                            <input id="produto" type="text" placeholder="Digite o nome do produto" />
+                                            <input id="produto-id" type="hidden" name="produto-id" />
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="produto-preco" class="form-label">Preço</label>
+                                            <input id="produto-preco" type="text" name="produto-preco" class="money" placeholder="Preço" />
+                                        </div>
+                                        <div class="col-2">
+                                            <label for="produto-quantidade" class="form-label">Quantidade</label>
+                                            <input id="produto-quantidade" type="text" name="produto-quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                        </div>
+                                        <div class="col-2 align-content-end flex-wrap">
+                                            <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                <span class="button__text2">Adicionar</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="widget-box" id="divProdutos">
+                                <div class="widget_content nopadding">
+                                    <div id="progressBarProdutos" class="progress" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="display: none;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
+                                    </div>
+
+                                    <table width="100%" class="tblProdutos" id="tabela">
+                                        <thead>
+                                            <tr>
+                                                <th>Produto</th>
+                                                <th width="8%">Quantidade</th>
+                                                <th width="10%">Preço unit.</th>
+                                                <th width="6%">Ações</th>
+                                                <th width="10%">Sub-total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            
+                                            @foreach (var p in Model.Produtos)
+                                            {
+                                                total += p.SubTotal;
+                                                <tr>
+                                                    <td>@p.Descricao</td>
+                                                    <td>@p.Quantidade</td>
+                                                    <td>R$ @(p.Preco?.ToString("N2") ?? p.Produtos?.PrecoVenda.ToString("N2"))</td>
+                                                    <td>
+                                                        @if (Model.Os.Status != "cancelado")
+                                                        {
+                                                            <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir produto">
+                                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                                            </a>
+                                                        }
+                                                    </td>
+                                                    <td>@p.SubTotal.ToString("N2")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4" style="text-align: right">
+                                                    <strong>Total:</strong>
+                                                </td>
+                                                <td>
+                                                    <div align="center">
+                                                        <strong>
+                                                            R$ @total.ToString("N2")
+                                                            <input type="hidden" id="total-venda" value="@total.ToString("N2")">
+                                                        </strong>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade show" id="servicos-tab-pane" role="tabpanel" aria-labelledby="navLinkServicosOs" tabindex="3">
+
+                </div>
+                <div class="tab-pane fade show" id="anexos-tab-pane" role="tabpanel" aria-labelledby="navLinkAnexosOs" tabindex="4">
+
+                </div>
+                <div class="tab-pane fade show" id="anotacao-tab-pane" role="tabpanel" aria-labelledby="navLinkAnotacoesOs" tabindex="5">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
+<script src="~/trumbowyg/dist/plugins/fontfamily/trumbowyg.fontfamily.min.js"></script>
+<script src="~/trumbowyg/dist/langs/pt_br.js"></script>
+<script>
+    $('#descricao-produto').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $('#defeito').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $('#observacoes').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $('#laudo-tecnico').trumbowyg({
+        lang: 'pt_br',
+        autogrow: true,
+        tagsToRemove: ['script', 'link'],
+        tagsToKeep: ['i', 'script[src]'],
+        btns: [
+            ['fontfamily'],
+            ['fontsize'],
+            ['undo', 'redo'],
+            ['bold', 'italic'],
+            ['formatting'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['unorderedList', 'orderedList'],
+            ['horizontalRule'],
+        ],
+        plugins: {
+            fontsize: {
+                sizeList: [
+                    '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+                ]
+            }
+        }
+    });
+
+    $(function () {
+        $("#cliente").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/clientes/ListarClientes",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        if (data.length === 0) {
+                            response([{
+                                nome: "Adicionar cliente",
+                                value: "add",
+                                adicionar: true
+                            }]);
+                        } else {
+                            response(data);
+                        }
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                if (!ui.item.adicionar) {
+                    $("#cliente").val(ui.item.nome);
+                }
+
+                return false;
+            },
+            select: function (event, ui) {
+                if (ui.item.adicionar) {
+                    window.location.href = "/clientes/adicionar";
+                } else {
+                    $("#cliente").val(ui.item.nome);
+                    $("#cliente-id").val(ui.item.value);
+                }
+
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            if (item.adicionar) {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-add">➕ ${item.nome}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            } else {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-title">${item.nome}</span>
+                            <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            }
+        };
+    });
+
+    $(function () {
+        $("#vendedor").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/usuarios/listarUsuarios",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#vendedor").val(ui.item.nome);
+                $("#vendedor-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Celular: ${item.celular}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(function () {
+        $("#garantias").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/garantias/listarGarantias",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#garantias").val(ui.item.nome);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#garantias").val(ui.item.nome);
+                $("#garantias-id").val(ui.item.value);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $(document).ready(function () {
+        $('#formOs').validate({
+            rules: {
+                'DataInicial': { required: true },
+                'DataFinal': { required: true },
+                'cliente': { required: true },
+                'tecnico': { required: true }
+            },
+            messages: {
+                'DataInicial': { required: 'Campo requerido.' },
+                'DataFinal': { required: 'Campo requerido.' },
+                'cliente': { required: 'Campo requerido.' },
+                'tecnico': { required: 'Campo requerido.' }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            },
+            submitHandler: function (form) {
+                var dados = $(form).serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/os/editar",
+                    data: dados,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.status === "success") {
+                            Swal.fire({
+                                icon: response.status,
+                                title: "Sucesso",
+                                text: "Produto adicionado com sucesso!"
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: response.status,
+                                title: "Atenção",
+                                text: "Produto adicionado com sucesso!"
+                            });
+                        }
+                    },
+                    error: function () {
+                        $("#errorUpload").removeClass("d-none").text("Erro ao enviar a imagem.");
+                        $("#successUpload").addClass("d-none");
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '#enviarWhatsApp', function () {
+        var osId = $(this).data('os-id');
+
+        $.ajax({
+            url: `/os/enviar-whatsapp/${osId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.status === "success") {
+                    window.open(response.link, '_blank');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Ocorreu um erro ao enviar a mensagem.'
+                });
+            }
+        });
+    });
+
+    $(function () {
+        $("#produto").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/produtos/listarProdutos",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#produto").val(ui.item.nome + " | Preço: R$ " + ui.item.preco + " | Estoque: " + ui.item.estoque);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#produto").val(ui.item.nome + " | Preço: R$ " + ui.item.preco + " | Estoque: " + ui.item.estoque);
+                $("#produto-id").val(ui.item.value);
+
+                let precoFormatado = parseFloat(ui.item.preco).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                $("#produto-preco").val(precoFormatado);
+
+                $("#produto-quantidade").data("estoque", ui.item.estoque);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Preço: R$ ${item.preco.toLocaleString('pt-BR', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        })} | Estoque: ${item.estoque}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
+    $("#formProdutos").validate({
+        rules: {
+            produto-preco: {
+                required: true
+            },
+            produto-quantidade: {
+                required: true
+            }
+        },
+        messages: {
+            produto-preco: {
+                required: 'Inserir o preço'
+            },
+            produto-quantidade: {
+                required: 'Insira a quantidade'
+            }
+        },
+        errorPlacement: function (error, element) {
+            element.attr("placeholder", error.text());
+        },
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass("is-invalid").addClass("is-valid");
+            $(element).attr("placeholder", "");
+        },
+        submitHandler: function (form) {
+            var quantidade = parseInt($("#produto-quantidade").val());
+            var estoque = parseInt($("#produto-estoque").val());
+
+            // <?php if (!$configuration['control_estoque']) {
+            //     echo 'estoque = 1000000';
+            // }
+            // ; ?>
+
+            if (estoque < quantidade) {
+                Swal.fire({
+                    type: "error",
+                    title: "Atenção",
+                    text: "Você não possui estoque suficiente."
+                });
+            } else {
+                var dados = $(form).serialize();
+                $("#progressBarProdutos").show();
+                $.ajax({
+                    type: "POST",
+                    url: "/os/adicionar-produtos",
+                    data: dados,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.result) {
+                            let tbody = $("#tabela tbody");
+                            tbody.empty();
+
+                            if (response.items && Array.isArray(response.items)) {
+                                response.items.forEach(item => {
+                                    tbody.append(`
+                                        <tr>
+                                            <td>${item.produtoNome}</td>
+                                            <td>${item.quantidade}</td>
+                                            <td>${item.preco}</td>
+                                            <td>${item.subTotal}</td>
+                                            <td>
+                                                <a data-id="${item.id}" role="button" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir produto">
+                                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    `);
+                                });
+                            }
+
+                            $("#tabela tfoot").html(`
+                                <tr>
+                                    <td colspan="4" style="text-align: right">
+                                        <strong>Total:</strong>
+                                    </td>
+                                    <td>
+                                        <div align="center">
+                                            <strong>
+                                                ${response.total || "R$ 0,00"}
+                                                <input type="hidden" id="total-venda" value="${response.total || "R$ 0,00"}">
+                                            </strong>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `);
+
+                            Swal.fire({
+                                icon: "success",
+                                title: "Sucesso",
+                                text: "Produto adicionado com sucesso!"
+                            });
+
+                            $("#produto-quantidade").val("");
+                            $("#produto-preco").val("");
+                            $("#produto").val("").focus();
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Erro",
+                                text: response.messages
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Erro",
+                            text: "Não foi possível adicionar o produto. Tente novamente."
+                        });
+                    },
+                    complete: function () {
+                        $("#progressBarProdutos").hide();
+                    }
+                });
+
+                return false;
+            }
+        }
+    });
+
+</script>
+
+<script>
+    const incrementBtn = document.querySelector('.increment');
+    const decrementBtn = document.querySelector('.decrement');
+    const garantiaInput = document.getElementById('garantia');
+
+    incrementBtn.addEventListener('click', () => {
+        garantiaInput.value = parseInt(garantiaInput.value || 0) + 1;
+        updateButtons();
+    });
+
+    decrementBtn.addEventListener('click', () => {
+        garantiaInput.value = Math.max(0, parseInt(garantiaInput.value || 0) - 1);
+        updateButtons();
+    });
+
+    function updateButtons() {
+        decrementBtn.disabled = garantiaInput.value <= 0;
+    }
+
+    updateButtons();
+</script>

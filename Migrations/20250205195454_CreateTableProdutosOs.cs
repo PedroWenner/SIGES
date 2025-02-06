@@ -11,10 +11,10 @@ namespace SIGES.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.RenameColumn(
-            //    name: "sub-total",
-            //    table: "ServicosOs",
-            //    newName: "sub_total");
+            migrationBuilder.RenameColumn(
+                name: "sub-total",
+                table: "ServicosOs",
+                newName: "sub_total");
 
             migrationBuilder.AlterColumn<int>(
                 name: "quantidade",
