@@ -5,68 +5,69 @@
 @{
     ViewData["Titulo"] = "Editar OS";
     decimal total = 0;
+    decimal totalServicos = 0;
 }
 
 <link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
 
 <style>
     .custom-counter {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #fff;
-    max-width: 180px;
-    justify-content: space-between;
-    transition: border 0.3s ease;
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        max-width: 180px;
+        justify-content: space-between;
+        transition: border 0.3s ease;
     }
 
     .custom-counter:focus-within {
-    border: 1px solid #aaa;
+        border: 1px solid #aaa;
     }
 
     .custom-counter input[type="number"] {
-    border: none;
-    outline: none;
-    width: 60px;
-    text-align: center;
-    font-size: 14px;
-    color: #333;
-    background: transparent;
+        border: none;
+        outline: none;
+        width: 60px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+        background: transparent;
     }
 
     .custom-counter input::placeholder {
-    color: #bbb;
-    font-style: italic;
+        color: #bbb;
+        font-style: italic;
     }
 
     .counter-buttons {
-    display: flex;
-    gap: 8px;
-    padding-right: 10px;
+        display: flex;
+        gap: 8px;
+        padding-right: 10px;
     }
 
     .counter-buttons button {
-    background: none;
-    border: none;
-    color: #aaa;
-    font-size: 18px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    padding: 0;
+        background: none;
+        border: none;
+        color: #aaa;
+        font-size: 18px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        padding: 0;
     }
 
     .counter-buttons button:hover {
-    color: #333;
+        color: #333;
     }
 
     .counter-buttons button:disabled {
-    color: #ddd;
-    cursor: default;
+        color: #ddd;
+        cursor: default;
     }
 
     #ui-datepicker-div {
-    z-index: 999 !important;
+        z-index: 999 !important;
     }
 </style>
 
@@ -77,7 +78,7 @@
         </div>
         <div class="card-body">
 
-            <div class="buttons d-flex">
+            <div class="buttons d-flex flex-wrap gap-2">
                 @if (Model.Os.faturado == 0)
                 {
                     <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
@@ -122,34 +123,36 @@
                 }
             </div>
 
-            <ul class="nav nav-tabs" id="myTabOs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="navLinkDetalheOs" data-bs-toggle="tab" data-bs-target="#os-tab-pane" type="button" role="tab" aria-controls="os-tab-pane" aria-selected="true">Detalhes da OS</button>
+            <ul class="nav nav-tabs mt-3" id="myTabOs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#os-tab-pane">Detalhes da OS</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="navLinkDescontoOs" data-bs-toggle="tab" data-bs-target="#desconto-tab-pane" type="button" role="tab" aria-controls="desconto-tab-pane">Descontos</button>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desconto-tab-pane">Descontos</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="navLinkProdutosOs" data-bs-toggle="tab" data-bs-target="#produtos-tab-pane" type="button" role="tab" aria-controls="produtos-tab-pane">Produtos</button>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#produtos-tab-pane">Produtos</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="navLinkServicosOs" data-bs-toggle="tab" data-bs-target="#servicos-tab-pane" type="button" role="tab" aria-controls="servicos-tab-pane">Serviços</button>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#servicos-tab-pane">Serviços</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="navLinkAnexosOs" data-bs-toggle="tab" data-bs-target="#anexos-tab-pane" type="button" role="tab" aria-controls="anexos-tab-pane">Anexos</button>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#anexos-tab-pane">Anexos</button>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="navLinkAnotacoesOs" data-bs-toggle="tab" data-bs-target="#anotacao-tab-pane" type="button" role="tab" aria-controls="anotacao-tab-pane">Anotações</button>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#anotacao-tab-pane">Anotações</button>
                 </li>
             </ul>
 
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="os-tab-pane" role="tabpanel" aria-labelledby="navLinkDetalheOs" tabindex="0">
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="os-tab-pane" tabindex="0">
+                    <h4>N° OS: @Model.Os?.Id</h4>
+
                     <form id="formOs" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                         <input type="hidden" asp-for="Os.Id" />
 
-                        <div class="row mb-3 mt-3">
+                        <div class="row">
                             <div class="col-6">
                                 <label for="cliente" class="form-label">Cliente</label>
                                 <input id="cliente" type="text" placeholder="Digite o nome do cliente" name="cliente" required value="@Model.Os?.Clientes?.Nome" />
@@ -162,8 +165,10 @@
                                 <input id="usuario-id" type="hidden" asp-for="Os.UsuariosId" />
                                 <span asp-validation-for="Os.UsuariosId" class="text-danger"></span>
                             </div>
+                        </div>
 
-                            <div class="col-3 mt-3">
+                        <div class="row mt-3">
+                            <div class="col-md-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select asp-for="Os.Status" id="status" required>
                                     <option value="Orçamento">Orçamento</option>
@@ -177,19 +182,19 @@
                                 <span asp-validation-for="Os.Status" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3">
                                 <label for="data-inicial" class="form-label">Data inicial</label>
                                 <input id="data-inicial" type="date" asp-for="Os.DataInicial" required class="datetime" />
                                 <span asp-validation-for="Os.DataInicial" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3">
                                 <label for="data-final" class="form-label">Data final</label>
                                 <input id="data-final" type="date" asp-for="Os.DataFinal" class="datetime" required />
                                 <span asp-validation-for="Os.DataFinal" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3">
                                 <label for="garantia" class="form-label">Garantia (dias)</label>
                                 <div class="custom-counter">
                                     <input id="garantia" type="number" min="0" asp-for="Os.Garantia" readonly />
@@ -200,8 +205,10 @@
                                 </div>
                                 <span asp-validation-for="Os.Garantia" class="text-danger"></span>
                             </div>
+                        </div>
 
-                            <div class="col-6 mt-3">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
                                 <label for="garantias" class="form-label">Termo de garantia</label>
                                 <input id="garantias" type="text" value="@Model.Os?.Garantias?.RefGarantia" />
                                 <input id="garantias-id" type="hidden" asp-for="Os.GarantiasId" />
@@ -209,30 +216,30 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3 mt-3">
-                            <div class="col-6">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
                                 <h6>Descrição produto/serviço</h6>
                                 <textarea asp-for="Os.DescricaoProduto" id="descricao-produto"></textarea>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6">
                                 <h6>Defeito</h6>
                                 <textarea asp-for="Os.Defeito" id="defeito"></textarea>
                             </div>
                         </div>
 
-                        <div class="row mb-3 mt-3">
-                            <div class="col-6">
+                        <div class="row mt-3">
+                            <div class="col-md-6">
                                 <h6>Observações</h6>
                                 <textarea asp-for="Os.Observacoes" id="observacoes"></textarea>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6">
                                 <h6>Laudo técnico</h6>
                                 <textarea asp-for="Os.LaudoTecnico" id="laudo-tecnico"></textarea>
                             </div>
                         </div>
 
                         <!-- Botões -->
-                        <div class="d-flex justify-content-center">
+                        <div class="d-flex justify-content-center mt-4">
                             <a title="Voltar" class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
                                 <span class="button__icon"><i class="bx bx-undo"></i></span>
                                 <span class="button__text2">Voltar</span>
@@ -244,87 +251,95 @@
                         </div>
                     </form>
                 </div>
-                <div class="tab-pane fade show" id="desconto-tab-pane" role="tabpanel" aria-labelledby="navLinkDescontoOs" tabindex="1">
+                <div class="tab-pane fade show" id="desconto-tab-pane" tabindex="1">
 
                 </div>
-                <div class="tab-pane fade show" id="produtos-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutosOs" tabindex="2">
-                    <div class="col-lg-12 mt-3 p-3 text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3">
+                <div class="tab-pane fade show" id="produtos-tab-pane" tabindex="2">
+                    <div class="container-fluid mt-3">
                         <div class="row">
-                            <div class="col-md-12">
-                                <form id="formProdutos" method="post">
-                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            <div class="col-12">
+                                <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                                    <form id="formProdutos" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                                    <input type="hidden" name="OsId" value="@Model.Os.Id" />
-                                    <div class="row mb-3 mt-3">
-                                        <div class="col-5">
-                                            <label for="produto" class="form-label">Produto</label>
-                                            <input id="produto" type="text" placeholder="Digite o nome do produto" />
-                                            <input id="produto-id" type="hidden" name="ProdutosId" />
+                                        <input type="hidden" name="OsId" value="@Model.Os?.Id" />
+
+                                        <div class="row g-3">
+                                            <div class="col-lg-5 col-md-6">
+                                                <label for="produto" class="form-label">Produto</label>
+                                                <input id="produto" type="text" placeholder="Digite o nome do produto" />
+                                                <input id="produto-id" type="hidden" name="ProdutosId" />
+                                            </div>
+
+                                            <div class="col-lg-2 col-md-3">
+                                                <label for="produto-preco" class="form-label">Preço</label>
+                                                <input id="produto-preco" type="text" name="Preco" class="money" placeholder="Preço" />
+                                            </div>
+
+                                            <div class="col-lg-2 col-md-3">
+                                                <label for="produto-quantidade" class="form-label">Quantidade</label>
+                                                <input id="produto-quantidade" type="text" name="Quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span class="button__text2">Adicionar</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-2">
-                                            <label for="produto-preco" class="form-label">Preço</label>
-                                            <input id="produto-preco" type="text" name="Preco" class="money" placeholder="Preço" />
-                                        </div>
-                                        <div class="col-2">
-                                            <label for="produto-quantidade" class="form-label">Quantidade</label>
-                                            <input id="produto-quantidade" type="text" name="Quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
-                                        </div>
-                                        <div class="col-2 align-content-end flex-wrap">
-                                            <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                <span class="button__text2">Adicionar</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="widget-box" id="divProdutos">
-                                <div class="widget_content nopadding">
-                                    <div id="progressBarProdutos" class="progress mt-4" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="display: none;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
-                                    </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="progressBarProdutos" class="progress mt-4 d-none" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
+                                </div>
 
-                                    <table width="100%" class="tblProdutos" id="tabela">
+                                <div class="table-responsive mt-3">
+                                    <table class="tblProdutos" id="tabela">
                                         <thead>
                                             <tr>
-                                                <th>Produto</th>
-                                                <th width="8%">Quantidade</th>
-                                                <th width="10%">Preço unit.</th>
-                                                <th width="6%">Ações</th>
-                                                <th width="10%">Sub-total</th>
+                                                <th class="text-left" style="width: 70%">Produto</th>
+                                                <th style="width: 5%" class="text-center">Quantidade</th>
+                                                <th class="text-right" style="width: 10%">Preço unit.</th>
+                                                <th class="text-right" style="width: 5%">Ações</th>
+                                                <th class="text-right" style="width: 10%">Sub-total</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            
+
                                             @foreach (var p in Model.Produtos)
                                             {
                                                 total += p.SubTotal;
                                                 <tr>
-                                                    <td>@p.Produtos?.Descricao</td>
-                                                    <td>@p.Quantidade</td>
-                                                    <td>R$ @(p.Preco?.ToString("N2") ?? p.Produtos?.PrecoVenda.ToString("N2"))</td>
-                                                    <td>
-                                                        @if (Model.Os.Status != "cancelado")
+                                                    <td class="text-left">@p.Produtos?.Descricao</td>
+                                                    <td class="text-center">@p.Quantidade</td>
+                                                    <td class="text-right">R$ @(p.Preco?.ToString("N2") ?? p.Produtos?.PrecoVenda.ToString("N2"))</td>
+                                                    <td class="text-right">
+                                                        @if (Model.Os?.Status != "cancelado")
                                                         {
-                                                            <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir produto">
+                                                            <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
                                                                 <i class="bx bx-trash-alt bx-xs"></i>
                                                             </a>
                                                         }
                                                     </td>
-                                                    <td>@p.SubTotal.ToString("N2")</td>
+                                                    <td class="text-right">R$ @p.SubTotal.ToString("N2")</td>
                                                 </tr>
                                             }
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="4" style="text-align: right">
+                                                <td colspan="4" class="text-end">
                                                     <strong>Total:</strong>
                                                 </td>
                                                 <td>
-                                                    <div align="center">
+                                                    <div class="text-center">
                                                         <strong>
                                                             R$ @total.ToString("N2")
-                                                            <input type="hidden" id="total-venda" value="@total.ToString("N2")">
+                                                            <input type="hidden" id="total-produto" value="@total.ToString("N2")">
                                                         </strong>
                                                     </div>
                                                 </td>
@@ -336,13 +351,107 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade show" id="servicos-tab-pane" role="tabpanel" aria-labelledby="navLinkServicosOs" tabindex="3">
+                <div class="tab-pane fade show" id="servicos-tab-pane" tabindex="3">
+                    <div class="container-fluid mt-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                                    <form id="formServicos" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                                        <input type="hidden" name="OsId" value="@Model.Os?.Id" />
+
+                                        <div class="row g-3">
+                                            <div class="col-lg-5 col-md-6">
+                                                <label for="servico" class="form-label">Serviço</label>
+                                                <input id="servico" type="text" placeholder="Digite o nome do serviço" />
+                                                <input id="servico-id" type="hidden" name="ServicosId" />
+                                            </div>
+
+                                            <div class="col-lg-2 col-md-3">
+                                                <label for="servico-preco" class="form-label">Preço</label>
+                                                <input id="servico-preco" type="text" name="Preco" class="money" placeholder="Preço" />
+                                            </div>
+
+                                            <div class="col-lg-2 col-md-3">
+                                                <label for="servico-quantidade" class="form-label">Quantidade</label>
+                                                <input id="servico-quantidade" type="text" name="Quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span class="button__text2">Adicionar</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="progressBarServicos" class="progress mt-4 d-none" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
+                                </div>
+
+                                <div class="table-responsive mt-3">
+                                    <table class="tblServicos" id="tabela">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-left" style="width: 70%">Serviço</th>
+                                                <th style="width: 5%" class="text-center">Quantidade</th>
+                                                <th class="text-right" style="width: 10%">Preço unit.</th>
+                                                <th class="text-right" style="width: 5%">Ações</th>
+                                                <th class="text-right" style="width: 10%">Sub-total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @foreach (var s in Model.Servicos)
+                                            {
+                                                totalServicos += s.SubTotal ?? 0;
+                                                <tr>
+                                                    <td class="text-left">@s.Servicos?.Nome</td>
+                                                    <td class="text-center">@s.Quantidade</td>
+                                                    <td class="text-right">R$ @(s.Preco?.ToString("N2") ?? s.Servicos?.Valor.ToString("N2"))</td>
+                                                    <td class="text-right">
+                                                        @if (Model.Os?.Status != "cancelado")
+                                                        {
+                                                            <a data-id="@s.Id" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
+                                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                                            </a>
+                                                        }
+                                                    </td>
+                                                    <td class="text-right">R$ @s.SubTotal?.ToString("N2")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4" class="text-end">
+                                                    <strong>Total:</strong>
+                                                </td>
+                                                <td>
+                                                    <div class="text-center">
+                                                        <strong>
+                                                            R$ @totalServicos.ToString("N2")
+                                                            <input type="hidden" id="total-servico" value="@totalServicos.ToString("N2")">
+                                                        </strong>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade show" id="anexos-tab-pane" tabindex="4">
 
                 </div>
-                <div class="tab-pane fade show" id="anexos-tab-pane" role="tabpanel" aria-labelledby="navLinkAnexosOs" tabindex="4">
-
-                </div>
-                <div class="tab-pane fade show" id="anotacao-tab-pane" role="tabpanel" aria-labelledby="navLinkAnotacoesOs" tabindex="5">
+                <div class="tab-pane fade show" id="anotacao-tab-pane" tabindex="5">
 
                 </div>
             </div>
@@ -579,6 +688,41 @@
         };
     });
 
+    $(function () {
+        $("#servico").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/servicos/listar-servicos",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                $("#servico").val(ui.item.nome + " | Valor: R$ " + ui.item.valor);
+                return false;
+            },
+            select: function (event, ui) {
+                $("#servico").val(ui.item.nome + " | Valor: R$ " + ui.item.valor);
+                $("#servico-id").val(ui.item.value);
+                $("#servico-preco").val(ui.item.valor);
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append(
+                    `<div class="ui-menu-item-wrapper">
+                        <span class="autocomplete-title">${item.nome}</span>
+                        <span class="autocomplete-details">Valor: ${item.valor}</span>
+                    </div>`
+                )
+                .appendTo(ul);
+        };
+    });
+
     $(document).ready(function () {
         $('#formOs').validate({
             rules: {
@@ -739,11 +883,11 @@
             $("#progressBarProdutos").show();
             $.ajax({
                 type: "POST",
-                url: "/os/adicionar-produtos",
+                url: "/os/adicionar-produto",
                 data: dados,
                 dataType: "json",
                 success: function (response) {
-                    if (response.status) {
+                    if (response.status == "success") {
                         let tbody = $("#tabela tbody");
                         tbody.empty();
 
@@ -751,15 +895,15 @@
                             response.produtos.forEach(produto => {
                                 tbody.append(`
                                     <tr>
-                                        <td>${produto.produtoNome}</td>
-                                        <td>${produto.quantidade}</td>
-                                        <td>${produto.preco}</td>
-                                        <td>${produto.subTotal}</td>
-                                        <td>
-                                            <a data-id="${produto.id}" role="button" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir produto">
+                                        <td class="text-left">${produto.produtoNome}</td>
+                                        <td class="text-center">${produto.quantidade}</td>
+                                        <td class="text-right">${produto.preco}</td>
+                                        <td class="text-right">
+                                            <a data-id="${produto.id}" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
                                                 <i class="bx bx-trash-alt bx-xs"></i>
                                             </a>
                                         </td>
+                                        <td class="text-right">${produto.subTotal}</td>
                                     </tr>
                                 `);
                             });
@@ -767,14 +911,14 @@
 
                         $("#tabela tfoot").html(`
                             <tr>
-                                <td colspan="4" style="text-align: right">
+                                <td colspan="4" class="text-end">
                                     <strong>Total:</strong>
                                 </td>
                                 <td>
-                                    <div align="center">
+                                    <div class="text-center">
                                         <strong>
                                             ${response.total || "R$ 0,00"}
-                                            <input type="hidden" id="total-venda" value="${response.total || "R$ 0,00"}">
+                                            <input type="hidden" id="total-produto" value="${response.total || "R$ 0,00"}">
                                         </strong>
                                     </div>
                                 </td>
@@ -812,6 +956,305 @@
 
             return false;
         }
+    });
+
+    $(document).ready(function () {
+        $(document).on("click", ".btn-remover", function (event) {
+            event.preventDefault();
+
+            var produtoId = $(this).data("id");
+
+            Swal.fire({
+                title: "Tem certeza?",
+                text: "Você deseja remover este item?",
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, remover!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#progressBarProdutos").show();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/os/remover-produto",
+                        data: { produtoId: produtoId },
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.status == "success") {
+                                let tbody = $("#tabela tbody");
+                                tbody.empty();
+
+                                if (response.produtos && Array.isArray(response.produtos)) {
+                                    response.produtos.forEach(produto => {
+                                        tbody.append(`
+                                            <tr>
+                                                <td class="text-left">${produto.produtoNome}</td>
+                                                <td class="text-center">${produto.quantidade}</td>
+                                                <td class="text-right">${produto.preco}</td>
+                                                <td class="text-right">
+                                                    <a data-id="${produto.id}" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
+                                                        <i class="bx bx-trash-alt bx-xs"></i>
+                                                    </a>
+                                                </td>
+                                                <td class="text-right">${produto.subTotal}</td>
+                                            </tr>
+                                        `);
+                                    });
+                                }
+
+                                $("#tabela tfoot").html(`
+                                    <tr>
+                                        <td colspan="4" class="text-end">
+                                            <strong>Total:</strong>
+                                        </td>
+                                        <td>
+                                            <div class="text-center">
+                                                <strong>
+                                                    ${response.total || "R$ 0,00"}
+                                                    <input type="hidden" id="total-produto" value="${response.total || "R$ 0,00"}">
+                                                </strong>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `);
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: "Produto excluido com sucesso!"
+                                });
+
+                                $("#produto-quantidade").val("");
+                                $("#produto-preco").val("");
+                                $("#produto").val("").focus();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Erro",
+                                    text: response.message
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Erro",
+                                text: "Não foi possível remover o produto. Tente novamente."
+                            });
+                        },
+                        complete: function () {
+                            $("#progressBarProdutos").hide();
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    $("#formServicos").validate({
+        rules: {
+            Preco: {
+                required: true
+            },
+            Quantidade: {
+                required: true
+            }
+        },
+        messages: {
+            Preco: {
+                required: 'Inserir o preço'
+            },
+            Quantidade: {
+                required: 'Insira a quantidade'
+            }
+        },
+        errorPlacement: function (error, element) {
+            element.attr("placeholder", error.text());
+        },
+        highlight: function (element, errorClass, validClass) {
+            $(element).addClass("is-invalid").removeClass("is-valid");
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass("is-invalid").addClass("is-valid");
+            $(element).attr("placeholder", "");
+        },
+        submitHandler: function (form) {
+            var dados = $(form).serialize();
+            $("#progressBarServicos").show();
+            $.ajax({
+                type: "POST",
+                url: "/os/adicionar-servico",
+                data: dados,
+                dataType: "json",
+                success: function (response) {
+                    if (response.status == "success") {
+                        let tbody = $(".tblServicos tbody");
+                        tbody.empty();
+
+                        if (response.servicos && Array.isArray(response.servicos)) {
+                            response.servicos.forEach(servico => {
+                                tbody.append(`
+                                    <tr>
+                                        <td class="text-left">${servico.servicoNome}</td>
+                                        <td class="text-center">${servico.quantidade}</td>
+                                        <td class="text-right">${servico.preco}</td>
+                                        <td class="text-right">
+                                            <a data-id="${servico.id}" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
+                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                            </a>
+                                        </td>
+                                        <td class="text-right">${servico.subTotal}</td>
+                                    </tr>
+                                `);
+                            });
+                        }
+
+                        $(".tblServicos tfoot").html(`
+                            <tr>
+                                <td colspan="4" class="text-end">
+                                    <strong>Total:</strong>
+                                </td>
+                                <td>
+                                    <div class="text-center">
+                                        <strong>
+                                            ${response.total || "R$ 0,00"}
+                                            <input type="hidden" id="total-servico" value="${response.total || "R$ 0,00"}">
+                                        </strong>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "Sucesso",
+                            text: "Serviço adicionado com sucesso!"
+                        });
+
+                        $("#servico-quantidade").val("");
+                        $("#servico-preco").val("");
+                        $("#servico").val("").focus();
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Erro",
+                            text: response.message
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro",
+                        text: "Não foi possível adicionar o serviço. Tente novamente."
+                    });
+                },
+                complete: function () {
+                    $("#progressBarServicos").hide();
+                }
+            });
+
+            return false;
+        }
+    });
+
+    $(document).ready(function () {
+        $(document).on("click", ".btn-remover-servico", function (event) {
+            event.preventDefault();
+
+            var servicoId = $(this).data("id");
+
+            Swal.fire({
+                title: "Tem certeza?",
+                text: "Você deseja remover este serviço?",
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, remover!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#progressBarServicos").show();
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/os/remover-servico",
+                        data: { servicoId: servicoId },
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.status == "success") {
+                                let tbody = $(".tblServicos tbody");
+                                tbody.empty();
+
+                                if (response.servicos && Array.isArray(response.servicos)) {
+                                    response.servicos.forEach(servico => {
+                                        tbody.append(`
+                                            <tr>
+                                                <td class="text-left">${servico.servicoNome}</td>
+                                                <td class="text-center">${servico.quantidade}</td>
+                                                <td class="text-right">${servico.preco}</td>
+                                                <td class="text-right">
+                                                    <a data-id="${servico.id}" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
+                                                        <i class="bx bx-trash-alt bx-xs"></i>
+                                                    </a>
+                                                </td>
+                                                <td class="text-right">${servico.subTotal}</td>
+                                            </tr>
+                                        `);
+                                    });
+                                }
+
+                                $(".tblServicos tfoot").html(`
+                                    <tr>
+                                        <td colspan="4" class="text-end">
+                                            <strong>Total:</strong>
+                                        </td>
+                                        <td>
+                                            <div class="text-center">
+                                                <strong>
+                                                    ${response.total || "R$ 0,00"}
+                                                    <input type="hidden" id="total-servico" value="${response.total || "R$ 0,00"}">
+                                                </strong>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `);
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: "Serviço excluido com sucesso!"
+                                });
+
+                                $("#servico-quantidade").val("");
+                                $("#servico-preco").val("");
+                                $("#servico").val("").focus();
+                            } else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Erro",
+                                    text: response.message
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Erro",
+                                text: "Não foi possível remover o serviço. Tente novamente."
+                            });
+                        },
+                        complete: function () {
+                            $("#progressBarServicos").hide();
+                        }
+                    });
+                }
+            });
+        });
     });
 
 </script>

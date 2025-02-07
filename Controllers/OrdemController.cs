@@ -7,6 +7,7 @@ using SIGES.Models;
 using SIGES.Repositorios;
 using SIGES.Services;
 using SIGES.ViewModel;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SIGES.Controllers
 {
@@ -24,11 +25,12 @@ namespace SIGES.Controllers
         private readonly IRepository<ProdutoModel> _repositorioProdutos;
         private readonly IRepository<ProdutosOs> _repositorioProdutosOs;
         private readonly IRepository<ServicosOs> _repositorioServicosOs;
+        private readonly IRepository<ServicoModel> _repositorioServico;
 
         public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio, IRepository<EmitenteModel> repositorioEmitente,
             IRepository<UsuarioModel> repositorioUsuario, IConfiguracao configuracaoRepositorio, IEmailQueueRepository emailQueueRepository,
             Interfaces.IViewRenderService viewRenderService, IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
-            IRepository<ProdutoModel> repositorioProdutos)
+            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
@@ -40,6 +42,7 @@ namespace SIGES.Controllers
             _repositorioProdutosOs = repositorioProdutosOs;
             _repositorioServicosOs = repositorioServicosOs;
             _repositorioProdutos = repositorioProdutos;
+            _repositorioServico = repositorioServico;
         }
 
         [HttpGet("")]
@@ -286,7 +289,7 @@ namespace SIGES.Controllers
         }
 
         [Permissao("eOs", "Você não tem permissão para editar OS.")]
-        [HttpPost("adicionar-produtos")]
+        [HttpPost("adicionar-produto")]
         public async Task<IActionResult> AdicionarProdutos(ProdutosOs produtoOs)
         {
             var os = await _osRepositorio.ObterPorId(produtoOs.OsId);
@@ -313,7 +316,8 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "Produto não encontrado." });
             }
 
-            if (_configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque").ToString() == "1")
+            var controlEstoque = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque");
+            if (controlEstoque == "1")
             {
                 if (produtoOs.Quantidade > produto.Estoque)
                 {
@@ -325,7 +329,7 @@ namespace SIGES.Controllers
             {
                 await _repositorioProdutosOs.Adicionar(produtoOs);
 
-                if (_configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque").ToString() == "1")
+                if (controlEstoque == "1")
                 {
                     produto.Estoque = produto.Estoque - produtoOs.Quantidade;
                     await _repositorioProdutos.Atualizar(produto);
@@ -335,7 +339,7 @@ namespace SIGES.Controllers
                 os.ValorDesconto = 0;
                 await _osRepositorio.Atualizar(os);
 
-                var produtosAdicionados = await _repositorioProdutosOs.Listar();
+                var produtosAdicionados = _osRepositorio.GetProdutos(os.Id);
 
                 return Json(new 
                 {
@@ -349,6 +353,186 @@ namespace SIGES.Controllers
                         SubTotal = i.SubTotal.ToString("C")
                     }),
                     total = produtosAdicionados.Sum(i => i.SubTotal).ToString("C")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("remover-produto")]
+        public async Task<IActionResult> RemoverProduto(int produtoId)
+        {
+            var produtoOs = await _repositorioProdutosOs.ObterPorId(produtoId);
+            if (produtoOs == null)
+            {
+                return Json(new { status = "error", message = "Produto não encontrado." });
+            }
+
+            var os = await _osRepositorio.ObterPorId(produtoOs.OsId);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            if (os.faturado == 1)
+            {
+                return Json(new { status = "error", message = "Não é possivel excluir produtos. OS já faturada!" });
+            }
+
+            var produto = await _repositorioProdutos.ObterPorId(produtoOs.ProdutosId);
+            if (produto == null)
+            {
+                return Json(new { status = "error", message = "Produto não encontrado." });
+            }
+
+            var controlEstoque = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque");
+            int quantidade = produtoOs.Quantidade;
+            try
+            {
+                await _repositorioProdutosOs.Deletar(produtoOs);
+
+                if (controlEstoque == "1")
+                {
+                    produto.Estoque = produto.Estoque + quantidade;
+                    await _repositorioProdutos.Atualizar(produto);
+                }
+
+                os.Desconto = 0;
+                os.ValorDesconto = 0;
+                await _osRepositorio.Atualizar(os);
+
+                var produtosAdicionados = _osRepositorio.GetProdutos(os.Id);
+
+                return Json(new 
+                {
+                    status = "success",
+                    produtos = produtosAdicionados.Select(i => new
+                    {
+                        i.Id,
+                        ProdutoNome = i.Produtos?.Descricao,
+                        i.Quantidade,
+                        Preco = i.Preco?.ToString("C"),
+                        SubTotal = i.SubTotal.ToString("C")
+                    }),
+                    total = produtosAdicionados.Sum(i => i.SubTotal).ToString("C")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("adicionar-servico")]
+        public async Task<IActionResult> AdicionarServico(ServicosOs servicosOs)
+        {
+            var os = await _osRepositorio.ObterPorId(servicosOs.OsId);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            if (os.faturado == 1)
+            {
+                return Json(new { status = "error", message = "Não é possivel adicionar produtos. OS já faturada!" });
+            }
+
+            servicosOs.SubTotal = (servicosOs.Preco ?? 0) * (servicosOs.Quantidade);
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { status = "error", message = "Validar campos antes de continuar." });
+            }
+
+            var servico = await _repositorioServico.ObterPorId(servicosOs.ServicosId);
+            if (servico == null)
+            {
+                return Json(new { status = "error", message = "Serviço não encontrado." });
+            }
+
+            try
+            {
+                await _repositorioServicosOs.Adicionar(servicosOs);
+
+                os.Desconto = 0;
+                os.ValorDesconto = 0;
+                await _osRepositorio.Atualizar(os);
+
+                var servicosAdicionados = _osRepositorio.GetServicos(os.Id);
+
+                return Json(new 
+                {
+                    status = "success",
+                    servicos = servicosAdicionados.Select(i => new
+                    {
+                        i.Id,
+                        ServicoNome = i.Servicos?.Nome,
+                        i.Quantidade,
+                        Preco = i.Preco?.ToString("C"),
+                        SubTotal = i.SubTotal?.ToString("C")
+                    }),
+                    total = servicosAdicionados.Sum(i => i.SubTotal ?? 0).ToString("C")
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("remover-servico")]
+        public async Task<IActionResult> RemoverServico(int servicoId)
+        {
+            var servicosOs = await _repositorioServicosOs.ObterPorId(servicoId);
+            if (servicosOs == null)
+            {
+                return Json(new { status = "error", message = "Serviço não encontrado." });
+            }
+
+            var os = await _osRepositorio.ObterPorId(servicosOs.OsId);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            if (os.faturado == 1)
+            {
+                return Json(new { status = "error", message = "Não é possivel excluir produtos. OS já faturada!" });
+            }
+
+            var servico = await _repositorioProdutos.ObterPorId(servicosOs.ServicosId);
+            if (servico == null)
+            {
+                return Json(new { status = "error", message = "Serviço não encontrado." });
+            }
+
+            try
+            {
+                await _repositorioServicosOs.Deletar(servicosOs);
+
+                os.Desconto = 0;
+                os.ValorDesconto = 0;
+                await _osRepositorio.Atualizar(os);
+
+                var servicosAdicionados = _osRepositorio.GetServicos(os.Id);
+
+                return Json(new
+                {
+                    status = "success",
+                    servicos = servicosAdicionados.Select(i => new
+                    {
+                        i.Id,
+                        ServicoNome = i.Servicos?.Nome,
+                        i.Quantidade,
+                        Preco = i.Preco?.ToString("C"),
+                        SubTotal = i.SubTotal?.ToString("C")
+                    }),
+                    total = servicosAdicionados.Sum(i => i.SubTotal ?? 0).ToString("C")
                 });
             }
             catch (Exception ex)

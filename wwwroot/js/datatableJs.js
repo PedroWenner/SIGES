@@ -14,8 +14,6 @@
         autoWidth: false,
         pageLength: pageLength
     });
-
-    console.log("Configuração carregada: pageLength =", pageLength);
 });
 
 // Desativa mensagens de erro do DataTables
