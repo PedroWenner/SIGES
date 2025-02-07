@@ -57,14 +57,14 @@ namespace SIGES.Controllers
             return View("LOrdem", viewModel);
         }
 
-        [Permissao("aOrdem", "Você não tem permissão para adicionar OS.")]
+        [Permissao("aOs", "Você não tem permissão para adicionar OS.")]
         [HttpGet("adicionar")]
         public async Task<IActionResult> Adicionar()
         {
             return View("AOrdem");
         }
 
-        [Permissao("aOrdem", "Você não tem permissão para adicionar OS.")]
+        [Permissao("aOs", "Você não tem permissão para adicionar OS.")]
         [HttpPost("adicionar")]
         public async Task<IActionResult> Adicionar(OsModel os)
         {
@@ -99,7 +99,7 @@ namespace SIGES.Controllers
             }
         }
 
-        [Permissao("eOrdem", "Você não tem permissão para editar OS.")]
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
         [HttpGet("editar/{id}")]
         public async Task<IActionResult> Editar(int id)
         {
@@ -113,18 +113,40 @@ namespace SIGES.Controllers
 
             var produtos = _osRepositorio.GetProdutos(id);
             var servicos = _osRepositorio.GetServicos(id);
+            
+            // Defina o caminho onde os anexos dessa OS estão armazenados
+            string pastaAnexos = Path.Combine("wwwroot/anexos", $"OS-{id}");
+            List<ArquivoModelOs> anexos = new List<ArquivoModelOs>();
+
+            if (Directory.Exists(pastaAnexos))
+            {
+                var arquivos = Directory.GetFiles(pastaAnexos);
+                foreach (var arquivo in arquivos)
+                {
+                    string fileName = Path.GetFileName(arquivo);
+                    string fileUrl = $"/anexos/OS-{id}/{fileName}";
+
+                    anexos.Add(new ArquivoModelOs
+                    {
+                        FileName = fileName,
+                        Url = fileUrl,
+                        FileType = ObterTipoArquivo(fileName)
+                    });
+                }
+            }
 
             var viewmodel = new OsEmailViewModel
             {
                 Os = os,
                 Produtos = produtos.ToList(),
                 Servicos = servicos.ToList(),
+                Anexos = anexos
             };
 
             return View("EOrdem", viewmodel);
         }
 
-        [Permissao("eOrdem", "Você não tem permissão para editar OS.")]
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
         [HttpPost("editar/{id}")]
         public async Task<IActionResult> Editar(int id, OsModel os)
         {
@@ -538,6 +560,159 @@ namespace SIGES.Controllers
             catch (Exception ex)
             {
                 return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("anexar")]
+        public async Task<IActionResult> Anexar(int osId)
+        {
+            var files = Request.Form.Files;
+
+            if (files == null || files.Count == 0)
+            {
+                return Json(new { status = "error", message = "Nenhum arquivo enviado." });
+            }
+
+            var directory = Path.Combine("wwwroot", "anexos", $"OS-{osId}");
+
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            if (!Directory.Exists(Path.Combine(directory, "thumbs")))
+                Directory.CreateDirectory(Path.Combine(directory, "thumbs"));
+
+            List<string> arquivosSalvos = new List<string>();
+
+            try
+            {
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        var extension = Path.GetExtension(file.FileName);
+                        if (!AllowedExtensions(extension))
+                        {
+                            return Json(new { status = "error", message = "Extensão não permitida." });
+                        }
+                        
+                        var newFileName = $"{Guid.NewGuid()}{extension}";
+                        var filePath = Path.Combine(directory, newFileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        var isImage = file.ContentType.StartsWith("image");
+                        string thumbPath = "";
+
+                        if (isImage)
+                        {
+                            thumbPath = Path.Combine(directory, "thumbs", $"thumb_{newFileName}");
+                            CriarThumbnail(filePath, thumbPath);
+                        }
+
+                        arquivosSalvos.Add($"/anexos/OS-{osId}/{newFileName}");
+                    }
+                }
+
+                return Json(new { status = "success", message = "Arquivo(s) anexado(s) com sucesso.", arquivos = arquivosSalvos });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = $"Erro ao salvar arquivo(s): {ex.Message}" });
+            }
+        }
+
+        private void CriarThumbnail(string inputPath, string outputPath)
+        {
+            using var image = System.Drawing.Image.FromFile(inputPath);
+            var thumbnail = image.GetThumbnailImage(200, 125, () => false, IntPtr.Zero);
+            thumbnail.Save(outputPath);
+        }
+
+        // Método para determinar o tipo do arquivo (imagem, PDF, etc.)
+        private string ObterTipoArquivo(string fileName)
+        {
+            string ext = Path.GetExtension(fileName).ToLower();
+            if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif")
+            {
+                return "image";
+            }
+            return "file";
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpGet("listar-anexos/{osId}")]
+        public IActionResult ListarAnexos(int osId)
+        {
+            var directory = Path.Combine("wwwroot", "anexos", $"OS-{osId}");
+
+            if (!Directory.Exists(directory))
+            {
+                return Json(new { status = "success", arquivos = new List<string>() });
+            }
+
+            var arquivos = Directory.GetFiles(directory)
+                .Where(file => !file.Contains("thumb_"))
+                .Select(file => $"/anexos/OS-{osId}/{Path.GetFileName(file)}")
+                .ToList();
+
+            return Json(new { status = "success", arquivos = arquivos });
+        }
+
+        private bool AllowedExtensions(string extensao)
+        {
+            List<string> extensoesPermitidas = new List<string> { "jpg", "png", "gif", "jpeg", "JPG", "PNG", "GIF", "JPEG", "pdf", "PDF", "cdr", "CDR", "docx", "DOCX", "txt" };
+            if (extensoesPermitidas.Contains(extensao))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        [Permissao("eOs", "Você não tem permissão para baixar anexos")]
+        [HttpGet("download/{filename}")]
+        public IActionResult Download(string fileName)
+        {
+            var directory = Path.Combine("wwwroot", "anexos");
+            var filePath = Directory.GetFiles(directory, fileName, SearchOption.AllDirectories).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var contentType = "application/octet-stream";
+            return File(fileBytes, contentType, fileName);
+        }
+
+        [Permissao("eOs", "Você não tem permissão para excluir anexos")]
+        [HttpGet("excluir-anexo/{filename}")]
+        public IActionResult ExcluirAnexo(string fileName)
+        {
+            try
+            {
+                var directory = Path.Combine("wwwroot", "anexos");
+                var filePath = Directory.GetFiles(directory, fileName, SearchOption.AllDirectories).FirstOrDefault();
+
+                if (string.IsNullOrEmpty(filePath) || !System.IO.File.Exists(filePath))
+                    return Json(new { status = "error", message = "Arquivo não encontrado." });
+
+                System.IO.File.Delete(filePath);
+
+                var thumbPath = Path.Combine(Path.GetDirectoryName(filePath)!, "thumbs", $"thumb_{fileName}");
+                if (System.IO.File.Exists(thumbPath))
+                {
+                    System.IO.File.Delete(thumbPath);
+                }
+
+                return Json(new { status = "success", message = "Arquivo excluído com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = $"Erro ao excluir arquivo: {ex.Message}" });
             }
         }
     }

@@ -449,7 +449,77 @@
                     </div>
                 </div>
                 <div class="tab-pane fade show" id="anexos-tab-pane" tabindex="4">
+                    <div class="container-fluid mt-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                                    <form id="formAnexos" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
+                                        <input type="hidden" name="OsId" value="@Model.Os?.Id" />
+
+                                        <div class="row g-3">
+                                            <div class="col-lg-8 col-md-9">
+                                                <label for="anexo" class="form-label">Anexo</label>
+                                                <input id="anexo" type="file" name="userfile" multiple />
+                                                <small class="form-text text-muted">(Arquivos suportados: .jpg, .png, .gif, .jpeg, .JPG, .PNG, .GIF, .JPEG, .pdf, .PDF, .cdr, .CDR, .docx, .DOCX, .txt)</small>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                    <span class="button__icon"><i class='bx bx-paperclip'></i></span>
+                                                    <span class="button__text2">Anexar</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="progressBarAnexos" class="progress mt-4 d-none" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
+                                </div>
+
+                                <div class="row mt-3" id="divAnexos">
+                                    @if (Model.Anexos != null && Model.Anexos.Any())
+                                    {
+                                        @foreach (var anexo in Model.Anexos)
+                                        {
+                                            var isImage = anexo.FileType == "image";
+                                            var thumbnail = isImage ? anexo.Url : "/img/icon-file.png";
+
+                                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+                                                <div class="card text-center shadow-sm">
+                                                    <a href="@anexo.Url" target="_blank" class="d-block p-2">
+                                                        <img src="@thumbnail" alt="Anexo" class="img-fluid rounded" style="max-height: 120px;">
+                                                    </a>
+                                                    <div class="card-body p-2">
+                                                        <small class="d-block text-truncate" style="max-width: 100px;">@anexo.FileName</small>
+                                                        <div class="d-flex justify-content-center gap-2 mt-2">
+                                                            <a href="/os/download/@anexo.FileName" class="btn btn-sm btn-secondary" title="Baixar">
+                                                                <i class="fas fa-download"></i>
+                                                            </a>
+                                                            <a role="button" href="/os/excluir-anexo/@anexo.FileName" class="btn btn-sm btn-danger btn-remover-anexo" data-id="@anexo.FileName" title="Remover">
+                                                                <i class="bx bx-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-12 text-center">
+                                            <p class="text-muted">Nenhum anexo disponível.</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane fade show" id="anotacao-tab-pane" tabindex="5">
 
@@ -458,6 +528,37 @@
         </div>
     </div>
 </div>
+
+<!-- Modal excluir
+<div id="modal-excluir-anexo" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="form-excluir-anexo" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Excluir anexo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="filenameAnexo" name="filename" />
+                    <h6 style="text-align: center">
+                        Deseja realmente excluir este anexo?
+                    </h6>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-danger">
+                        <span class="button__icon"><i class='bx bx-trash'></i></span>
+                        <span class="button__text2">Excluir</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ -->
 
 <script src="~/js/jquery.validate.js"></script>
 <script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
@@ -888,7 +989,7 @@
                 dataType: "json",
                 success: function (response) {
                     if (response.status == "success") {
-                        let tbody = $("#tabela tbody");
+                        let tbody = $(".tblProdutos tbody");
                         tbody.empty();
 
                         if (response.produtos && Array.isArray(response.produtos)) {
@@ -909,7 +1010,7 @@
                             });
                         }
 
-                        $("#tabela tfoot").html(`
+                        $(".tblProdutos tfoot").html(`
                             <tr>
                                 <td colspan="4" class="text-end">
                                     <strong>Total:</strong>
@@ -984,7 +1085,7 @@
                         dataType: "json",
                         success: function (response) {
                             if (response.status == "success") {
-                                let tbody = $("#tabela tbody");
+                                let tbody = $(".tblProdutos tbody");
                                 tbody.empty();
 
                                 if (response.produtos && Array.isArray(response.produtos)) {
@@ -1005,7 +1106,7 @@
                                     });
                                 }
 
-                                $("#tabela tfoot").html(`
+                                $(".tblProdutos tfoot").html(`
                                     <tr>
                                         <td colspan="4" class="text-end">
                                             <strong>Total:</strong>
@@ -1254,6 +1355,123 @@
                     });
                 }
             });
+        });
+    });
+
+    $(document).ready(function () {
+        var osId = $("input[name='OsId']").val();
+        carregarAnexos(osId);
+        
+        $("#formAnexos").submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            formData.append("osId", osId);
+
+            $("#progressBarAnexos").removeClass("d-none");
+
+            $.ajax({
+                type: "POST",
+                url: "/os/anexar",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $("#progressBarAnexos").addClass("d-none");
+
+                    if (response.status == "success") {
+                        Swal.fire("Sucesso", response.message, "success");
+                        carregarAnexos(osId);
+                    } else {
+                        Swal.fire("Erro", response.message, "error");
+                    }
+                },
+                error: function () {
+                    $("#progressBarAnexos").addClass("d-none");
+                    Swal.fire("Erro", "Erro ao enviar arquivos.", "error");
+                }
+            });
+        });
+
+        // Função para buscar e carregar anexos existentes
+        function carregarAnexos(osId) {
+            $.get(`/os/listar-anexos/${osId}`, function (response) {
+                if (response.status === "success") {
+                    atualizarListaAnexos(response.arquivos);
+                }
+            });
+        }
+
+        // Função para atualizar dinamicamente os anexos na tela
+        function atualizarListaAnexos(arquivos) {
+            var divAnexos = $("#divAnexos");
+            divAnexos.empty();
+
+            if (arquivos.length === 0) {
+                divAnexos.html('<div class="col-12 text-center"><p class="text-muted">Nenhum anexo disponível.</p></div>');
+                return;
+            }
+
+            arquivos.forEach(function (anexo) {
+                var fileName = anexo.split('/').pop();
+                var isImage = fileName.match(/\.(jpg|jpeg|png|gif)$/i);
+                var thumbnail = isImage ? anexo : "/img/icon-file.png";
+
+                var html = `
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <a href="${anexo}" target="_blank" class="d-block p-2">
+                                <img src="${thumbnail}" alt="Anexo" class="img-fluid rounded" style="max-height: 120px;">
+                            </a>
+                            <div class="card-body p-2">
+                                <small class="d-block text-truncate" style="max-width: 100px;">${anexo.split('/').pop()}</small>
+                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                    <a href="/os/download/${fileName}" class="btn btn-sm btn-secondary" title="Baixar">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <a role="button" href="/os/excluir-anexo/${fileName}" class="btn btn-sm btn-danger btn-remover-anexo" data-id="${fileName}" title="Remover">
+                                        <i class="bx bx-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                divAnexos.append(html);
+            });
+        }
+    });
+
+    $(document).on("click", ".btn-remover-anexo", function (e) {
+        e.preventDefault();
+        var fileName = $(this).data("id");
+
+        Swal.fire({
+            title: "Tem certeza?",
+            text: "Essa ação não poderá ser desfeita!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Sim, excluir!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: `/os/excluir-anexo/${fileName}`,
+                    success: function (response) {
+                        if (response.status === "success") {
+                            Swal.fire("Excluído!", response.message, "success");
+                            carregarAnexos(@Model?.Os?.Id);
+                        } else {
+                            Swal.fire("Erro!", response.message, "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Erro!", "Erro ao excluir arquivo.", "error");
+                    }
+                });
+            }
         });
     });
 
