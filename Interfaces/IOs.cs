@@ -11,5 +11,6 @@ namespace SIGES.Interfaces
         Task Excluir(int id);
         IEnumerable<ServicosOs?> GetServicos(int id);
         IEnumerable<ProdutosOs?> GetProdutos(int id);
+        IEnumerable<AnotacoesOs?> GetAnotacaoes(int id);
     }
 }

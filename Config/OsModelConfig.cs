@@ -20,14 +20,20 @@ namespace SIGES.Config
                 .HasForeignKey(o => o.UsuariosId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Relacionamento OS -> Garantia (Opcional)
+            // Relacionamento OS -> Garantia
             builder.HasOne(o => o.Garantias)
-                .WithMany(g => g.Ordens) // Garantia pode estar em várias OS, mas sem navegação reversa explícita
+                .WithMany(g => g.Ordens)
                 .HasForeignKey(o => o.GarantiasId)
-                .OnDelete(DeleteBehavior.SetNull); // Define como NULL se a garantia for excluída
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Relacionamento OS -> ServicosOs ()
             builder.HasMany(o => o.Servicos)
+                .WithOne(s => s.Os)
+                .HasForeignKey(s => s.OsId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relacionamento OS -> AnotacoesOs ()
+            builder.HasMany(o => o.Anotacoes)
                 .WithOne(s => s.Os)
                 .HasForeignKey(s => s.OsId)
                 .OnDelete(DeleteBehavior.Cascade);

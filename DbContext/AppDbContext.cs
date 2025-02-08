@@ -51,5 +51,6 @@ namespace SIGES.Data
         public DbSet<ContasModel> Contas { get; set; }
         public DbSet<ArquivoModel> Documentos { get; set; }
         public DbSet<ProdutosOs> ProdutosOs { get; set; }
+        public DbSet<AnotacoesOs> AnotacoesOs { get; set; }
     }
 }

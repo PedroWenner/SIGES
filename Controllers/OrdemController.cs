@@ -26,11 +26,12 @@ namespace SIGES.Controllers
         private readonly IRepository<ProdutosOs> _repositorioProdutosOs;
         private readonly IRepository<ServicosOs> _repositorioServicosOs;
         private readonly IRepository<ServicoModel> _repositorioServico;
+        private readonly IRepository<AnotacoesOs> _repositorioAnotacao;
 
         public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio, IRepository<EmitenteModel> repositorioEmitente,
             IRepository<UsuarioModel> repositorioUsuario, IConfiguracao configuracaoRepositorio, IEmailQueueRepository emailQueueRepository,
             Interfaces.IViewRenderService viewRenderService, IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
-            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico)
+            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico, IRepository<AnotacoesOs> repositorioAnotacao)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
@@ -43,6 +44,7 @@ namespace SIGES.Controllers
             _repositorioServicosOs = repositorioServicosOs;
             _repositorioProdutos = repositorioProdutos;
             _repositorioServico = repositorioServico;
+            _repositorioAnotacao = repositorioAnotacao;
         }
 
         [HttpGet("")]
@@ -113,6 +115,7 @@ namespace SIGES.Controllers
 
             var produtos = _osRepositorio.GetProdutos(id);
             var servicos = _osRepositorio.GetServicos(id);
+            var anotacoes = _osRepositorio.GetAnotacaoes(id);
             
             // Defina o caminho onde os anexos dessa OS estão armazenados
             string pastaAnexos = Path.Combine("wwwroot/anexos", $"OS-{id}");
@@ -140,6 +143,7 @@ namespace SIGES.Controllers
                 Os = os,
                 Produtos = produtos.ToList(),
                 Servicos = servicos.ToList(),
+                Anotacoes = anotacoes.ToList(),
                 Anexos = anexos
             };
 
@@ -664,7 +668,7 @@ namespace SIGES.Controllers
 
         private bool AllowedExtensions(string extensao)
         {
-            List<string> extensoesPermitidas = new List<string> { "jpg", "png", "gif", "jpeg", "JPG", "PNG", "GIF", "JPEG", "pdf", "PDF", "cdr", "CDR", "docx", "DOCX", "txt" };
+            List<string> extensoesPermitidas = new List<string> { ".jpg", ".png", ".gif", ".jpeg", ".JPG", ".PNG", ".GIF", ".JPEG", ".pdf", ".PDF", ".cdr", ".CDR", ".docx", ".DOCX", ".txt" };
             if (extensoesPermitidas.Contains(extensao))
             {
                 return true;
@@ -689,7 +693,7 @@ namespace SIGES.Controllers
         }
 
         [Permissao("eOs", "Você não tem permissão para excluir anexos")]
-        [HttpGet("excluir-anexo/{filename}")]
+        [HttpPost("excluir-anexo/{filename}")]
         public IActionResult ExcluirAnexo(string fileName)
         {
             try
@@ -713,6 +717,82 @@ namespace SIGES.Controllers
             catch (Exception ex)
             {
                 return Json(new { status = "error", message = $"Erro ao excluir arquivo: {ex.Message}" });
+            }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("adicionar-anotacao")]
+        public async Task<IActionResult> AdicionarAnotacao(AnotacoesOs anotacoesOs)
+        {
+            var os = await _osRepositorio.ObterPorId(anotacoesOs.OsId);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new { status = "error", message = "Validar campos antes de continuar." });
+            }
+
+            try
+            {
+                anotacoesOs.Anotacao = HtmlHelpers.HigienizarHtml(anotacoesOs.Anotacao);
+                await _repositorioAnotacao.Adicionar(anotacoesOs);
+                var anotacoesAdicionados = _osRepositorio.GetAnotacaoes(os.Id);
+
+                return Json(new
+                {
+                    status = "success",
+                    anotacoes = anotacoesAdicionados.Select(i => new
+                    {
+                        i.Id,
+                        i.Anotacao,
+                        DataHora = i.DataHora.ToString("dd/MM/yyyy HH:mm:ss")
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("excluir-anotacao/{id}")]
+        public async Task<IActionResult> ExcluirAnotacao(int id)
+        {
+            var anotacoesOs = await _repositorioAnotacao.ObterPorId(id);
+            if (anotacoesOs == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            var os = await _osRepositorio.ObterPorId(anotacoesOs.OsId);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            try
+            {
+                await _repositorioAnotacao.Deletar(anotacoesOs);
+                var anotacoesAdicionados = _osRepositorio.GetAnotacaoes(os.Id);
+
+                return Json(new
+                {
+                    status = "success",
+                    anotacoes = anotacoesAdicionados.Select(i => new
+                    {
+                        i.Id,
+                        i.Anotacao,
+                        DataHora = i.DataHora.ToString("dd/MM/yyyy HH:mm:ss")
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
             }
         }
     }

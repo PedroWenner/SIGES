@@ -16,7 +16,7 @@ namespace SIGES.Config
 
             // Relacionamento ServiçoOs -> OS (Ordem de Serviço)
             builder.HasOne(s => s.Os)
-                .WithMany(o => o.Servicos) // Relaciona com a lista de serviços na OS
+                .WithMany(o => o.Servicos)
                 .HasForeignKey(s => s.OsId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

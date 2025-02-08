@@ -66,5 +66,11 @@ namespace SIGES.Repositorios
                 .Where(s => s.OsId == id)
                 .ToList();
         }
+        public IEnumerable<AnotacoesOs?> GetAnotacaoes(int id)
+        {
+            return _context.AnotacoesOs
+                .Where(s => s.OsId == id)
+                .ToList();
+        }
     }
 }

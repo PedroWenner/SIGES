@@ -7,6 +7,7 @@ public class OsEmailViewModel
     public List<ProdutosOs?> Produtos { get; set; } = new List<ProdutosOs?>();
     public List<ServicosOs?> Servicos { get; set; } = new List<ServicosOs?>();
     public List<ArquivoModelOs> Anexos { get; set; } = new List<ArquivoModelOs>();
+    public List<AnotacoesOs> Anotacoes { get; set; } = new List<AnotacoesOs>();
 }
 
 public class ArquivoModelOs

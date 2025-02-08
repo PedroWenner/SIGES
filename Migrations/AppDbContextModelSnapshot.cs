@@ -22,6 +22,35 @@ namespace SIGES.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("SIGES.Models.AnotacoesOs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_anotacoes");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Anotacao")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("anotacao");
+
+                    b.Property<DateTime>("DataHora")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("data_hora");
+
+                    b.Property<int>("OsId")
+                        .HasColumnType("int")
+                        .HasColumnName("os_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OsId");
+
+                    b.ToTable("AnotacoesOs");
+                });
+
             modelBuilder.Entity("SIGES.Models.ArquivoModel", b =>
                 {
                     b.Property<int>("Id")
@@ -983,7 +1012,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$MIGU6WC.3RIB3KqRVnX.g.CG6x0cfD9m8m1mLuNrWwOHbslQccsvu",
+                            Senha = "$2a$11$z2YzO8tv10GO3fvCuMmyjOLPUqKGm/hJ/3FLN7CluTFtR7UKK5Wr.",
                             Situacao = 1
                         });
                 });
@@ -1048,6 +1077,17 @@ namespace SIGES.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Vendas");
+                });
+
+            modelBuilder.Entity("SIGES.Models.AnotacoesOs", b =>
+                {
+                    b.HasOne("SIGES.Models.OsModel", "Os")
+                        .WithMany("Anotacoes")
+                        .HasForeignKey("OsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Os");
                 });
 
             modelBuilder.Entity("SIGES.Models.Cobranca", b =>
@@ -1273,6 +1313,8 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.OsModel", b =>
                 {
+                    b.Navigation("Anotacoes");
+
                     b.Navigation("Produtos");
 
                     b.Navigation("Servicos");

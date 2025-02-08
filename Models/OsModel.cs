@@ -73,5 +73,8 @@ namespace SIGES.Models
         [ValidateNever]
         public List<ProdutosOs> Produtos { get; set; } = new List<ProdutosOs>();
 
+        [ValidateNever]
+        public List<AnotacoesOs> Anotacoes { get; set; } = new List<AnotacoesOs>();
+
     }
 }
