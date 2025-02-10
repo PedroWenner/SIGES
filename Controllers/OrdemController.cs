@@ -113,6 +113,7 @@ namespace SIGES.Controllers
                 return RedirectToAction("Index");
             }
 
+            var emitente = await _repositorioEmitente.GetLastRegister();
             var produtos = _osRepositorio.GetProdutos(id);
             var servicos = _osRepositorio.GetServicos(id);
             var anotacoes = _osRepositorio.GetAnotacaoes(id);
@@ -144,7 +145,8 @@ namespace SIGES.Controllers
                 Produtos = produtos.ToList(),
                 Servicos = servicos.ToList(),
                 Anotacoes = anotacoes.ToList(),
-                Anexos = anexos
+                Anexos = anexos,
+                Emitente = emitente
             };
 
             return View("EOrdem", viewmodel);
@@ -223,6 +225,106 @@ namespace SIGES.Controllers
             }
 
             return remetentes.Distinct().Where(r => !string.IsNullOrEmpty(r)).ToList();
+        }
+
+        [Permissao("vOs", "Você não tem permissão para enviar e-mail!")]
+        [HttpPost("enviar-os-email/{id}")]
+        public async Task<IActionResult> EnviarOsEmail(int id)
+        {
+            try
+            {
+                var os = await _osRepositorio.ObterPorId(id);
+                if (os == null)
+                {
+                    TempData["Error"] = "OS não encontrada!";
+                    return RedirectToAction("Index");
+                }
+
+                var emitente = await _repositorioEmitente.GetLastRegister();
+                var osCadastrada = await _osRepositorio.ObterPorId(os.Id);
+                var tecnico = await _repositorioUsuario.ObterPorId(os.UsuariosId);
+                var osNotification = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("os_notification");
+                var emailAutomatico = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("email_automatico");
+
+                if (osNotification != "nenhum" && emailAutomatico == "1")
+                {
+                    List<string> remetentes = DefinirRemetentes(osNotification, osCadastrada.Clientes.Email, tecnico.Email, emitente.Email);
+                    string status = await EnviarEmail(os.Id, remetentes, "Ordem de Serviço - Criada");
+                }
+
+                TempData["Success"] = "O email está sendo processado e será enviado em breve.";
+                return RedirectToAction("Visualizar", os);
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Erro ao enviar e-mail.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [Permissao("vOs", "Você não possui permissão para visualizar OS.")]
+        [HttpGet("visualizar/{id}")]
+        public async Task<IActionResult> Visualizar(int id)
+        {
+            var os = await _osRepositorio.ObterPorId(id);
+            if (os == null)
+            {
+                TempData["Error"] = "OS não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            var emitente = await _repositorioEmitente.GetLastRegister();
+            var produtos = _osRepositorio.GetProdutos(id);
+            var servicos = _osRepositorio.GetServicos(id);
+            var anotacoes = _osRepositorio.GetAnotacaoes(id);
+
+            // Defina o caminho onde os anexos dessa OS estão armazenados
+            string pastaAnexos = Path.Combine("wwwroot/anexos", $"OS-{id}");
+            List<ArquivoModelOs> anexos = new List<ArquivoModelOs>();
+
+            if (Directory.Exists(pastaAnexos))
+            {
+                var arquivos = Directory.GetFiles(pastaAnexos);
+                foreach (var arquivo in arquivos)
+                {
+                    string fileName = Path.GetFileName(arquivo);
+                    string fileUrl = $"/anexos/OS-{id}/{fileName}";
+
+                    anexos.Add(new ArquivoModelOs
+                    {
+                        FileName = fileName,
+                        Url = fileUrl,
+                        FileType = ObterTipoArquivo(fileName)
+                    });
+                }
+            }
+
+            var pixService = new PixService();
+            var chavePix = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
+            string qrCode = string.Empty;
+            string chaveFormatada = string.Empty;
+
+            decimal? valorTotal = produtos.Sum(i => i.SubTotal) + servicos.Sum(i => i.SubTotal ?? 0);
+            if (valorTotal > 0 && !string.IsNullOrEmpty(chavePix))
+            {
+                //qrCode = pixService.GerarQrCode(chavePix, valorTotal, $"Venda {id}", emitente.Nome, emitente.Cidade);
+                qrCode = pixService.GerarQrCode("pedro_wenner@outlook.com", 66.25m, "Venda 123", "Pedro Wenner Lemes Alcantara", "Cuiaba");
+                chaveFormatada = pixService.FormatarChavePix(chavePix);
+            }
+
+            var viewmodel = new OsEmailViewModel
+            {
+                Os = os,
+                Produtos = produtos.ToList(),
+                Servicos = servicos.ToList(),
+                Anotacoes = anotacoes.ToList(),
+                Emitente = emitente,
+                QrCodeBase64 = qrCode,
+                ChavePixFormatada = chaveFormatada,
+                Anexos = anexos
+            };
+
+            return View("VOs", viewmodel);
         }
 
         [Permissao("vOs", "Você não tem permissão para enviar e-mail!")]
@@ -738,6 +840,7 @@ namespace SIGES.Controllers
             try
             {
                 anotacoesOs.Anotacao = HtmlHelpers.HigienizarHtml(anotacoesOs.Anotacao);
+                anotacoesOs.Anotacao = "[" + User?.Identity?.Name + "] " + anotacoesOs.Anotacao;
                 await _repositorioAnotacao.Adicionar(anotacoesOs);
                 var anotacoesAdicionados = _osRepositorio.GetAnotacaoes(os.Id);
 
@@ -794,6 +897,78 @@ namespace SIGES.Controllers
             {
                 return Json(new { status = "error", message = ex.Message });
             }
+        }
+
+        [Permissao("eOs", "Você não tem permissão para editar OS.")]
+        [HttpPost("aplicar-desconto")]
+        public async Task<IActionResult> AplicarDesconto(OsModel os)
+        {
+            var osExistente = await _osRepositorio.ObterPorId(os.Id);
+            if (os == null)
+            {
+                return Json(new { status = "error", message = "OS não encontrada." });
+            }
+
+            string status = osExistente?.Status ?? "";
+            if (osExistente?.faturado == 1 || status == "Cancelado" || status == "Faturado")
+            {
+                return Json(new { status = "error", message = "Não é possivel aplicar desconto. OS já faturada/cancelada!" });
+            }
+
+            if (os.Desconto == 0)
+            {
+                return Json(new { status = "error", message = "Valor/Percentual do desconto não informado!" });
+            }
+
+            var produtos = _osRepositorio.GetProdutos(os.Id);
+            var servicos = _osRepositorio.GetServicos(os.Id);
+
+            decimal valorProdutos = produtos == null ? 0 : (produtos.Sum(x => x.SubTotal));
+            decimal valorServicos = servicos == null ? 0 : servicos.Sum(x => x.SubTotal ?? 0);
+            decimal valorTotal = valorProdutos + valorServicos;
+
+            if (valorTotal == 0)
+            {
+                return Json(new { status = "error", message = "Valor/Percentual do desconto não informado!" });
+            }
+
+            osExistente.Desconto = os.Desconto;
+            osExistente.TipoDesconto = os.TipoDesconto;
+            osExistente.ValorDesconto = CalcularDesconto(os.TipoDesconto, os.Desconto, valorTotal);
+
+            try
+            {
+                await _osRepositorio.Atualizar(osExistente);
+
+                return Json(new
+                {
+                    status = "success",
+                    message = "Desconto aplicado com sucesso!"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        private decimal CalcularDesconto(string tipoDesconto, decimal desconto, decimal valorTotal)
+        {
+            decimal descontoDef = 0;
+            if (tipoDesconto == "porcento")
+            {
+                descontoDef = valorTotal * desconto / 100;
+            }
+            else if (tipoDesconto == "real")
+            {
+                descontoDef = desconto;
+            }
+            else
+            {
+                descontoDef = 0;
+            }
+
+            return valorTotal - descontoDef;
         }
     }
 }

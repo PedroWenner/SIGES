@@ -7,13 +7,13 @@
 
 <style>
     .ck-editor__editable {
-    min-height: 300px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 100%;
-    white-space: normal !important;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+        min-height: 300px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        width: 100%;
+        white-space: normal !important;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
     }
 </style>
 
@@ -25,28 +25,28 @@
         <div class="card-body">
 
             <div class="d-flex">
-                <a title="Editar" class="button btn btn-mini btn-success" asp-controller="Venda" asp-action="Editar" asp-route-id="@Model.Venda.Id">
+                <a class="button btn btn-mini btn-success" asp-controller="Venda" asp-action="Editar" asp-route-id="@Model.Venda.Id">
                     <span class="button__icon"><i class="bx bx-edit bx-xs"></i></span>
                     <span class="button__text2">Editar</span>
                 </a>
-                <a title="Orçamento" class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
+                <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
                     <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
                     <span class="button__text2">Orçamento</span>
                 </a>
-                <a title="Papel A4" class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
+                <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
                     <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
                     <span class="button__text2">Papel A4</span>
                 </a>
-                <a title="CP não fiscal" class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="nao-fiscal" target="_blank">
+                <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="nao-fiscal" target="_blank">
                     <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
                     <span class="button__text2">CP não fiscal</span>
                 </a>
-                <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" title="Gerar pagamento" class="button btn btn-mini btn-info"
+                <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" class="button btn btn-mini btn-info"
                     data-id="@Model.Venda.Id" data-tipo="venda">
                     <span class="button__icon"><i class="bx bx-qr bx-xs"></i></span>
                     <span class="button__text2">Gerar pagamento</span>
                 </a>
-                <a title="Voltar" class="button btn btn-mini btn-warning" asp-controller="Venda" asp-action="Index">
+                <a class="button btn btn-mini btn-warning" asp-controller="Venda" asp-action="Index">
                     <span class="button__icon"><i class="bx bx-x bx-xs"></i></span>
                     <span class="button__text2">Voltar</span>
                 </a>

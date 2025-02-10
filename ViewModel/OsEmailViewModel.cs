@@ -8,6 +8,8 @@ public class OsEmailViewModel
     public List<ServicosOs?> Servicos { get; set; } = new List<ServicosOs?>();
     public List<ArquivoModelOs> Anexos { get; set; } = new List<ArquivoModelOs>();
     public List<AnotacoesOs> Anotacoes { get; set; } = new List<AnotacoesOs>();
+    public string QrCodeBase64 { get; set; } = string.Empty;
+    public string ChavePixFormatada { get; set; } = string.Empty;
 }
 
 public class ArquivoModelOs

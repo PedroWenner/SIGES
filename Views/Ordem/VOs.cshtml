@@ -1,0 +1,457 @@
+﻿@using SIGES.Helpers
+@using SIGES.Interfaces
+@model OsEmailViewModel
+
+@{
+    ViewData["Titulo"] = "Visualizar OS";
+    decimal totalProdutos = Model.Produtos.Sum(i => i.SubTotal);
+    decimal totalServicos = Model.Servicos.Sum(i => i.SubTotal ?? 0);
+    decimal valorTotalOs = Model.Os.ValorDesconto > 0 ? Model.Os.ValorDesconto : totalProdutos + totalServicos;
+    List<string> status = new List<string> { "Finalizado", "Faturado", "Orçamento", "Aberto" };
+}
+
+<link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
+
+<style type="text/css">
+    .card-custom {
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-custom:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .card-body-custom {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-custom img {
+        width: 100%;
+        height: 50px;
+        object-fit: cover;
+    }
+
+    .text-truncate-custom {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0">Ordem de Serviço #@Model.Os.Id</h5>
+        </div>
+        <div class="card-body">
+
+            <div class="buttons d-flex flex-wrap gap-2">
+                <a class="button btn btn-mini btn-success" href="/os/editar/@Model.Os.Id">
+                    <span class="button__icon"><i class="bx bx-edit"></i></span>
+                    <span class="button__text">Editar OS</span>
+                </a>
+                <div class="button-container">
+                    <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                        <span class="button__icon"><i class="bx bx-printer"></i></span>
+                        <span class="button__text">Imprimir</span>
+                    </a>
+                    <div class="cascading-buttons">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                            <span class="button__icon"><i class='bx bx-file'></i></span>
+                            <span class="button__text">Papel A4</span>
+                        </a>
+                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                            <span class="button__icon"><i class='bx bx-receipt'></i></span>
+                            <span class="button__text">Cupom 80mm</span>
+                        </a>
+                        @if (Model.Os.GarantiasId != null)
+                        {
+                            <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                                <span class="button__icon"><i class="bx bx-paperclip"></i></span>
+                                <span class="button__text">Termo Garantia</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
+                {
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-os-id="@Model.Os.Id">
+                        <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
+                        <span class="button__text">WhatsApp</span>
+                    </button>
+                }
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Email) && !string.IsNullOrEmpty(Model.Emitente?.Email))
+                {
+                    <a class="button btn btn-mini btn-warning" id="enviar-email" href="/os/enviar-os-email/@Model.Os.Id">
+                        <span class="button__icon"><i class="bx bx-envelope"></i></span>
+                        <span class="button__text">Via e-mail</span>
+                    </a>
+                }
+                <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" class="button btn btn-mini btn-primary" data-id="@Model.Os.Id" data-tipo="venda">
+                    <span class="button__icon"><i class="bx bx-dollar bx-xs"></i></span>
+                    <span class="button__text2">Gerar pagamento</span>
+                </a>
+                @if (!string.IsNullOrEmpty(Model.QrCodeBase64))
+                {
+                    <a data-bs-target="#modal-pix" data-bs-toggle="modal" id="btn-pix" role="button" class="button btn btn-mini btn-info">
+                        <span class="button__icon"><i class="bx bx-qr"></i></span>
+                        <span class="button__text">Chave PIX</span>
+                    </a>
+                }
+            </div>
+
+            <div class="container-fluid mt-3">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                            <div class="row">
+                                <div class="col-lg-5 col-md-6">
+                                    <h6>Cliente</h6>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="bx bxs-business"></i> @Model.Os.Clientes.Nome
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="bx bxs-phone"></i> E-mail: @Model.Os.Clientes.Celular
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-map-marker-alt"></i> @Model.Os.Clientes.Rua, @Model.Os.Clientes.NumeroRua, @Model.Os.Clientes.Bairro - @Model.Os.Clientes.Cep
+                                        @Model.Os.Clientes.Cidade/@Model.Os.Clientes.Estado 
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-envelope"></i> Celular: @Model.Os.Clientes.Email
+                                    </p>
+                                </div>
+                                <div class="col-lg-5 col-md-6">
+                                    <h6>Responsável</h6>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-user"></i> @Model.Os.Usuarios.Nome
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-envelope"></i> E-mail: @Model.Os.Usuarios.Email
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="bx bxs-phone"></i> Celular: @Model.Os.Usuarios.Telefone
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mt-3 p-3">
+                        <div class="table-responsive">
+                            <table class="table table-condensed">
+                                <tbody>
+                                    @if (Model.Os.DataInicial != null)
+                                    {
+                                        <tr>
+                                            <td><b>Status OS: </b> @Model.Os.Status </td>
+                                            <td><b>Data inicial: </b> @Model.Os.DataInicial?.ToString("dd/MM/yyyy") </td>
+                                            <td><b>Data final: </b> @Model.Os.DataFinal?.ToString("dd/MM/yyyy") </td>
+                                            <td><b>Garantia: </b> @Model.Os.Garantia </td>
+                                            @if (status.Contains(Model.Os.Status ?? ""))
+                                            {
+                                                <td><b>Venc. da garantia: </b> @Model.Os.DataFinal?.AddDays(int.Parse(Model.Os.Garantia ?? "0")).ToString("dd/MM/yyyy") </td>
+                                            }
+                                        </tr>
+                                    }
+                                    @if (Model.Os.DescricaoProduto != null)
+                                    {
+                                        <tr>
+                                            <td colspan="5"><b>Descrição: </b>@Html.Raw(Model.Os.DescricaoProduto)</td>
+                                        </tr>
+                                    }
+                                    @if (Model.Os.Defeito != null)
+                                    {
+                                        <tr>
+                                            <td colspan="5"><b>Defeito apresentado: </b>@Html.Raw(Model.Os.Defeito)</td>
+                                        </tr>
+                                    }
+                                    @if (Model.Os.Observacoes != null)
+                                    {
+                                        <tr>
+                                            <td colspan="5"><b>Observações: </b>@Html.Raw(Model.Os.Observacoes)</td>
+                                        </tr>
+                                    }
+                                    @if (Model.Os.LaudoTecnico != null)
+                                    {
+                                        <tr>
+                                            <td colspan="5"><b>Laudo técnico: </b>@Html.Raw(Model.Os.LaudoTecnico)</td>
+                                        </tr>
+                                    }
+                                    @if (Model.Os.GarantiasId != null)
+                                    {
+                                        <tr>
+                                            <td colspan="5"><b>Termo de garantia: </b>@Html.Raw(Model.Os.Garantias.TextoGarantia)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.Anotacoes != null)
+                {
+                    <div class="row">
+                        <div class="col-12 mt-3 p-3">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 85%">Anotação</th>
+                                            <th style="width: 15%">Data/Hora</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Anotacoes.Count == 0)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Nenhuma anotação cadastrada</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var note in Model.Anotacoes)
+                                            {
+                                                <tr>
+                                                    <td>@note.Anotacao</td>
+                                                    <td>@note.DataHora</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Anexos != null && Model.Anexos.Any())
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <p><b>Anexos</b></p>
+                            <div class="row mt-3" id="divAnexos">
+                                @foreach (var anexo in Model.Anexos)
+                                {
+                                    var isImage = anexo.FileType == "image";
+                                    var thumbnail = isImage ? anexo.Url : "/img/icon-file.png";
+
+                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+                                        <div class="card card-custom text-center shadow-sm">
+                                            <a href="@anexo.Url" target="_blank" class="d-block p-2">
+                                                <img src="@thumbnail" alt="Anexo" class="img-fluid rounded" style="max-height: 120px;">
+                                            </a>
+                                            <div class="card-body card-body-custom p-2">
+                                                <small class="d-block text-truncate text-truncate-custom" style="max-width: 100px;">@anexo.FileName</small>
+                                                <div class="d-flex justify-content-center gap-2 mt-2">
+                                                    <a href="/os/download/@anexo.FileName" class="btn btn-sm btn-secondary" title="Baixar">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Produtos != null)
+                {
+                    <div class="row">
+                        <div class="col-12 mt-3 p-3">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Qtd</th>
+                                            <th>Unt</th>
+                                            <th>Sub-total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Produtos.Count == 0)
+                                        {
+                                            <tr>
+                                                <td colspan="4">Nenhum produto cadastrado</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var p in Model.Produtos)
+                                            {
+                                                <tr>
+                                                    <td>@p.Produtos?.Descricao</td>
+                                                    <td>@p.Quantidade</td>
+                                                    <td>@p.Preco?.ToString("C")</td>
+                                                    <td>@p.SubTotal.ToString("C")</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4" class="text-end">
+                                                <b>Total:</b> @totalProdutos.ToString("C")
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Servicos != null)
+                {
+                    <div class="row">
+                        <div class="col-12 mt-3 p-3">
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th>Serviço</th>
+                                            <th>Qtd</th>
+                                            <th>Unt</th>
+                                            <th>Sub-total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Servicos.Count == 0)
+                                        {
+                                            <tr>
+                                                <td colspan="4">Nenhum produto cadastrado</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var s in Model.Servicos)
+                                            {
+                                                <tr>
+                                                    <td>@s.Servicos?.Nome</td>
+                                                    <td>@s.Quantidade</td>
+                                                    <td>@s.Preco?.ToString("C")</td>
+                                                    <td>@s.SubTotal?.ToString("C")</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="4" class="text-end">
+                                                <b>Total:</b> @totalServicos.ToString("C")
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-pix" class="modal fade" tabindex="-1" aria-labelledby="mymodallabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-5">Pagamento via PIX</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-lg-12 col-md-12 text-center">
+                        <img style="margin: 12px 0 0 0;" src="~/img/logo_pix.png" width="100" alt="QR Code de Pagamento" /><br>
+                        <img id="qrCodeImage" style="margin: 5px 0 0 0;" src="data:image/png;base64,@Model.QrCodeBase64" width="250" alt="QR Code de Pagamento" /><br>
+                        <span style="margin: 0; font-size: 90%; text-align: center;">Chave PIX: @Model.ChavePixFormatada</span><br />
+                        <span style="margin: 0; font-size: 90%; text-align: center;">Valor Total: @valorTotalOs.ToString("C")</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex;justify-content: center">
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
+                {
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-os-id="@Model.Os.Id">
+                        <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
+                        <span class="button__text">WhatsApp</span>
+                    </button>
+                }
+                <button type="button" class="button btn btn-mini btn-primary" id="copyButton">
+                    <span class="button__icon"><i class="fas fa-copy"></i></span>
+                    <span class="button__text2">Copia e cola</span>
+                </button>
+                <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
+                    <span class="button__icon"><i class="bx bx-x"></i></span>
+                    <span class="button__text2">Cancelar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Cobranca/_ModalGerarPagamento.cshtml")
+<script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
+<script>
+    document.getElementById('copyButton').addEventListener('click', function () {
+        var qrCodeImage = document.getElementById('qrCodeImage');
+        var canvas = document.createElement('canvas');
+        canvas.width = qrCodeImage.width;
+        canvas.height = qrCodeImage.height;
+        var context = canvas.getContext('2d');
+        context.drawImage(qrCodeImage, 0, 0, qrCodeImage.width, qrCodeImage.height);
+        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        var code = jsQR(imageData.data, imageData.width, imageData.height);
+        console.log(code);
+        console.log(canvas);
+        if (code) {
+            navigator.clipboard.writeText(code.data).then(function () {
+                alert('QR Code copiado com sucesso: ' + code.data);
+            }).catch(function (err) {
+                console.error('Erro ao copiar QR Code: ', err);
+            });
+        } else {
+            alert('Não foi possível decodificar o QR Code.');
+        }
+    });
+
+    $(document).on('click', '#enviarWhatsApp', function () {
+        var osId = $(this).data('os-id');
+
+        $.ajax({
+            url: `/os/enviar-whatsapp/${osId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.status === "success") {
+                    window.open(response.link, '_blank');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Ocorreu um erro ao enviar a mensagem.'
+                });
+            }
+        });
+    });
+</script>

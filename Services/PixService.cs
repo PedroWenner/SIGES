@@ -1,4 +1,6 @@
 ﻿using QRCoder;
+using System.Globalization;
+using System.Text;
 
 namespace SIGES.Services
 {
@@ -9,14 +11,67 @@ namespace SIGES.Services
             if (valor <= 0 || string.IsNullOrWhiteSpace(chavePix))
                 return string.Empty;
 
-            var payload = $"00020126360014BR.GOV.BCB.PIX0114{chavePix}520400005303986540{valor:0.00}5802BR5909{nomeEmitente}6009{cidadeEmitente}62070503***6304";
+            string valorFormatado = valor.Value.ToString("0.00", CultureInfo.InvariantCulture);
+            cidadeEmitente = RemoverAcentos(cidadeEmitente.ToUpper()).Substring(0, Math.Min(cidadeEmitente.Length, 15));
+            nomeEmitente = RemoverAcentos(nomeEmitente.ToUpper()).Substring(0, Math.Min(nomeEmitente.Length, 25));
+
+            string payload = $"000201"
+            + MontarCampo("26", $"0014BR.GOV.BCB.PIX0114{chavePix}") // Chave Pix correta
+            + "52040000" // Código Merchant Category
+            + "5303986" // Moeda (BRL)
+            + MontarCampo("54", valorFormatado) // Valor da transação
+            + "5802BR" // País
+            + MontarCampo("59", nomeEmitente) // Nome do recebedor
+            + MontarCampo("60", cidadeEmitente) // Cidade do recebedor
+            + "62070503***"; // TXID Padrão
+
+
+            string crc16 = CalcularCRC16(payload + "6304");
+            payload += "6304" + crc16;
+
+            Console.WriteLine(payload);
 
             using (var qrGenerator = new QRCodeGenerator())
             {
                 var qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-                var qrCode = new Base64QRCode(qrCodeData);
-                return qrCode.GetGraphic(20);
+                var qrCode = new PngByteQRCode(qrCodeData);
+                return Convert.ToBase64String(qrCode.GetGraphic(20));
             }
+        }
+
+        private string MontarCampo(string id, string valor)
+        {
+            int tamanho = valor.Length.ToString().Length == 1 ? 1 : 2;
+            return $"{id}{valor.Length.ToString().PadLeft(tamanho, '0')}{valor}";
+        }
+
+        public string RemoverAcentos(string texto)
+        {
+            if (string.IsNullOrEmpty(texto)) return texto;
+            return new string(texto.Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
+        }
+
+        private string CalcularCRC16(string payload)
+        {
+            const ushort polynomial = 0x1021;
+            ushort crc = 0xFFFF;
+
+            byte[] bytes = Encoding.ASCII.GetBytes(payload);
+            foreach (byte b in bytes)
+            {
+                crc ^= (ushort)(b << 8);
+                for (int i = 0; i < 8; i++)
+                {
+                    if ((crc & 0x8000) != 0)
+                        crc = (ushort)((crc << 1) ^ polynomial);
+                    else
+                        crc <<= 1;
+                }
+            }
+
+            return crc.ToString("X4");
         }
 
         public string FormatarChavePix(string chave)

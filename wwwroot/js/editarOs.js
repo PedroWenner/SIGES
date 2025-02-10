@@ -1,4 +1,8 @@
-﻿$('#descricao-produto').trumbowyg({
+﻿$(document).ready(function () {
+    $(".money").mask("#.##0,00", { reverse: true });
+});
+
+$('#descricao-produto').trumbowyg({
     lang: 'pt_br',
     autogrow: true,
     tagsToRemove: ['script', 'link'],
@@ -1018,26 +1022,120 @@ $(document).on("click", ".btn-remover-anotacao", function (e) {
     });
 });
 
-const incrementBtn = document.querySelector('.increment');
-const decrementBtn = document.querySelector('.decrement');
-const garantiaInput = document.getElementById('garantia');
-
-incrementBtn.addEventListener('click', () => {
-    garantiaInput.value = parseInt(garantiaInput.value || 0) + 1;
-    updateButtons();
-});
-
-decrementBtn.addEventListener('click', () => {
-    garantiaInput.value = Math.max(0, parseInt(garantiaInput.value || 0) - 1);
-    updateButtons();
-});
-
-function updateButtons() {
-    decrementBtn.disabled = garantiaInput.value <= 0;
+function increment(btnDecrement, id) {
+    const input = document.getElementById(id);
+    const decrement = document.getElementById(btnDecrement);
+    input.value = parseInt(input.value || 0) + 1;
+    updateButtons(decrement, input);
 }
 
-updateButtons();
+function decrement(btnDecrement, id) {
+    const input = document.getElementById(id);
+    const decrement = document.getElementById(btnDecrement);
+    input.value = parseInt(input.value || 0) - 1;
+    updateButtons(decrement, input);
+}
+
+function updateButtons(btnDecrement, id) {
+    btnDecrement.disabled = id.value <= 0;
+}
 
 $(document).on("click", ".btn-adicionar-anotacao", function (e) {
     $("#anotacao").val('');
+});
+
+function calcularDesconto() {
+    let valor = parseFloat($('#valor-total-os').val().replace('.', '').replace(',', '.')) || 0;
+    var tipoDesconto = $('#tipo-desconto').val();
+    let desconto = parseFloat($('#desconto').val()) || 0;
+
+    if (valor === 0)
+        return false;
+
+    if (tipoDesconto == 'porcento') {
+        if (desconto > 100) {
+            Swal.fire("Erro!", "Não é possível aplicar desconto maior que 100%.", "error");
+            $("#desconto").val('');
+            return false;
+        }
+        
+        valor -= (valor * desconto / 100);
+        $("#valor-desconto").val(valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    } else {
+        if (desconto > valor) {
+            Swal.fire("Erro!", "Não é possível aplicar um desconto maior que o valor total da venda.", "error");
+            $("#desconto").val('');
+            return false;
+        }
+        
+        valor -= desconto;
+        $("#valor-desconto").val(valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+}
+
+$("#form-desconto").validate({
+    rules: {
+        Desconto: { required: true },
+        ValorDesconto: { required: true }
+    },
+    messages: {
+        Desconto: { required: 'Inserir o desconto' },
+        ValorDesconto: { required: 'Inserir o total com o desconto' }
+    },
+    errorPlacement: function (error, element) {
+        element.attr("placeholder", error.text());
+    },
+    highlight: function (element, errorClass, validClass) {
+        $(element).addClass("is-invalid").removeClass("is-valid");
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        $(element).removeClass("is-invalid").addClass("is-valid");
+        $(element).attr("placeholder", "");
+    },
+    submitHandler: function (form) {
+        var dados = $(form).serialize();
+        $.ajax({
+            type: "POST",
+            url: "/os/aplicar-desconto",
+            data: dados,
+            dataType: "json",
+            beforeSend: function () {
+                Swal.fire({
+                    title: 'Processando',
+                    text: 'Registrando desconto...',
+                    icon: 'info',
+                    showCloseButton: false,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                });
+            },
+            success: function (response) {
+                if (response.status == "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Sucesso",
+                        text: "Desconto aplicado com sucesso!",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro",
+                        text: response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro",
+                    text: "Não foi possível adicionar o desconto. Tente novamente."
+                });
+            }
+        });
+
+        return false;
+    }
 });

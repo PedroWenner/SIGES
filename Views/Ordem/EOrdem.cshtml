@@ -6,6 +6,7 @@
     ViewData["Titulo"] = "Editar OS";
     decimal total = 0;
     decimal totalServicos = 0;
+    decimal valorTotalOs = Model.Produtos.Sum(x => x.SubTotal) + Model.Servicos.Sum(x => x.SubTotal ?? 0);
 }
 
 <link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
@@ -26,7 +27,7 @@
         border: 1px solid #aaa;
     }
 
-    .custom-counter input[type="number"] {
+    .custom-counter input[type="text"] {
         border: none;
         outline: none;
         width: 60px;
@@ -71,10 +72,16 @@
     }
 
     .card-custom {
-        height: 250px; /* Define uma altura fixa para todos os cards */
+        height: 250px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between; /* Mantém espaçamento entre os elementos */
+        justify-content: space-between;
+    }
+
+    .card-custom:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease-in-out;
     }
 
     .card-body-custom {
@@ -84,9 +91,9 @@
     }
 
     .card-custom img {
-        width: 100%; /* Garante que a imagem ocupe toda a largura do card */
-        height: 120px; /* Define uma altura fixa para todas as imagens */
-        object-fit: cover; /* Ajusta a imagem para cobrir o espaço sem distorcer */
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
     }
 
     .text-truncate-custom {
@@ -112,7 +119,7 @@
                     </a>
                 }
 
-                <a title="Visualizar OS" class="button btn btn-mini btn-primary" href="#">
+                <a class="button btn btn-mini btn-primary" asp-controller="Ordem" asp-action="Visualizar" asp-route-id="@Model.Os.Id">
                     <span class="button__icon"><i class="bx bx-show"></i></span>
                     <span class="button__text">Visualizar OS</span>
                 </a>
@@ -130,9 +137,9 @@
                             <span class="button__icon"><i class='bx bx-receipt'></i></span>
                             <span class="button__text">Cupom 80mm</span>
                         </a>
-                        @if (Model.Os.GarantiasId == null)
+                        @if (Model.Os.GarantiasId != null)
                         {
-                            <a target="_blank" title="Imprimir Termo de Garantia" class="button btn btn-mini btn-secondary" href="#">
+                            <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
                                 <span class="button__icon"><i class="bx bx-paperclip"></i></span>
                                 <span class="button__text">Termo Garantia</span>
                             </a>
@@ -145,6 +152,13 @@
                         <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
                         <span class="button__text">WhatsApp</span>
                     </button>
+                }
+                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Email) && !string.IsNullOrEmpty(Model.Emitente?.Email))
+                {
+                    <a class="button btn btn-mini btn-warning" id="enviar-email" href="/os/enviar-os-email/@Model.Os.Id">
+                        <span class="button__icon"><i class="bx bx-envelope"></i></span>
+                        <span class="button__text">Via e-mail</span>
+                    </a>
                 }
             </div>
 
@@ -222,10 +236,10 @@
                             <div class="col-md-3">
                                 <label for="garantia" class="form-label">Garantia (dias)</label>
                                 <div class="custom-counter">
-                                    <input id="garantia" type="number" min="0" asp-for="Os.Garantia" readonly />
+                                    <input id="garantia" type="text" asp-for="Os.Garantia" onkeypress="return somenteNumeros(this)" />
                                     <div class="counter-buttons">
-                                        <button type="button" class="decrement">–</button>
-                                        <button type="button" class="increment">+</button>
+                                        <button id="btn-decrement-garantia" type="button" onclick="decrement('btn-decrement-garantia', 'garantia');">–</button>
+                                        <button id="btn-increment-garantia" type="button" onclick="increment('btn-decrement-garantia', 'garantia');">+</button>
                                     </div>
                                 </div>
                                 <span asp-validation-for="Os.Garantia" class="text-danger"></span>
@@ -277,7 +291,51 @@
                     </form>
                 </div>
                 <div class="tab-pane fade show" id="desconto-tab-pane" tabindex="1">
+                    <div class="container-fluid mt-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                                    <form id="form-desconto" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
+                                        <input type="hidden" name="Id" value="@Model.Os?.Id" />
+
+                                        <div class="row g-3">
+                                            <div class="col-lg-2 col-md-3">
+                                                <label for="valor-total-os" class="form-label">Valor total da OS:</label>
+                                                <input id="valor-total-os" type="text" placeholder="0,00" readonly value="@valorTotalOs.ToString("N2")" />
+                                            </div>
+
+                                            <div class="col-lg-1 col-md-1">
+                                                <label for="tipo-desconto" class="form-label">Preço</label>
+                                                <select id="tipo-desconto" name="TipoDesconto" onchange="calcularDesconto(); return false;">
+                                                    <option value="real">R$</option>
+                                                    <option value="porcento">%</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-lg-1 col-md-2">
+                                                <label for="desconto" class="form-label">Desconto</label>
+                                                <input id="desconto" type="text" name="Desconto" placeholder="0,00" class="money" onchange="calcularDesconto(); return false;" required />
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-2">
+                                                <label for="valor-desconto" class="form-label">Total com desconto</label>
+                                                <input id="valor-desconto" type="text" name="ValorDesconto" placeholder="0,00" class="money" required />
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span class="button__text2">Aplicar</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane fade show" id="produtos-tab-pane" tabindex="2">
                     <div class="container-fluid mt-3">
@@ -303,7 +361,13 @@
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="produto-quantidade" class="form-label">Quantidade</label>
-                                                <input id="produto-quantidade" type="text" name="Quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                <div class="custom-counter">
+                                                    <input id="produto-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                    <div class="counter-buttons">
+                                                        <button id="btn-decrement-produto" type="button" onclick="decrement('btn-decrement-produto', 'produto-quantidade');">–</button>
+                                                        <button id="btn-increment-produto" type="button" onclick="increment('btn-decrement-produto', 'produto-quantidade');">+</button>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="col-lg-3 col-md-12 d-flex align-items-end">
@@ -400,7 +464,13 @@
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="servico-quantidade" class="form-label">Quantidade</label>
-                                                <input id="servico-quantidade" type="text" name="Quantidade" placeholder="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                <div class="custom-counter">
+                                                    <input id="servico-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                    <div class="counter-buttons">
+                                                        <button id="btn-decrement-servico" type="button" onclick="decrement('btn-decrement-servico', 'servico-quantidade');">–</button>
+                                                        <button id="btn-increment-servico" type="button" onclick="increment('btn-decrement-servico', 'servico-quantidade');">+</button>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="col-lg-3 col-md-12 d-flex align-items-end">
