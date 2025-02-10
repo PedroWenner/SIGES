@@ -82,7 +82,7 @@
                 </div>
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
                 {
-                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-os-id="@Model.Os.Id">
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-id="@Model.Os.Id" data-tipo="nao-pix">
                         <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
                         <span class="button__text">WhatsApp</span>
                     </button>
@@ -94,13 +94,13 @@
                         <span class="button__text">Via e-mail</span>
                     </a>
                 }
-                <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" class="button btn btn-mini btn-primary" data-id="@Model.Os.Id" data-tipo="venda">
+                <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" class="button btn btn-mini btn-primary" data-id="@Model?.Os?.Id" data-tipo="venda">
                     <span class="button__icon"><i class="bx bx-dollar bx-xs"></i></span>
                     <span class="button__text2">Gerar pagamento</span>
                 </a>
-                @if (!string.IsNullOrEmpty(Model.QrCodeBase64))
+                @if (!string.IsNullOrEmpty(Model?.PodeGerarPix))
                 {
-                    <a data-bs-target="#modal-pix" data-bs-toggle="modal" id="btn-pix" role="button" class="button btn btn-mini btn-info">
+                    <a data-id="@Model?.Os?.Id" id="btn-pix" role="button" class="button btn btn-mini btn-info">
                         <span class="button__icon"><i class="bx bx-qr"></i></span>
                         <span class="button__text">Chave PIX</span>
                     </a>
@@ -376,8 +376,11 @@
                 <div class="row g-3">
                     <div class="col-lg-12 col-md-12 text-center">
                         <img style="margin: 12px 0 0 0;" src="~/img/logo_pix.png" width="100" alt="QR Code de Pagamento" /><br>
-                        <img id="qrCodeImage" style="margin: 5px 0 0 0;" src="data:image/png;base64,@Model.QrCodeBase64" width="250" alt="QR Code de Pagamento" /><br>
-                        <span style="margin: 0; font-size: 90%; text-align: center;">Chave PIX: @Model.ChavePixFormatada</span><br />
+                        <img id="qrCodeImage" style="margin: 5px 0 0 0;" src="" width="250" alt="QR Code de Pagamento" /><br>
+                        <div class="mt-3">
+                            <h4>Ou copie o código Pix:</h4>
+                            <p id="pixCodeText" style="word-break: break-word; background-color: #f8f9fa; padding: 10px; border-radius: 5px;"></p>
+                        </div><br />
                         <span style="margin: 0; font-size: 90%; text-align: center;">Valor Total: @valorTotalOs.ToString("C")</span>
                     </div>
                 </div>
@@ -385,7 +388,7 @@
             <div class="modal-footer" style="display:flex;justify-content: center">
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
                 {
-                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-os-id="@Model.Os.Id">
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-id="@Model.Os.Id" data-tipo="pix">
                         <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
                         <span class="button__text">WhatsApp</span>
                     </button>
@@ -406,41 +409,79 @@
 @await Html.PartialAsync("~/Views/Cobranca/_ModalGerarPagamento.cshtml")
 <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
 <script>
-    document.getElementById('copyButton').addEventListener('click', function () {
-        var qrCodeImage = document.getElementById('qrCodeImage');
-        var canvas = document.createElement('canvas');
-        canvas.width = qrCodeImage.width;
-        canvas.height = qrCodeImage.height;
-        var context = canvas.getContext('2d');
-        context.drawImage(qrCodeImage, 0, 0, qrCodeImage.width, qrCodeImage.height);
-        var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        var code = jsQR(imageData.data, imageData.width, imageData.height);
-        console.log(code);
-        console.log(canvas);
-        if (code) {
-            navigator.clipboard.writeText(code.data).then(function () {
-                alert('QR Code copiado com sucesso: ' + code.data);
-            }).catch(function (err) {
-                console.error('Erro ao copiar QR Code: ', err);
+    $(document).on('click', '#btn-pix', function () {
+        var id = $(this).data('id');
+
+        $.ajax({
+            url: `/api/pix/gerar/${id}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.status === "success") {
+                    $("#qrCodeImage").attr("src", `data:image/png;base64,${response.qrCodeBase64}`);
+                    $("#pixCodeText").text(response.qrCode);
+                    $("#pixCodeText").attr("data-clipboard-text", response.qrCode);
+                    $("#modal-pix").modal("show");
+                } else {
+                    Swal.fire({
+                        icon: response.status,
+                        title: response.title,
+                        text: response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Ocorreu um erro ao criar chave pix.'
+                });
+            }
+        });
+    });
+
+    // Copiar código Pix para a área de transferência
+    $(document).on("click", "#copyButton", function () {
+        var pixCode = $("#pixCodeText").text();
+        navigator.clipboard.writeText(pixCode).then(function () {
+            $("#modal-pix").modal("hide");
+            Swal.fire({
+                icon: "success",
+                title: "Copiado!",
+                text: "O código Pix foi copiado para a área de transferência."
             });
-        } else {
-            alert('Não foi possível decodificar o QR Code.');
-        }
+        }, function () {
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Não foi possível copiar o código Pix."
+            });
+        });
     });
 
     $(document).on('click', '#enviarWhatsApp', function () {
-        var osId = $(this).data('os-id');
+        var id = $(this).data('id');
+        var tipo = $(this).data('tipo');
+        console.log(tipo);
+        console.log($("#pixCodeText").text());
+
+        if (tipo === 'pix') {
+            var mensagem  = $("#pixCodeText").text();
+        } else {
+            var mensagem = '';
+        }
 
         $.ajax({
-            url: `/os/enviar-whatsapp/${osId}`,
+            url: `/api/mensagem/enviar-whatsapp/${id}`,
             type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({ mensagem: mensagem }),
             success: function (response) {
                 if (response.status === "success") {
                     window.open(response.link, '_blank');
                 } else {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Erro',
+                        icon: response.status,
+                        title: response.title,
                         text: response.message
                     });
                 }

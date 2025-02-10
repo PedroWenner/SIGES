@@ -4,6 +4,7 @@ using SIGES.Attributes;
 using SIGES.Helpers;
 using SIGES.Interfaces;
 using SIGES.Models;
+using SIGES.Models.Requests;
 using SIGES.Repositorios;
 using SIGES.Services;
 using SIGES.ViewModel;
@@ -27,11 +28,13 @@ namespace SIGES.Controllers
         private readonly IRepository<ServicosOs> _repositorioServicosOs;
         private readonly IRepository<ServicoModel> _repositorioServico;
         private readonly IRepository<AnotacoesOs> _repositorioAnotacao;
+        private readonly PaymentGatewaysService _paymentGatewaysService;
 
         public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio, IRepository<EmitenteModel> repositorioEmitente,
             IRepository<UsuarioModel> repositorioUsuario, IConfiguracao configuracaoRepositorio, IEmailQueueRepository emailQueueRepository,
             Interfaces.IViewRenderService viewRenderService, IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
-            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico, IRepository<AnotacoesOs> repositorioAnotacao)
+            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico, IRepository<AnotacoesOs> repositorioAnotacao,
+            PaymentGatewaysService paymentGatewaysService)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
@@ -45,6 +48,7 @@ namespace SIGES.Controllers
             _repositorioProdutos = repositorioProdutos;
             _repositorioServico = repositorioServico;
             _repositorioAnotacao = repositorioAnotacao;
+            _paymentGatewaysService = paymentGatewaysService;
         }
 
         [HttpGet("")]
@@ -299,19 +303,9 @@ namespace SIGES.Controllers
                 }
             }
 
-            var pixService = new PixService();
-            var chavePix = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
-            string qrCode = string.Empty;
-            string chaveFormatada = string.Empty;
+            var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
 
             decimal? valorTotal = produtos.Sum(i => i.SubTotal) + servicos.Sum(i => i.SubTotal ?? 0);
-            if (valorTotal > 0 && !string.IsNullOrEmpty(chavePix))
-            {
-                //qrCode = pixService.GerarQrCode(chavePix, valorTotal, $"Venda {id}", emitente.Nome, emitente.Cidade);
-                qrCode = pixService.GerarQrCode("pedro_wenner@outlook.com", 66.25m, "Venda 123", "Pedro Wenner Lemes Alcantara", "Cuiaba");
-                chaveFormatada = pixService.FormatarChavePix(chavePix);
-            }
-
             var viewmodel = new OsEmailViewModel
             {
                 Os = os,
@@ -319,8 +313,7 @@ namespace SIGES.Controllers
                 Servicos = servicos.ToList(),
                 Anotacoes = anotacoes.ToList(),
                 Emitente = emitente,
-                QrCodeBase64 = qrCode,
-                ChavePixFormatada = chaveFormatada,
+                PodeGerarPix = podeGerarPix,
                 Anexos = anexos
             };
 
@@ -363,57 +356,6 @@ namespace SIGES.Controllers
             }
 
             return "success";
-        }
-
-        [Permissao("eOs", "Você não tem permissão para enviar mensagens.")]
-        [HttpPost("enviar-whatsapp/{id}")]
-        public async Task<IActionResult> EnviarWhatsApp(int id)
-        {
-            var os = await _osRepositorio.ObterPorId(id);
-            if (os == null)
-            {
-                return Json(new { status = "Error", message = "OS não encontrada." });
-            }
-
-            var emitente = (await _repositorioEmitente.Listar()).FirstOrDefault();
-            var textoBase = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("notifica_whats");
-
-            if (string.IsNullOrEmpty(textoBase))
-            {
-                return Json(new { status = "error", message = "O texto base para notificação não está configurado." });
-            }
-
-            var zapnumber = new string(os.Clientes?.Telefone?.Where(char.IsDigit).ToArray());
-
-            List<string> troca = new List<string>
-            {
-                os.Clientes?.Nome ?? "",
-                os.Id.ToString() ?? "",
-                os.Status ?? "",
-                "R$ " + (os.Desconto > 0 && os.ValorDesconto > 0
-                    ? os.ValorDesconto.ToString("N2")
-                    : (os.Produtos?.Sum(x => x.Preco ?? 0) + os.Servicos?.Sum(x => x.Preco ?? 0)).ToString()),
-                os.DescricaoProduto ?? "",
-                emitente?.Nome ?? "",
-                emitente?.Telefone ?? "",
-                os.Observacoes ?? "",
-                os.Defeito ?? "",
-                os.LaudoTecnico ?? "",
-                os.DataFinal?.ToString("dd/MM/yyyy") ?? "",
-                os.DataInicial?.ToString("dd/MM/yyyy") ?? "",
-                $"{os.Garantia} dias"
-            };
-
-            string textoDeNotificacao = HtmlHelpers.CriarTextoWhats(textoBase, troca);
-
-            if (!string.IsNullOrEmpty(zapnumber))
-            {
-
-                string linkWhatsApp = $"https://wa.me/55{zapnumber}?text={textoDeNotificacao}";
-                return Json(new { status = "success", link = linkWhatsApp });
-            }
-
-            return Json(new { status = "error", message = "Número de WhatsApp não encontrado para o cliente." });
         }
 
         [Permissao("eOs", "Você não tem permissão para editar OS.")]

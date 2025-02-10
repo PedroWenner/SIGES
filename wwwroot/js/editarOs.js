@@ -317,18 +317,27 @@ $(document).ready(function () {
 });
 
 $(document).on('click', '#enviarWhatsApp', function () {
-    var osId = $(this).data('os-id');
+    var id = $(this).data('id');
+    var tipo = $(this).data('tipo');
+
+    if (tipo === 'pix') {
+        var mensagem = $("#pixCodeText").val();
+    } else {
+        var mensagem = '';
+    }
 
     $.ajax({
-        url: `/os/enviar-whatsapp/${osId}`,
+        url: `/api/mensagem/enviar-whatsapp/${id}`,
         type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify({ mensagem: mensagem }),
         success: function (response) {
             if (response.status === "success") {
                 window.open(response.link, '_blank');
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
+                    icon: response.status,
+                    title: response.title,
                     text: response.message
                 });
             }

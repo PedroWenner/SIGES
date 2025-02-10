@@ -2,17 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
 using SIGES.ViewModel;
-using System.Drawing;
-using System.Globalization;
-using System.Net;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using SIGES.Helpers;
 using SIGES.Attributes;
 using SIGES.Models.Requests;
 using SIGES.Services;
-using ZXing.QrCode.Internal;
 
 
 namespace SIGES.Controllers
@@ -27,10 +21,13 @@ namespace SIGES.Controllers
         private readonly IProdutoRepositorio _produtoRepositorio;
         private readonly ILancamento _lancamentoRepository;
         private readonly IConfiguracao _configuracaoRepositorio;
+        private readonly PaymentGatewaysService _paymentGatewaysService;
+        private readonly IPaymentGateway _paymentGateway;
 
         public VendaController(IVenda vendaRepositorio, ILogService logServiceRepositorio,
             IItensVenda itensVendaRepositorio, IProdutoRepositorio produtoRepositorio,
-            ILancamento lancamentoRepository, IConfiguracao configuracao)
+            ILancamento lancamentoRepository, IConfiguracao configuracao, PaymentGatewaysService paymentGatewaysService,
+            IPaymentGateway paymentGateway)
         {
             _vendaRepositorio = vendaRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
@@ -38,6 +35,8 @@ namespace SIGES.Controllers
             _produtoRepositorio = produtoRepositorio;
             _lancamentoRepository = lancamentoRepository;
             _configuracaoRepositorio = configuracao;
+            _paymentGatewaysService = paymentGatewaysService;
+            _paymentGateway = paymentGateway;
         }
 
         [Permissao("vVenda", "Você não possui permissão para visualizar vendas.")]
@@ -292,16 +291,29 @@ namespace SIGES.Controllers
             }
 
             var itensVenda = _itensVendaRepositorio.Listar().Where(i => i.VendaId == id).ToList();
-            var pixService = new PixService();
-            var chavePix = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
+            var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
             string qrCode = string.Empty;
-            string chaveFormatada = string.Empty;
+            string qrCodeBase64 = string.Empty;
 
-            decimal? valorTotal = itensVenda.Sum(i => i.Quantidade * i.Preco);
-            if (valorTotal > 0 && !string.IsNullOrEmpty(chavePix))
+            if (!string.IsNullOrEmpty(podeGerarPix) || tipo.ToLower() != "nao-fiscal")
             {
-                qrCode = pixService.GerarQrCode(chavePix, valorTotal, $"Venda {id}", emitente.Nome, emitente.Cidade);
-                chaveFormatada = pixService.FormatarChavePix(chavePix);
+                PaymentRequest request = new PaymentRequest
+                {
+                    Id = venda.Id,
+                    Tipo = "venda",
+                    TransactionAmount = itensVenda.Sum(i => i.Quantidade * i.Preco),
+                    Description = $"Venda {id}",
+                    PaymentMethodId = "pix",
+                    Email = venda.Cliente?.Email ?? "",
+                    Identification = venda.Cliente?.Documento?.Replace(".", "").Replace("-", "") ?? ""
+                };
+
+                var pix = await _paymentGateway.GerarPix(request);
+                if (pix is not null)
+                {
+                    qrCode = pix.GetType().GetProperty("qrCode")?.GetValue(pix)?.ToString() ?? string.Empty;
+                    qrCodeBase64 = pix.GetType().GetProperty("qrCodeBase64")?.GetValue(pix)?.ToString() ?? string.Empty;
+                }
             }
 
             var viewModel = new VendaImprimirViewModel
@@ -310,7 +322,7 @@ namespace SIGES.Controllers
                 ItensVenda = itensVenda,
                 Emitente = emitente,
                 QrCodeBase64 = qrCode,
-                ChavePixFormatada = chaveFormatada
+                ChavePixFormatada = ""
             };
 
             if (tipo.ToLower() == "nao-fiscal")

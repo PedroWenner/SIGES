@@ -148,7 +148,7 @@
                 </div>
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
                 {
-                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-os-id="@Model.Os.Id">
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-id="@Model.Os.Id" data-tipo="nao-pix">
                         <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
                         <span class="button__text">WhatsApp</span>
                     </button>

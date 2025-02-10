@@ -7,6 +7,7 @@ using MercadoPago.Client.Payment;
 using MercadoPago.Config;
 using MercadoPago.Resource.Payment;
 using SIGES.ViewModel;
+using MercadoPago.Client;
 
 namespace SIGES.Services
 {
@@ -207,6 +208,87 @@ namespace SIGES.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<object> GerarPix(PaymentRequest request)
+        {
+            try
+            {
+                var requestOptions = new RequestOptions();
+                requestOptions.CustomHeaders.Add("x-idempotency-key", Guid.NewGuid().ToString());
+
+                var payer = new PaymentPayerRequest
+                {
+                    Email = request.Email ?? throw new Exception("Email do cliente não pode ser nulo."),
+                    FirstName = request.FirstName ?? "Desconhecido",
+                    LastName = request.LastName ?? "Desconhecido",
+                    Identification = new IdentificationRequest
+                    {
+                        Type = request.Identification?.Length == 11 ? "CPF" : "CNPJ",
+                        Number = request.Identification ?? throw new Exception("Documento do cliente não pode ser nulo.")
+                    }
+                };
+
+                var paymentRequest = new PaymentCreateRequest
+                {
+                    TransactionAmount = request.TransactionAmount,
+                    Description = request.Description,
+                    PaymentMethodId = request.PaymentMethodId,
+                    Payer = payer
+                };
+
+                var client = new PaymentClient();
+                Payment payment = await client.CreateAsync(paymentRequest, requestOptions);
+
+                if (payment.Status != "approved" && payment.Status != "pending")
+                {
+                    return new { status = payment.Status, message = "Pagamento não aprovado." };
+                }
+
+                // Criar a cobrança no banco
+                //var novaCobranca = new Cobranca
+                //{
+                //    Barcode = payment.TransactionDetails.Barcode.Content,
+                //    Link = payment.TransactionDetails.ExternalResourceUrl ?? "",
+                //    Pdf = payment.TransactionDetails.ExternalResourceUrl ?? "",
+                //    ExpireAt = payment.DateOfExpiration ?? DateTime.Now,
+                //    ChargeId = payment.Id.ToString(),
+                //    Status = payment.Status,
+                //    Total = Convert.ToDecimal(request.TransactionAmount).ToString("C"),
+                //    ClientesId = request.ClienteId,
+                //    PaymentMethod = "pix",
+                //    PaymentGateway = "MercadoPago"
+                //};
+
+                //if (request.Tipo == "venda")
+                //{
+                //    novaCobranca.VendasId = request.Id;
+                //}
+                //else
+                //{
+                //    novaCobranca.OsId = request.Id;
+                //}
+
+                //_context.Cobrancas.Add(novaCobranca);
+                //await _context.SaveChangesAsync();
+
+                var qrCode = payment.PointOfInteraction.TransactionData.QrCode;
+                var qrCodeBase64 = payment.PointOfInteraction.TransactionData.QrCodeBase64;
+
+                return new
+                {
+                    status = "success",
+                    message = "Cobrança gerada com sucesso!",
+                    acao = "success",
+                    qrCode = qrCode,
+                    qrCodeBase64 = qrCodeBase64
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new { status = "error", message = ex.Message, acao = "error" };
+            }
         }
     }
 }

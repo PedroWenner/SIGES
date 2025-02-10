@@ -11,5 +11,6 @@ namespace SIGES.Interfaces
         Task<bool> CancelarCobranca(int id);
         Task<(bool confirm, string msg)> ConfirmarPagamento(int id);
         Task<bool> AtualizarStatus(int id);
+        Task<object> GerarPix(PaymentRequest request);
     }
 }
