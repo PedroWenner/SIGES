@@ -246,15 +246,16 @@
                 </div>
                 }
 
+                <div>
+                    <img width="130" src="@Model.QrCodeImg" alt="QR Code de Pagamento" />
+                </div>
                 @if (totalProdutos != 0 || totalServicos != 0)
                 {
                     <div class="pagamento">
                         <div class="qrcode">
                             @if (Model.PodeGerarPix == "S")
                             {
-                                <div>
-                                    <img width="130" src="<?= $qrCode ?>" alt="QR Code de Pagamento" />
-                                </div>
+                                
                                 <div style="display: flex; flex-wrap: wrap; align-content: center;">
                                     <div style="width: 100%; text-align:center;">
                                         <i class="fas fa-camera"></i><br />
@@ -600,7 +601,7 @@
                                             {
                                                 <tr>
                                                     <td style="width:290px">TOTAL</td>
-                                                    <td>R$ @valorTotalOs.ToString("N2")))</td>
+                                                    <td>R$ @valorTotalOs.ToString("N2")</td>
                                                 </tr>
                                             }
                                         </tbody>

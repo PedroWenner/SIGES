@@ -15,6 +15,12 @@ using SIGES.Services;
 using SIGES.ViewModel;
 using Path = System.IO.Path;
 using System;
+using pix_payload_generator.net.Models.CobrancaModels;
+using pix_payload_generator.net.Models.PayloadModels;
+using QRCoder;
+using Cobranca = pix_payload_generator.net.Models.CobrancaModels.Cobranca;
+using System.Globalization;
+using System.Text;
 
 namespace SIGES.Controllers
 {
@@ -217,6 +223,7 @@ namespace SIGES.Controllers
             var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
             var imprimirAnexo = _appSettingsService.ObterConfiguracao("IMPRIMIR_ANEXOS") ?? "false";
             var controlVias = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_2vias");
+            var pixKey = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
             List<ArquivoModelOs> anexos = new List<ArquivoModelOs>();
             
             if (imprimirAnexo == "true")
@@ -241,6 +248,33 @@ namespace SIGES.Controllers
                 }
             }
 
+            string cidadeEmitente = RemoverAcentos(emitente.Cidade.ToUpper());
+            string nomeEmitente = RemoverAcentos(emitente.Nome.ToUpper());
+            string qrCodeImg = string.Empty;
+            string valorFormatado = (produtos.Sum(x => x.SubTotal) + servicos.Sum(x => x.SubTotal))?.ToString("0.00", CultureInfo.InvariantCulture);
+
+            if (!string.IsNullOrEmpty(pixKey))
+            {
+                Cobranca cobranca = new Cobranca(_chave: pixKey)
+                {
+                    SolicitacaoPagador = $"OS {id}",
+                    Valor = new Valor
+                    {
+                        Original = valorFormatado
+                    }
+                };
+
+                var payload = cobranca.ToPayload(GerarTxid(), new Merchant(nomeEmitente, cidadeEmitente));
+                var stringToQrCode = payload.GenerateStringToQrCode();
+                using (var qrGenerator = new QRCodeGenerator())
+                {
+                    var qrCodeData = qrGenerator.CreateQrCode(stringToQrCode, QRCodeGenerator.ECCLevel.Q);
+                    var qrCode = new PngByteQRCode(qrCodeData);
+
+                    qrCodeImg = $"data:image/png;base64,{Convert.ToBase64String(qrCode.GetGraphic(20))}";
+                }
+            }
+
             var viewmodel = new OsEmailViewModel
             {
                 Os = os,
@@ -250,7 +284,8 @@ namespace SIGES.Controllers
                 Emitente = emitente,
                 PodeGerarPix = podeGerarPix,
                 Anexos = anexos,
-                Control2Vias = controlVias
+                Control2Vias = controlVias,
+                QrCodeImg = qrCodeImg
             };
 
             return View("Views/Relatorios/Os/papel-a4.cshtml", viewmodel);
@@ -264,6 +299,19 @@ namespace SIGES.Controllers
                 return "image";
             }
             return "file";
+        }
+
+        public string GerarTxid()
+        {
+            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 25);
+        }
+
+        public string RemoverAcentos(string texto)
+        {
+            if (string.IsNullOrEmpty(texto)) return texto;
+            return new string(texto.Normalize(NormalizationForm.FormD)
+                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                .ToArray());
         }
     }
 }
