@@ -58,12 +58,12 @@
                     <span class="button__text">Editar OS</span>
                 </a>
                 <div class="button-container">
-                    <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                    <a class="button btn btn-mini btn-secondary">
                         <span class="button__icon"><i class="bx bx-printer"></i></span>
                         <span class="button__text">Imprimir</span>
                     </a>
                     <div class="cascading-buttons">
-                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os.Id">
                             <span class="button__icon"><i class='bx bx-file'></i></span>
                             <span class="button__text">Papel A4</span>
                         </a>

@@ -13,6 +13,8 @@ using SIGES.Models.Requests;
 using SIGES.Repositorios;
 using SIGES.Services;
 using SIGES.ViewModel;
+using Path = System.IO.Path;
+using System;
 
 namespace SIGES.Controllers
 {
@@ -23,11 +25,19 @@ namespace SIGES.Controllers
         private readonly IProdutoRepositorio _produtoRepositorio;
         private readonly IOs _repositorioOs;
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
-        public RelatorioController(IProdutoRepositorio produtoRepositorio, IOs repositorioOs, IRepository<EmitenteModel> repositorioEmitente)
+        private readonly PaymentGatewaysService _paymentGatewaysService;
+        private readonly AppSettingsService _appSettingsService;
+        private readonly IConfiguracao _configuracaoRepositorio;
+
+        public RelatorioController(IProdutoRepositorio produtoRepositorio, IOs repositorioOs, IRepository<EmitenteModel> repositorioEmitente,
+            PaymentGatewaysService paymentGatewaysService, AppSettingsService appSettingsService, IConfiguracao configuracaoRepositorio)
         {
             _produtoRepositorio = produtoRepositorio;
             _repositorioOs = repositorioOs;
             _repositorioEmitente = repositorioEmitente;
+            _paymentGatewaysService = paymentGatewaysService;
+            _appSettingsService = appSettingsService;
+            _configuracaoRepositorio = configuracaoRepositorio;
         }
 
         [HttpGet("ProdutosEtiquetas")]
@@ -197,57 +207,63 @@ namespace SIGES.Controllers
             if (os == null)
             {
                 TempData["Error"] = "Os não encontrada.";
-                return RedirectToAction("Index");
+                return RedirectToRoute("/os");
             }
 
             var emitente = await _repositorioEmitente.GetLastRegister();
-            if (emitente == null)
-            {
-                TempData["Error"] = "Emitente não configurado.";
-                return RedirectToAction("Index");
-            }
-
-            var itensVenda = _itensVendaRepositorio.Listar().Where(i => i.VendaId == id).ToList();
+            var produtos = _repositorioOs.GetProdutos(id);
+            var servicos = _repositorioOs.GetServicos(id);
+            var anotacoes = _repositorioOs.GetAnotacaoes(id);
             var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
-            string qrCode = string.Empty;
-            string qrCodeBase64 = string.Empty;
-
-            if (!string.IsNullOrEmpty(podeGerarPix) || tipo.ToLower() != "nao-fiscal")
+            var imprimirAnexo = _appSettingsService.ObterConfiguracao("IMPRIMIR_ANEXOS") ?? "false";
+            var controlVias = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_2vias");
+            List<ArquivoModelOs> anexos = new List<ArquivoModelOs>();
+            
+            if (imprimirAnexo == "true")
             {
-                PaymentRequest request = new PaymentRequest
+                // Defina o caminho onde os anexos dessa OS estão armazenados
+                string pastaAnexos = Path.Combine("wwwroot/anexos", $"OS-{id}");
+                if (Directory.Exists(pastaAnexos))
                 {
-                    Id = venda.Id,
-                    Tipo = "venda",
-                    TransactionAmount = itensVenda.Sum(i => i.Quantidade * i.Preco),
-                    Description = $"Venda {id}",
-                    PaymentMethodId = "pix",
-                    Email = venda.Cliente?.Email ?? "",
-                    Identification = venda.Cliente?.Documento?.Replace(".", "").Replace("-", "") ?? ""
-                };
+                    var arquivos = Directory.GetFiles(pastaAnexos);
+                    foreach (var arquivo in arquivos)
+                    {
+                        string fileName = Path.GetFileName(arquivo);
+                        string fileUrl = $"/anexos/OS-{id}/{fileName}";
 
-                var pix = await _paymentGateway.GerarPix(request);
-                if (pix is not null)
-                {
-                    qrCode = pix.GetType().GetProperty("qrCode")?.GetValue(pix)?.ToString() ?? string.Empty;
-                    qrCodeBase64 = pix.GetType().GetProperty("qrCodeBase64")?.GetValue(pix)?.ToString() ?? string.Empty;
+                        anexos.Add(new ArquivoModelOs
+                        {
+                            FileName = fileName,
+                            Url = fileUrl,
+                            FileType = ObterTipoArquivo(fileName)
+                        });
+                    }
                 }
             }
 
-            var viewModel = new VendaImprimirViewModel
+            var viewmodel = new OsEmailViewModel
             {
-                Venda = venda,
-                ItensVenda = itensVenda,
+                Os = os,
+                Produtos = produtos.ToList(),
+                Servicos = servicos.ToList(),
+                Anotacoes = anotacoes.ToList(),
                 Emitente = emitente,
-                QrCodeBase64 = qrCodeBase64,
-                ChavePixFormatada = ""
+                PodeGerarPix = podeGerarPix,
+                Anexos = anexos,
+                Control2Vias = controlVias
             };
 
-            if (tipo.ToLower() == "nao-fiscal")
-            {
-                return View("ImprimirNaoFiscal", viewModel);
-            }
+            return View("Views/Relatorios/Os/papel-a4.cshtml", viewmodel);
+        }
 
-            return View("Imprimir", viewModel);
+        private string ObterTipoArquivo(string fileName)
+        {
+            string ext = Path.GetExtension(fileName).ToLower();
+            if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif")
+            {
+                return "image";
+            }
+            return "file";
         }
     }
 }

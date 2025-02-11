@@ -205,6 +205,7 @@ namespace SIGES.Controllers.Api
     public class MensagemRequest
     {
         public string? Mensagem { get; set; }
+        public string? Tipo { get; set; }
     }
     public class EmailRequest
     {
