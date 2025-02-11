@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Attributes;
+using SIGES.Controllers.Api;
 using SIGES.Helpers;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Models.Requests;
-using SIGES.Repositorios;
 using SIGES.Services;
 using SIGES.ViewModel;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace SIGES.Controllers
 {
@@ -19,36 +17,35 @@ namespace SIGES.Controllers
         private readonly IOs _osRepositorio;
         private readonly ILogService _logServiceRepositorio;
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
-        private readonly IRepository<UsuarioModel> _repositorioUsuario;
         private readonly IConfiguracao _configuracaoRepositorio;
-        private readonly IEmailQueueRepository _emailQueueRepository;
-        private readonly Interfaces.IViewRenderService _viewRenderService;
         private readonly IRepository<ProdutoModel> _repositorioProdutos;
         private readonly IRepository<ProdutosOs> _repositorioProdutosOs;
         private readonly IRepository<ServicosOs> _repositorioServicosOs;
         private readonly IRepository<ServicoModel> _repositorioServico;
         private readonly IRepository<AnotacoesOs> _repositorioAnotacao;
         private readonly PaymentGatewaysService _paymentGatewaysService;
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio, IRepository<EmitenteModel> repositorioEmitente,
-            IRepository<UsuarioModel> repositorioUsuario, IConfiguracao configuracaoRepositorio, IEmailQueueRepository emailQueueRepository,
-            Interfaces.IViewRenderService viewRenderService, IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
-            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico, IRepository<AnotacoesOs> repositorioAnotacao,
-            PaymentGatewaysService paymentGatewaysService)
+        public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio,
+            IRepository<EmitenteModel> repositorioEmitente, IConfiguracao configuracaoRepositorio,
+            IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
+            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico,
+            IRepository<AnotacoesOs> repositorioAnotacao, PaymentGatewaysService paymentGatewaysService,
+            HttpClient httpClient, IConfiguration configuration)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
             _repositorioEmitente = repositorioEmitente;
-            _repositorioUsuario = repositorioUsuario;
             _configuracaoRepositorio = configuracaoRepositorio;
-            _emailQueueRepository = emailQueueRepository;
-            _viewRenderService = viewRenderService;
             _repositorioProdutosOs = repositorioProdutosOs;
             _repositorioServicosOs = repositorioServicosOs;
             _repositorioProdutos = repositorioProdutos;
             _repositorioServico = repositorioServico;
             _repositorioAnotacao = repositorioAnotacao;
             _paymentGatewaysService = paymentGatewaysService;
+            _httpClient = httpClient;
+            _configuration = configuration;
         }
 
         [HttpGet("")]
@@ -87,15 +84,9 @@ namespace SIGES.Controllers
 
                 var emitente = await _repositorioEmitente.GetLastRegister();
                 var osCadastrada = await _osRepositorio.ObterPorId(os.Id);
-                var tecnico = await _repositorioUsuario.ObterPorId(os.UsuariosId);
-                var osNotification = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("os_notification");
-                var emailAutomatico = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("email_automatico");
 
-                if (osNotification != "nenhum" && emailAutomatico == "1")
-                {
-                    List<string> remetentes = DefinirRemetentes(osNotification, osCadastrada.Clientes.Email, tecnico.Email, emitente.Email);
-                    string status = await EnviarEmail(os.Id, remetentes, "Ordem de Serviço - Criada");
-                }
+                var emailResponse = await EnviarEmailAsync(osCadastrada.Id, "Ordem de serviço - criada", "os", "Email/Os/OsEmail", "S");
+                //ele vai ser chamado aqui passando o oscadastrada.id como parametro
 
                 return Json(new { status = "success", message = "OS adicionada com sucesso, você pode adicionar produtos ou serviços a essa OS nas abas de produtos e serviços!", id = os.Id.ToString() });
             }
@@ -178,10 +169,21 @@ namespace SIGES.Controllers
             await _logServiceRepositorio.RegistrarAlteracoes(usuarioAtual, osExistente, os);
 
             // Salva as alterações
+            osExistente.Status = os.Status;
+            osExistente.ClientesId = os.ClientesId;
+            osExistente.UsuariosId = os.UsuariosId;
+            osExistente.DataInicial = os.DataInicial;
+            osExistente.DataFinal = os.DataFinal;
+            osExistente.Garantia = os.Garantia;
+            osExistente.GarantiasId = os.GarantiasId;
+            osExistente.DescricaoProduto = os.DescricaoProduto;
+            osExistente.Defeito = os.Defeito;
+            osExistente.Observacoes = os.Observacoes;
+            osExistente.LaudoTecnico = os.LaudoTecnico;
             await _osRepositorio.Atualizar(osExistente);
 
             TempData["Success"] = "OS atualizada com sucesso!";
-            return RedirectToAction("Index");
+            return RedirectToAction("Editar", new { id = osExistente.Id });
         }
 
         [HttpPost("excluir")]
@@ -203,67 +205,6 @@ namespace SIGES.Controllers
             TempData["Success"] = "OS excluída com sucesso!";
 
             return RedirectToAction("Index");
-        }
-
-        private List<string> DefinirRemetentes(string configuracao, string emailCliente, string emailTecnico, string emailEmitente)
-        {
-            var remetentes = new List<string>();
-
-            switch (configuracao)
-            {
-                case "todos":
-                    remetentes.AddRange(new[] { emailCliente, emailTecnico, emailEmitente });
-                    break;
-                case "cliente":
-                    remetentes.Add(emailCliente);
-                    break;
-                case "tecnico":
-                    remetentes.Add(emailTecnico);
-                    break;
-                case "emitente":
-                    remetentes.Add(emailEmitente);
-                    break;
-                default:
-                    remetentes.Add(emailCliente);
-                    break;
-            }
-
-            return remetentes.Distinct().Where(r => !string.IsNullOrEmpty(r)).ToList();
-        }
-
-        [Permissao("vOs", "Você não tem permissão para enviar e-mail!")]
-        [HttpPost("enviar-os-email/{id}")]
-        public async Task<IActionResult> EnviarOsEmail(int id)
-        {
-            try
-            {
-                var os = await _osRepositorio.ObterPorId(id);
-                if (os == null)
-                {
-                    TempData["Error"] = "OS não encontrada!";
-                    return RedirectToAction("Index");
-                }
-
-                var emitente = await _repositorioEmitente.GetLastRegister();
-                var osCadastrada = await _osRepositorio.ObterPorId(os.Id);
-                var tecnico = await _repositorioUsuario.ObterPorId(os.UsuariosId);
-                var osNotification = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("os_notification");
-                var emailAutomatico = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("email_automatico");
-
-                if (osNotification != "nenhum" && emailAutomatico == "1")
-                {
-                    List<string> remetentes = DefinirRemetentes(osNotification, osCadastrada.Clientes.Email, tecnico.Email, emitente.Email);
-                    string status = await EnviarEmail(os.Id, remetentes, "Ordem de Serviço - Criada");
-                }
-
-                TempData["Success"] = "O email está sendo processado e será enviado em breve.";
-                return RedirectToAction("Visualizar", os);
-            }
-            catch (Exception)
-            {
-                TempData["Error"] = "Erro ao enviar e-mail.";
-                return RedirectToAction("Index");
-            }
         }
 
         [Permissao("vOs", "Você não possui permissão para visualizar OS.")]
@@ -320,42 +261,32 @@ namespace SIGES.Controllers
             return View("VOs", viewmodel);
         }
 
-        [Permissao("vOs", "Você não tem permissão para enviar e-mail!")]
-        [HttpPost("enviar-email/{id}")]
-        public async Task<string> EnviarEmail(int id, List<string> remetentes, string assunto)
+        private async Task<object> EnviarEmailAsync(int id, string assunto, string tipo, string nomeview, string automaticoMail)
         {
-            var os = await _osRepositorio.ObterPorId(id);
-            var emitente = await _repositorioEmitente.GetLastRegister();
-            if (string.IsNullOrEmpty(emitente.Email))
+            try
             {
-                return "error";
-            }
-
-            var produtos = _osRepositorio.GetProdutos(id);
-            var servicos = _osRepositorio.GetServicos(id);
-
-            // **Renderizando a View HTML**
-            var model = new OsEmailViewModel
-            {
-                Os = os,
-                Emitente = emitente,
-                Produtos = produtos.ToList(),
-                Servicos = servicos.ToList(),
-            };
-            var htmlBody = await _viewRenderService.RenderToStringAsync("Email/Os/OsEmail", model);
-
-            foreach (var remetente in remetentes.Where(r => !string.IsNullOrEmpty(r)))
-            {
-                await _emailQueueRepository.AdicionarEmail(new EmailQueue
+                EmailRequest email = new EmailRequest
                 {
-                    To = remetente,
-                    Message = htmlBody,
-                    Status = "pending",
-                    Date = DateTime.UtcNow
-                });
-            }
+                    Assunto = assunto,
+                    Tipo = tipo,
+                    Nomeview = nomeview,
+                    AutomaticoMail = automaticoMail
+                };
+                var apiUrl = $"{_configuration["ApiUrls:Mensagem"]}/enviar-email/{id}?email={email}";
 
-            return "success";
+                var response = await _httpClient.PostAsync(apiUrl, null);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<object>();
+                }
+
+                return new { status = "error", message = "Falha ao enviar e-mail." };
+            }
+            catch (Exception ex)
+            {
+                return new { status = "error", message = ex.Message };
+            }
         }
 
         [Permissao("eOs", "Você não tem permissão para editar OS.")]

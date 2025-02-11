@@ -1,5 +1,4 @@
 ﻿using iText.Barcodes;
-using iText.IO.Image;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
@@ -7,20 +6,28 @@ using iText.Layout.Element;
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Interfaces;
 using SIGES.Models;
-using System.Drawing;
-using DrawingImage = System.Drawing.Image;
 using PdfImage = iText.Layout.Element.Image;
-using ZXing;
-using ZXing.Common;
+using Microsoft.AspNetCore.Authorization;
+using SIGES.Attributes;
+using SIGES.Models.Requests;
+using SIGES.Repositorios;
+using SIGES.Services;
+using SIGES.ViewModel;
 
 namespace SIGES.Controllers
 {
+    [Route("relatorios")]
+    [Authorize]
     public class RelatorioController : Controller
     {
         private readonly IProdutoRepositorio _produtoRepositorio;
-        public RelatorioController(IProdutoRepositorio produtoRepositorio)
+        private readonly IOs _repositorioOs;
+        private readonly IRepository<EmitenteModel> _repositorioEmitente;
+        public RelatorioController(IProdutoRepositorio produtoRepositorio, IOs repositorioOs, IRepository<EmitenteModel> repositorioEmitente)
         {
             _produtoRepositorio = produtoRepositorio;
+            _repositorioOs = repositorioOs;
+            _repositorioEmitente = repositorioEmitente;
         }
 
         [HttpGet("ProdutosEtiquetas")]
@@ -180,6 +187,67 @@ namespace SIGES.Controllers
             int digitoVerificador = (10 - (somaTotal % 10)) % 10;
 
             return codigo + digitoVerificador;
+        }
+
+        [HttpGet("os/papel-a4/{id}")]
+        [Permissao("vOs", "Você não possui permissão para visualizar OS.")]
+        public async Task<IActionResult> Imprimir(int id)
+        {
+            var os = await _repositorioOs.ObterPorId(id);
+            if (os == null)
+            {
+                TempData["Error"] = "Os não encontrada.";
+                return RedirectToAction("Index");
+            }
+
+            var emitente = await _repositorioEmitente.GetLastRegister();
+            if (emitente == null)
+            {
+                TempData["Error"] = "Emitente não configurado.";
+                return RedirectToAction("Index");
+            }
+
+            var itensVenda = _itensVendaRepositorio.Listar().Where(i => i.VendaId == id).ToList();
+            var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
+            string qrCode = string.Empty;
+            string qrCodeBase64 = string.Empty;
+
+            if (!string.IsNullOrEmpty(podeGerarPix) || tipo.ToLower() != "nao-fiscal")
+            {
+                PaymentRequest request = new PaymentRequest
+                {
+                    Id = venda.Id,
+                    Tipo = "venda",
+                    TransactionAmount = itensVenda.Sum(i => i.Quantidade * i.Preco),
+                    Description = $"Venda {id}",
+                    PaymentMethodId = "pix",
+                    Email = venda.Cliente?.Email ?? "",
+                    Identification = venda.Cliente?.Documento?.Replace(".", "").Replace("-", "") ?? ""
+                };
+
+                var pix = await _paymentGateway.GerarPix(request);
+                if (pix is not null)
+                {
+                    qrCode = pix.GetType().GetProperty("qrCode")?.GetValue(pix)?.ToString() ?? string.Empty;
+                    qrCodeBase64 = pix.GetType().GetProperty("qrCodeBase64")?.GetValue(pix)?.ToString() ?? string.Empty;
+                }
+            }
+
+            var viewModel = new VendaImprimirViewModel
+            {
+                Venda = venda,
+                ItensVenda = itensVenda,
+                Emitente = emitente,
+                QrCodeBase64 = qrCodeBase64,
+                ChavePixFormatada = ""
+            };
+
+            if (tipo.ToLower() == "nao-fiscal")
+            {
+                return View("ImprimirNaoFiscal", viewModel);
+            }
+
+            return View("Imprimir", viewModel);
         }
     }
 }

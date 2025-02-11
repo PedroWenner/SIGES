@@ -20,13 +20,12 @@ namespace SIGES.Controllers
         private readonly IItensVenda _itensVendaRepositorio;
         private readonly IProdutoRepositorio _produtoRepositorio;
         private readonly ILancamento _lancamentoRepository;
-        private readonly IConfiguracao _configuracaoRepositorio;
         private readonly PaymentGatewaysService _paymentGatewaysService;
         private readonly IPaymentGateway _paymentGateway;
 
         public VendaController(IVenda vendaRepositorio, ILogService logServiceRepositorio,
             IItensVenda itensVendaRepositorio, IProdutoRepositorio produtoRepositorio,
-            ILancamento lancamentoRepository, IConfiguracao configuracao, PaymentGatewaysService paymentGatewaysService,
+            ILancamento lancamentoRepository, PaymentGatewaysService paymentGatewaysService,
             IPaymentGateway paymentGateway)
         {
             _vendaRepositorio = vendaRepositorio;
@@ -34,7 +33,6 @@ namespace SIGES.Controllers
             _itensVendaRepositorio = itensVendaRepositorio;
             _produtoRepositorio = produtoRepositorio;
             _lancamentoRepository = lancamentoRepository;
-            _configuracaoRepositorio = configuracao;
             _paymentGatewaysService = paymentGatewaysService;
             _paymentGateway = paymentGateway;
         }
@@ -321,7 +319,7 @@ namespace SIGES.Controllers
                 Venda = venda,
                 ItensVenda = itensVenda,
                 Emitente = emitente,
-                QrCodeBase64 = qrCode,
+                QrCodeBase64 = qrCodeBase64,
                 ChavePixFormatada = ""
             };
 

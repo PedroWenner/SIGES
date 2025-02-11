@@ -260,62 +260,6 @@ $(function () {
     };
 });
 
-$(document).ready(function () {
-    $('#formOs').validate({
-        rules: {
-            'DataInicial': { required: true },
-            'DataFinal': { required: true },
-            'cliente': { required: true },
-            'tecnico': { required: true }
-        },
-        messages: {
-            'DataInicial': { required: 'Campo requerido.' },
-            'DataFinal': { required: 'Campo requerido.' },
-            'cliente': { required: 'Campo requerido.' },
-            'tecnico': { required: 'Campo requerido.' }
-        },
-        errorPlacement: function (error, element) {
-            element.attr("placeholder", error.text());
-        },
-        highlight: function (element, errorClass, validClass) {
-            $(element).addClass("is-invalid").removeClass("is-valid");
-        },
-        unhighlight: function (element, errorClass, validClass) {
-            $(element).removeClass("is-invalid").addClass("is-valid");
-            $(element).attr("placeholder", "");
-        },
-        submitHandler: function (form) {
-            var dados = $(form).serialize();
-
-            $.ajax({
-                type: "POST",
-                url: "/os/editar",
-                data: dados,
-                dataType: "json",
-                success: function (response) {
-                    if (response.status === "success") {
-                        Swal.fire({
-                            icon: response.status,
-                            title: "Sucesso",
-                            text: "Produto adicionado com sucesso!"
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: response.status,
-                            title: "Atenção",
-                            text: "Produto adicionado com sucesso!"
-                        });
-                    }
-                },
-                error: function () {
-                    $("#errorUpload").removeClass("d-none").text("Erro ao enviar a imagem.");
-                    $("#successUpload").addClass("d-none");
-                }
-            });
-        }
-    });
-});
-
 $(document).on('click', '#enviarWhatsApp', function () {
     var id = $(this).data('id');
     var tipo = $(this).data('tipo');
@@ -1147,4 +1091,36 @@ $("#form-desconto").validate({
 
         return false;
     }
+});
+
+$(document).on('click', '#enviar-email', function () {
+    var id = $(this).data('id');
+    $.ajax({
+        url: `/api/mensagem/enviar-email/${id}`,
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify({ assunto: "Ordem de Serviço", tipo: "os", nomeview: "Email/Os/OsEmail", automaticoMail: "S" }),
+        success: function (response) {
+            if (response.status === "success") {
+                Swal.fire({
+                    icon: response.status,
+                    title: response.title,
+                    text: response.message
+                });
+            } else {
+                Swal.fire({
+                    icon: response.status,
+                    title: response.title,
+                    text: response.message
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Ocorreu um erro ao enviar a mensagem.'
+            });
+        }
+    });
 });

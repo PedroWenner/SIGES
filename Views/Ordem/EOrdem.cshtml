@@ -155,7 +155,7 @@
                 }
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Email) && !string.IsNullOrEmpty(Model.Emitente?.Email))
                 {
-                    <a class="button btn btn-mini btn-warning" id="enviar-email" href="/os/enviar-os-email/@Model.Os.Id">
+                    <a class="button btn btn-mini btn-warning" id="enviar-email" data-id="@Model.Os.Id">
                         <span class="button__icon"><i class="bx bx-envelope"></i></span>
                         <span class="button__text">Via e-mail</span>
                     </a>
@@ -185,9 +185,9 @@
 
             <div class="tab-content mt-3">
                 <div class="tab-pane fade show active" id="os-tab-pane" tabindex="0">
-                    <h4>N° OS: @Model.Os?.Id</h4>
+                    <h4>N° OS: @Model.Os?.Id.ToString("D4")</h4>
 
-                    <form id="formOs" method="post">
+                    <form id="formOs" method="post" asp-controller="Ordem" asp-action="Editar">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                         <input type="hidden" asp-for="Os.Id" />
 
@@ -238,8 +238,8 @@
                                 <div class="custom-counter">
                                     <input id="garantia" type="text" asp-for="Os.Garantia" onkeypress="return somenteNumeros(this)" />
                                     <div class="counter-buttons">
-                                        <button id="btn-decrement-garantia" type="button" onclick="decrement('btn-decrement-garantia', 'garantia');">–</button>
-                                        <button id="btn-increment-garantia" type="button" onclick="increment('btn-decrement-garantia', 'garantia');">+</button>
+                                        <button id="btn-decrement-garantia" type="button" onclick="decrement('btn-decrement-servico', 'servico-quantidade');">–</button>
+                                        <button id="btn-increment-garantia" type="button" onclick="increment('btn-decrement-servico', 'servico-quantidade');">+</button>
                                     </div>
                                 </div>
                                 <span asp-validation-for="Os.Garantia" class="text-danger"></span>

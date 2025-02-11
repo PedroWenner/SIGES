@@ -48,7 +48,7 @@
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex align-items-center">
-            <h5 class="mb-0">Ordem de Serviço #@Model.Os.Id</h5>
+            <h5 class="mb-0">Ordem de Serviço #@Model.Os.Id.ToString("D4")</h5>
         </div>
         <div class="card-body">
 
@@ -89,7 +89,7 @@
                 }
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Email) && !string.IsNullOrEmpty(Model.Emitente?.Email))
                 {
-                    <a class="button btn btn-mini btn-warning" id="enviar-email" href="/os/enviar-os-email/@Model.Os.Id">
+                    <a class="button btn btn-mini btn-warning" id="enviar-email" data-id="@Model.Os.Id">
                         <span class="button__icon"><i class="bx bx-envelope"></i></span>
                         <span class="button__text">Via e-mail</span>
                     </a>
@@ -155,10 +155,13 @@
                                             <td><b>Status OS: </b> @Model.Os.Status </td>
                                             <td><b>Data inicial: </b> @Model.Os.DataInicial?.ToString("dd/MM/yyyy") </td>
                                             <td><b>Data final: </b> @Model.Os.DataFinal?.ToString("dd/MM/yyyy") </td>
-                                            <td><b>Garantia: </b> @Model.Os.Garantia </td>
-                                            @if (status.Contains(Model.Os.Status ?? ""))
+                                            @if (Model.Os.Garantia != "0")
                                             {
-                                                <td><b>Venc. da garantia: </b> @Model.Os.DataFinal?.AddDays(int.Parse(Model.Os.Garantia ?? "0")).ToString("dd/MM/yyyy") </td>
+                                                <td><b>Garantia: </b> @Model.Os.Garantia </td>
+                                                @if (status.Contains(Model.Os.Status ?? ""))
+                                                {
+                                                    <td><b>Venc. da garantia: </b> @Model.Os.DataFinal?.AddDays(int.Parse(Model.Os.Garantia ?? "0")).ToString("dd/MM/yyyy") </td>
+                                                }
                                             }
                                         </tr>
                                     }
@@ -461,8 +464,6 @@
     $(document).on('click', '#enviarWhatsApp', function () {
         var id = $(this).data('id');
         var tipo = $(this).data('tipo');
-        console.log(tipo);
-        console.log($("#pixCodeText").text());
 
         if (tipo === 'pix') {
             var mensagem  = $("#pixCodeText").text();
@@ -478,6 +479,38 @@
             success: function (response) {
                 if (response.status === "success") {
                     window.open(response.link, '_blank');
+                } else {
+                    Swal.fire({
+                        icon: response.status,
+                        title: response.title,
+                        text: response.message
+                    });
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Ocorreu um erro ao enviar a mensagem.'
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '#enviar-email', function () {
+        var id = $(this).data('id');
+        $.ajax({
+            url: `/api/mensagem/enviar-email/${id}`,
+            type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify({ assunto: "Ordem de Serviço", tipo: "os", nomeview: "Email/Os/OsEmail", automaticoMail: "S" }),
+            success: function (response) {
+                if (response.status === "success") {
+                    Swal.fire({
+                        icon: response.status,
+                        title: response.title,
+                        text: response.message
+                    });
                 } else {
                     Swal.fire({
                         icon: response.status,
