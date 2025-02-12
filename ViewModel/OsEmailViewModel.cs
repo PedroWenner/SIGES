@@ -10,7 +10,9 @@ public class OsEmailViewModel
     public List<AnotacoesOs?> Anotacoes { get; set; } = new List<AnotacoesOs?>();
     public string PodeGerarPix { get; set; } = string.Empty;
     public string? Control2Vias { get; set; } = string.Empty;
-    public string? QrCodeImg { get; set; } = string.Empty;
+    public string? QrCode { get; set; } = string.Empty;
+    public string? QrCodeBase64 { get; set; } = string.Empty;
+    public string? ChaveFormatada { get; set; } = string.Empty;
 }
 
 public class ArquivoModelOs

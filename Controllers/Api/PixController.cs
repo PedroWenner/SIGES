@@ -6,8 +6,6 @@ using pix_payload_generator.net.Models.PayloadModels;
 using QRCoder;
 using SIGES.Models;
 using Cobranca = pix_payload_generator.net.Models.CobrancaModels.Cobranca;
-using System.Security.Cryptography.Xml;
-using ZXing.QrCode.Internal;
 using System.Globalization;
 using System.Text;
 
@@ -30,19 +28,40 @@ public class PixController : ControllerBase
 
     // Chama a API para gerar o Pix e retorna o QR Code
     [HttpPost("gerar/{id}")]
-    public async Task<object> GerarPix(int id, string tipo = "os")
+    public async Task<PixResponse> GerarPix(int id, string tipo = "os")
     {
         try
         {
             if (id == 0)
             {
-                return new { status = "error", message = $"Problemas no envio do {id}", acao = "error" };
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = $"Problemas no envio do {id}",
+                    Acao = "error"
+                };
             }
 
             var model = await _osRepositorio.ObterPorId(id);
+            var emitente = await _repositorioEmitente.GetLastRegister();
+
             if (model == null)
             {
-                return new { status = "error", message = "OS/Venda não encontrado.", acao = "error" };
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = "OS/Venda não encontrado.",
+                    Acao = "error"
+                };
+            }
+            if (emitente == null)
+            {
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = "Emitente não confirado.",
+                    Acao = "error"
+                };
             }
 
             string qrCode = string.Empty;
@@ -66,59 +85,94 @@ public class PixController : ControllerBase
                 };
 
                 var pix = await _paymentGateway.GerarPix(request);
-                if (pix is not null)
+                if (pix != null && pix.Status == "success")
                 {
-                    qrCode = pix.GetType().GetProperty("qrCode")?.GetValue(pix)?.ToString() ?? string.Empty;
-                    qrCodeBase64 = pix.GetType().GetProperty("qrCodeBase64")?.GetValue(pix)?.ToString() ?? string.Empty;
+                    qrCode = pix.QrCode ?? string.Empty;
+                    qrCodeBase64 = pix.QrCodeBase64 ?? string.Empty;
                 }
 
-                return pix;
+                return new PixResponse
+                {
+                    Status = "success",
+                    Message = "Pix gerada com sucesso!",
+                    Acao = "success",
+                    QrCode = qrCode,
+                    QrCodeBase64 = qrCodeBase64
+                };
             }
 
-            return new { status = "error", message = "Não é possível gerar pix de OS/Venda sem valor.", acao = "error" };
+            return new PixResponse
+            {
+                Status = "error",
+                Message = "Não é possível gerar pix de OS/Venda sem valor.",
+                Acao = "error"
+            };
 
         }
         catch (Exception ex)
         {
-            return new { status = "error", message = ex.Message, acao = "error" };
+            return new PixResponse
+            {
+                Status = "error",
+                Message = ex.Message,
+                Acao = "error"
+            };
         }
     }
 
     // Chama a API para gerar o Pix estático e retorna o QR Code
     [HttpPost("gerar-pix-estatico/{id}")]
-    public async Task<object> GerarPixEstatico(int id, string tipo = "os")
+    public async Task<PixResponse> GerarPixEstatico(int id, string tipo = "os")
     {
         try
         {
             if (id == 0)
             {
-                return new { status = "error", message = $"Problemas no envio do {id}", acao = "error" };
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = $"Problemas no envio do {id}",
+                    Acao = "error"
+                };
             }
 
             var model = await _osRepositorio.ObterPorId(id);
+            var emitente = await _repositorioEmitente.GetLastRegister();
+            var pixKey = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
+            
             if (model == null)
             {
-                return new { status = "error", message = "OS/Venda não encontrado.", acao = "error" };
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = "OS/Venda não encontrado.",
+                    Acao = "error"
+                };
             }
-
-            var emitente = await _repositorioEmitente.GetLastRegister();
             if (emitente == null)
             {
-                return new { status = "error", message = "Emitente não confirado.", acao = "error" };
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = "Emitente não confirado.",
+                    Acao = "error"
+                };
+            }
+            if (string.IsNullOrEmpty(pixKey))
+            {
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = "Chave pix não configurada.",
+                    Acao = "error"
+                };
             }
 
             string cidadeEmitente = RemoverAcentos(emitente.Cidade.ToUpper());
             string nomeEmitente = RemoverAcentos(emitente.Nome.ToUpper());
             var produtos = _osRepositorio.GetProdutos(id);
             var servicos = _osRepositorio.GetServicos(id);
-            var pixKey = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
-
             decimal? valorTotal = produtos.Sum(i => i.SubTotal) + servicos.Sum(i => i.SubTotal ?? 0);
-
-            if (string.IsNullOrEmpty(pixKey))
-            {
-                return new { status = "error", message = "Chave pix não configuradao.", acao = "error" };
-            }
 
             if (valorTotal > 0 && !string.IsNullOrEmpty(pixKey))
             {
@@ -142,22 +196,33 @@ public class PixController : ControllerBase
                     qrCodeImg = $"data:image/png;base64,{Convert.ToBase64String(qrCode.GetGraphic(20))}";
                 }
 
-                return new
+                string chaveFormatada = FormatarChavePix(pixKey);
+                return new PixResponse
                 {
-                    status = "success",
-                    message = "Pix gerada com sucesso!",
-                    acao = "success",
-                    qrCode = stringToQrCode,
-                    qrCodeBase64 = qrCodeImg
+                    Status = "success",
+                    Message = "Pix gerada com sucesso!",
+                    Acao = "success",
+                    QrCode = stringToQrCode,
+                    QrCodeBase64 = qrCodeImg,
+                    ChaveFormatada = chaveFormatada
                 };
             }
 
-            return new { status = "error", message = "Não é possível gerar pix de OS/Venda sem valor.", acao = "error" };
-
+            return new PixResponse
+            {
+                Status = "error",
+                Message = "Não é possível gerar pix de OS/Venda sem valor.",
+                Acao = "error"
+            };
         }
         catch (Exception ex)
         {
-            return new { status = "error", message = ex.Message, acao = "error" };
+            return new PixResponse
+            {
+                Status = "error",
+                Message = ex.Message,
+                Acao = "error"
+            };
         }
     }
 
@@ -173,4 +238,25 @@ public class PixController : ControllerBase
             .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
             .ToArray());
     }
+
+    public string FormatarChavePix(string chave)
+    {
+        if (chave.Length == 11) // CPF
+            return Convert.ToUInt64(chave).ToString(@"000\.000\.000\-00");
+        else if (chave.Length == 14) // CNPJ
+            return Convert.ToUInt64(chave).ToString(@"00\.000\.000\/0000\-00");
+        else if (chave.Length == 32)
+            return chave.Insert(8, "-");
+        return chave;
+    }
+}
+
+public class PixResponse
+{
+    public string Status { get; set; }
+    public string Message { get; set; }
+    public string Acao { get; set; }
+    public string QrCode { get; set; }
+    public string QrCodeBase64 { get; set; }
+    public string ChaveFormatada { get; set; }
 }

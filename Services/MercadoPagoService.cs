@@ -210,7 +210,7 @@ namespace SIGES.Services
             return true;
         }
 
-        public async Task<object> GerarPix(PaymentRequest request)
+        public async Task<PixResponse> GerarPix(PaymentRequest request)
         {
             try
             {
@@ -242,52 +242,34 @@ namespace SIGES.Services
 
                 if (payment.Status != "approved" && payment.Status != "pending")
                 {
-                    return new { status = payment.Status, message = "Pagamento não aprovado." };
+                    return new PixResponse
+                    {
+                        Status = "error",
+                        Message = "Pagamento não aprovado.",
+                        Acao = "error"
+                    };
                 }
-
-                // Criar a cobrança no banco
-                //var novaCobranca = new Cobranca
-                //{
-                //    Barcode = payment.TransactionDetails.Barcode.Content,
-                //    Link = payment.TransactionDetails.ExternalResourceUrl ?? "",
-                //    Pdf = payment.TransactionDetails.ExternalResourceUrl ?? "",
-                //    ExpireAt = payment.DateOfExpiration ?? DateTime.Now,
-                //    ChargeId = payment.Id.ToString(),
-                //    Status = payment.Status,
-                //    Total = Convert.ToDecimal(request.TransactionAmount).ToString("C"),
-                //    ClientesId = request.ClienteId,
-                //    PaymentMethod = "pix",
-                //    PaymentGateway = "MercadoPago"
-                //};
-
-                //if (request.Tipo == "venda")
-                //{
-                //    novaCobranca.VendasId = request.Id;
-                //}
-                //else
-                //{
-                //    novaCobranca.OsId = request.Id;
-                //}
-
-                //_context.Cobrancas.Add(novaCobranca);
-                //await _context.SaveChangesAsync();
 
                 var qrCode = payment.PointOfInteraction.TransactionData.QrCode;
                 var qrCodeBase64 = payment.PointOfInteraction.TransactionData.QrCodeBase64;
 
-                return new
+                return new PixResponse
                 {
-                    status = "success",
-                    message = "Cobrança gerada com sucesso!",
-                    acao = "success",
-                    qrCode = qrCode,
-                    qrCodeBase64 = qrCodeBase64
+                    Status = "success",
+                    Message = "Pix gerada com sucesso!",
+                    Acao = "success",
+                    QrCode = qrCode,
+                    QrCodeBase64 = $"data:image/png;base64,{qrCodeBase64}"
                 };
-
             }
             catch (Exception ex)
             {
-                return new { status = "error", message = ex.Message, acao = "error" };
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = ex.Message,
+                    Acao = "error"
+                };
             }
         }
     }

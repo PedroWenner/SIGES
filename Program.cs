@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using SIGES.BackgroundJobs;
 using SIGES.Config;
 using SIGES.Data;
+using SIGES.Helpers;
+using SIGES.Interfaces;
 using SIGES.Middleware;
 using SIGES.Services;
 using System.Globalization;
@@ -62,14 +64,20 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddHostedService<EmailSenderBackgroundService>();
 
 var app = builder.Build();
-
 app.UseSession();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var configuracaoRepositorio = serviceProvider.GetRequiredService<IConfiguracao>();
+    var appSettingsService = serviceProvider.GetRequiredService<AppSettingsService>();
+
+    ConfiguracaoHelper.CarregarConfiguracoes(configuracaoRepositorio, appSettingsService);
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

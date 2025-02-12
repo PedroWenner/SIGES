@@ -12,6 +12,7 @@
 <html lang="pt-br">
 
 <head>
+    <title>@ConfiguracaoHelper.ObterValor("app_name") - @Model.Os.Id.ToString() - @Model.Os.Clientes.Nome</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="~/bootstrap-5.3.3/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/font-awesome/css/font-awesome.css" />
@@ -246,22 +247,21 @@
                 </div>
                 }
 
-                <div>
-                    <img width="130" src="@Model.QrCodeImg" alt="QR Code de Pagamento" />
-                </div>
                 @if (totalProdutos != 0 || totalServicos != 0)
                 {
                     <div class="pagamento">
                         <div class="qrcode">
-                            @if (Model.PodeGerarPix == "S")
+                            @if (Model.PodeGerarPix == "S" || !string.IsNullOrEmpty(Model.QrCodeBase64))
                             {
-                                
+                                <div>
+                                    <img width="130" src="@Model.QrCodeBase64" alt="QR Code de Pagamento" />
+                                </div>
                                 <div style="display: flex; flex-wrap: wrap; align-content: center;">
                                     <div style="width: 100%; text-align:center;">
                                         <i class="fas fa-camera"></i><br />
                                         Escaneie o QRCode ao lado para pagar por Pix
                                     </div>
-                                    <!-- <div class="chavePix">Chave Pix: <b><?= $chaveFormatada ?></b></div> -->
+                                    <div class="chavePix">Chave Pix: <b>@Model.ChaveFormatada</b></div>
                                 </div>
                             }
                             else
@@ -283,7 +283,7 @@
                                         {
                                             <tr>
                                                 <td width="65%">SUBTOTAL</td>
-                                                <td>R$ <b>@((totalProdutos + totalServicos.ToString("N2")))</b></td>
+                                                <td>R$ <b>@((totalProdutos + totalServicos).ToString("N2"))</b></td>
                                             </tr>
                                             <tr>
                                                 <td>DESCONTO</td>
@@ -375,7 +375,7 @@
                             <span class="via">Via empresa</span>
                         }
                         ORDEM DE SERVIÇO #@Model.Os.Id.ToString("D4")
-                        <span class="emissao">Emissão: @DateTime.Now.ToString("dd/MM/yyyy")" </span>
+                        <span class="emissao">Emissão: @DateTime.Now.ToString("dd/MM/yyyy")</span>
                     </div>
 
                     @if (Model.Os.DataInicial != null)
@@ -533,7 +533,6 @@
                             <tbody>
                                 @foreach (var s in Model.Servicos)
                                 {
-                                    totalServicos += s.SubTotal ?? 0;
                                     <tr>
                                         <td>@s.Servicos?.Nome</td>
                                         <td class="text-center">@s.Quantidade</td>
@@ -554,17 +553,17 @@
                     {
                         <div class="pagamento">
                             <div class="qrcode">
-                                @if (Model.PodeGerarPix == "S")
+                                @if (Model.PodeGerarPix == "S" || !string.IsNullOrEmpty(Model.QrCodeBase64))
                                 {
                                     <div>
-                                        <img width="130" src="<?= $qrCode ?>" alt="QR Code de Pagamento" />
+                                        <img width="130" src="@Model.QrCodeBase64" alt="QR Code de Pagamento" />
                                     </div>
                                     <div style="display: flex; flex-wrap: wrap; align-content: center;">
                                         <div style="width: 100%; text-align:center;">
                                             <i class="fas fa-camera"></i><br />
                                             Escaneie o QRCode ao lado para pagar por Pix
                                         </div>
-                                        <!-- <div class="chavePix">Chave Pix: <b><?= $chaveFormatada ?></b></div> -->
+                                        <div class="chavePix">Chave Pix: <b>@Model.ChaveFormatada</b></div>
                                     </div>
                                 }
                                 else
@@ -586,7 +585,7 @@
                                             {
                                                 <tr>
                                                     <td width="65%">SUBTOTAL</td>
-                                                    <td>R$ <b>@((totalProdutos + totalServicos.ToString("N2")))</b></td>
+                                                    <td>R$ <b>@((totalProdutos + totalServicos).ToString("N2"))</b></td>
                                                 </tr>
                                                 <tr>
                                                     <td>DESCONTO</td>

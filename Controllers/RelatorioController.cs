@@ -9,18 +9,14 @@ using SIGES.Models;
 using PdfImage = iText.Layout.Element.Image;
 using Microsoft.AspNetCore.Authorization;
 using SIGES.Attributes;
-using SIGES.Models.Requests;
-using SIGES.Repositorios;
 using SIGES.Services;
-using SIGES.ViewModel;
 using Path = System.IO.Path;
-using System;
 using pix_payload_generator.net.Models.CobrancaModels;
 using pix_payload_generator.net.Models.PayloadModels;
 using QRCoder;
 using Cobranca = pix_payload_generator.net.Models.CobrancaModels.Cobranca;
 using System.Globalization;
-using System.Text;
+using SIGES.Helpers;
 
 namespace SIGES.Controllers
 {
@@ -32,18 +28,18 @@ namespace SIGES.Controllers
         private readonly IOs _repositorioOs;
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
         private readonly PaymentGatewaysService _paymentGatewaysService;
-        private readonly AppSettingsService _appSettingsService;
-        private readonly IConfiguracao _configuracaoRepositorio;
+        private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
 
         public RelatorioController(IProdutoRepositorio produtoRepositorio, IOs repositorioOs, IRepository<EmitenteModel> repositorioEmitente,
-            PaymentGatewaysService paymentGatewaysService, AppSettingsService appSettingsService, IConfiguracao configuracaoRepositorio)
+            PaymentGatewaysService paymentGatewaysService, IConfiguration configuration, HttpClient httpClient)
         {
             _produtoRepositorio = produtoRepositorio;
             _repositorioOs = repositorioOs;
             _repositorioEmitente = repositorioEmitente;
             _paymentGatewaysService = paymentGatewaysService;
-            _appSettingsService = appSettingsService;
-            _configuracaoRepositorio = configuracaoRepositorio;
+            _configuration = configuration;
+            _httpClient = httpClient;
         }
 
         [HttpGet("ProdutosEtiquetas")]
@@ -221,9 +217,9 @@ namespace SIGES.Controllers
             var servicos = _repositorioOs.GetServicos(id);
             var anotacoes = _repositorioOs.GetAnotacaoes(id);
             var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
-            var imprimirAnexo = _appSettingsService.ObterConfiguracao("IMPRIMIR_ANEXOS") ?? "false";
-            var controlVias = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_2vias");
-            var pixKey = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
+            var imprimirAnexo = ConfiguracaoHelper.ObterValor("IMPRIMIR_ANEXOS") ?? "false";
+            var controlVias = ConfiguracaoHelper.ObterValor("control_2vias");
+            var pixKey = ConfiguracaoHelper.ObterValor("pix_key");
             List<ArquivoModelOs> anexos = new List<ArquivoModelOs>();
             
             if (imprimirAnexo == "true")
@@ -248,30 +244,18 @@ namespace SIGES.Controllers
                 }
             }
 
-            string cidadeEmitente = RemoverAcentos(emitente.Cidade.ToUpper());
-            string nomeEmitente = RemoverAcentos(emitente.Nome.ToUpper());
-            string qrCodeImg = string.Empty;
-            string valorFormatado = (produtos.Sum(x => x.SubTotal) + servicos.Sum(x => x.SubTotal))?.ToString("0.00", CultureInfo.InvariantCulture);
+            string qrCode = string.Empty;
+            string qrCodeBase64 = string.Empty;
+            string chaveFormatada = string.Empty;
 
             if (!string.IsNullOrEmpty(pixKey))
             {
-                Cobranca cobranca = new Cobranca(_chave: pixKey)
+                var pix = await RetornarPix("S", id, "os");
+                if (pix != null && pix.Status == "success")
                 {
-                    SolicitacaoPagador = $"OS {id}",
-                    Valor = new Valor
-                    {
-                        Original = valorFormatado
-                    }
-                };
-
-                var payload = cobranca.ToPayload(GerarTxid(), new Merchant(nomeEmitente, cidadeEmitente));
-                var stringToQrCode = payload.GenerateStringToQrCode();
-                using (var qrGenerator = new QRCodeGenerator())
-                {
-                    var qrCodeData = qrGenerator.CreateQrCode(stringToQrCode, QRCodeGenerator.ECCLevel.Q);
-                    var qrCode = new PngByteQRCode(qrCodeData);
-
-                    qrCodeImg = $"data:image/png;base64,{Convert.ToBase64String(qrCode.GetGraphic(20))}";
+                    qrCode = pix.QrCode ?? string.Empty;
+                    qrCodeBase64 = pix.QrCodeBase64 ?? string.Empty;
+                    chaveFormatada = pix.ChaveFormatada ?? string.Empty;
                 }
             }
 
@@ -285,7 +269,9 @@ namespace SIGES.Controllers
                 PodeGerarPix = podeGerarPix,
                 Anexos = anexos,
                 Control2Vias = controlVias,
-                QrCodeImg = qrCodeImg
+                QrCode = qrCode,
+                QrCodeBase64 = qrCodeBase64,
+                ChaveFormatada = chaveFormatada
             };
 
             return View("Views/Relatorios/Os/papel-a4.cshtml", viewmodel);
@@ -301,17 +287,40 @@ namespace SIGES.Controllers
             return "file";
         }
 
-        public string GerarTxid()
+        private async Task<PixResponse> RetornarPix(string estatico, int id, string tipo)
         {
-            return Guid.NewGuid().ToString().Replace("-", "").Substring(0, 25);
-        }
+            try
+            {
+                var apiUrl = $"{_configuration["ApiUrls:Pix"]}/gerar-pix-estatico/{id}?tipo={tipo}";
+                if (estatico == "N")
+                {
+                    apiUrl = $"{_configuration["ApiUrls:Pix"]}/gerar/{id}?tipo={tipo}";
+                }
 
-        public string RemoverAcentos(string texto)
-        {
-            if (string.IsNullOrEmpty(texto)) return texto;
-            return new string(texto.Normalize(NormalizationForm.FormD)
-                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                .ToArray());
+                var response = await _httpClient.PostAsync(apiUrl, null);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Desserializa diretamente para PixResponse
+                    return await response.Content.ReadFromJsonAsync<PixResponse>();
+                }
+
+                // Retorna um objeto PixResponse em caso de erro
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = "Falha ao retornar chave pix."
+                };
+            }
+            catch (Exception ex)
+            {
+                // Retorna um objeto PixResponse em caso de exceção
+                return new PixResponse
+                {
+                    Status = "error",
+                    Message = ex.Message
+                };
+            }
         }
     }
 }
