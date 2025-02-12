@@ -27,17 +27,15 @@ namespace SIGES.Controllers
         private readonly IProdutoRepositorio _produtoRepositorio;
         private readonly IOs _repositorioOs;
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
-        private readonly PaymentGatewaysService _paymentGatewaysService;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
         public RelatorioController(IProdutoRepositorio produtoRepositorio, IOs repositorioOs, IRepository<EmitenteModel> repositorioEmitente,
-            PaymentGatewaysService paymentGatewaysService, IConfiguration configuration, HttpClient httpClient)
+            IConfiguration configuration, HttpClient httpClient)
         {
             _produtoRepositorio = produtoRepositorio;
             _repositorioOs = repositorioOs;
             _repositorioEmitente = repositorioEmitente;
-            _paymentGatewaysService = paymentGatewaysService;
             _configuration = configuration;
             _httpClient = httpClient;
         }
@@ -201,9 +199,9 @@ namespace SIGES.Controllers
             return codigo + digitoVerificador;
         }
 
-        [HttpGet("os/papel-a4/{id}")]
+        [HttpGet("relatorios/imprimir/{id}/{tipo}")]
         [Permissao("vOs", "Você não possui permissão para visualizar OS.")]
-        public async Task<IActionResult> Imprimir(int id)
+        public async Task<IActionResult> Imprimir(int id, string tipo = "a4")
         {
             var os = await _repositorioOs.ObterPorId(id);
             if (os == null)
@@ -216,7 +214,7 @@ namespace SIGES.Controllers
             var produtos = _repositorioOs.GetProdutos(id);
             var servicos = _repositorioOs.GetServicos(id);
             var anotacoes = _repositorioOs.GetAnotacaoes(id);
-            var podeGerarPix = _paymentGatewaysService.GetGateways()["MercadoPago"].Credentials["access_token"].ToString();
+            var podeGerarPix = ConfiguracaoHelper.ObterValor("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN");
             var imprimirAnexo = ConfiguracaoHelper.ObterValor("IMPRIMIR_ANEXOS") ?? "false";
             var controlVias = ConfiguracaoHelper.ObterValor("control_2vias");
             var pixKey = ConfiguracaoHelper.ObterValor("pix_key");
@@ -273,8 +271,12 @@ namespace SIGES.Controllers
                 QrCodeBase64 = qrCodeBase64,
                 ChaveFormatada = chaveFormatada
             };
+            
+            string view = "Views/Relatorios/Os/papel-a4.cshtml";
+            if (tipo == "termica")
+                view = "Views/Relatorios/Os/papel-termica.cshtml";
 
-            return View("Views/Relatorios/Os/papel-a4.cshtml", viewmodel);
+            return View(view, viewmodel);
         }
 
         private string ObterTipoArquivo(string fileName)
@@ -321,6 +323,28 @@ namespace SIGES.Controllers
                     Message = ex.Message
                 };
             }
+        }
+
+        [HttpGet("relatorios/imprimir-garantia/{id}/{tipo}")]
+        [Permissao("vOs", "Você não possui permissão para visualizar OS.")]
+        public async Task<IActionResult> ImprimirGarantia(int id, string tipo = "os")
+        {
+            var os = await _repositorioOs.ObterPorId(id);
+            if (os == null)
+            {
+                TempData["Error"] = "Os não encontrada.";
+                return RedirectToRoute("/os");
+            }
+
+            var emitente = await _repositorioEmitente.GetLastRegister();
+            var viewmodel = new OsEmailViewModel
+            {
+                Os = os,
+                Emitente = emitente
+            };
+
+            string view = "Views/Relatorios/Garantias/garantia-os.cshtml";
+            return View(view, viewmodel);
         }
     }
 }

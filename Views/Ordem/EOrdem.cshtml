@@ -111,7 +111,7 @@
         <div class="card-body">
 
             <div class="buttons d-flex flex-wrap gap-2">
-                @if (Model.Os.faturado == 0)
+                @if (Model.Os?.faturado == 0)
                 {
                     <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
                         <span class="button__icon"><i class='bx bx-dollar'></i></span>
@@ -119,7 +119,7 @@
                     </a>
                 }
 
-                <a class="button btn btn-mini btn-primary" asp-controller="Ordem" asp-action="Visualizar" asp-route-id="@Model.Os.Id">
+                <a class="button btn btn-mini btn-primary" asp-controller="Ordem" asp-action="Visualizar" asp-route-id="@Model.Os?.Id">
                     <span class="button__icon"><i class="bx bx-show"></i></span>
                     <span class="button__text">Visualizar OS</span>
                 </a>
@@ -129,17 +129,17 @@
                         <span class="button__text">Imprimir</span>
                     </a>
                     <div class="cascading-buttons">
-                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os.Id">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os?.Id" asp-route-tipo="a4">
                             <span class="button__icon"><i class='bx bx-file'></i></span>
                             <span class="button__text">Papel A4</span>
                         </a>
-                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os?.Id" asp-route-tipo="termica">
                             <span class="button__icon"><i class='bx bx-receipt'></i></span>
                             <span class="button__text">Cupom 80mm</span>
                         </a>
-                        @if (Model.Os.GarantiasId != null)
+                        @if (Model.Os?.GarantiasId != null)
                         {
-                            <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                            <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="ImprimirGarantia" asp-route-id="@Model.Os.Id" asp-route-tipo="os">
                                 <span class="button__icon"><i class="bx bx-paperclip"></i></span>
                                 <span class="button__text">Termo Garantia</span>
                             </a>
@@ -148,14 +148,14 @@
                 </div>
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Telefone))
                 {
-                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-id="@Model.Os.Id" data-tipo="nao-pix">
+                    <button class="button btn btn-mini btn-success" id="enviarWhatsApp" data-id="@Model.Os?.Id" data-tipo="nao-pix">
                         <span class="button__icon"><i class="bx bxl-whatsapp"></i></span>
                         <span class="button__text">WhatsApp</span>
                     </button>
                 }
                 @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eOs") && !string.IsNullOrEmpty(Model.Os?.Clientes?.Email) && !string.IsNullOrEmpty(Model.Emitente?.Email))
                 {
-                    <a class="button btn btn-mini btn-warning" id="enviar-email" data-id="@Model.Os.Id">
+                    <a class="button btn btn-mini btn-warning" id="enviar-email" data-id="@Model.Os?.Id">
                         <span class="button__icon"><i class="bx bx-envelope"></i></span>
                         <span class="button__text">Via e-mail</span>
                     </a>

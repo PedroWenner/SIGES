@@ -63,17 +63,17 @@
                         <span class="button__text">Imprimir</span>
                     </a>
                     <div class="cascading-buttons">
-                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os.Id">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os.Id" asp-route-tipo="a4">
                             <span class="button__icon"><i class='bx bx-file'></i></span>
                             <span class="button__text">Papel A4</span>
                         </a>
-                        <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                        <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="Imprimir" asp-route-id="@Model.Os.Id" asp-route-tipo="termica">
                             <span class="button__icon"><i class='bx bx-receipt'></i></span>
                             <span class="button__text">Cupom 80mm</span>
                         </a>
                         @if (Model.Os.GarantiasId != null)
                         {
-                            <a target="_blank" class="button btn btn-mini btn-secondary" href="#">
+                            <a target="_blank" class="button btn btn-mini btn-secondary" asp-controller="Relatorio" asp-action="ImprimirGarantia" asp-route-id="@Model.Os.Id" asp-route-tipo="os">
                                 <span class="button__icon"><i class="bx bx-paperclip"></i></span>
                                 <span class="button__text">Termo Garantia</span>
                             </a>

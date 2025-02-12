@@ -1,0 +1,635 @@
+﻿@using SIGES.Helpers
+@using SIGES.Interfaces
+@model OsEmailViewModel
+@{
+    decimal totalProdutos = Model.Produtos.Sum(i => i.SubTotal);
+    decimal totalServicos = Model.Servicos.Sum(i => i.SubTotal ?? 0);
+    decimal valorTotalOs = Model?.Os?.ValorDesconto > 0 ? Model.Os.ValorDesconto : totalProdutos + totalServicos;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>@ConfiguracaoHelper.ObterValor("app_name") - #@Model?.Os?.Id.ToString("d4") - @Model.Os?.Clientes?.Nome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/matrix-style.css" />
+    <link rel="stylesheet" href="~/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="~/css/custom.css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        .table {
+            width: 72mm;
+            margin: auto;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #FAFAFA;
+        }
+
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+
+        .page {
+            width: 80mm;
+            min-height: 30cm;
+            padding: 2mm;
+            margin: 1mm auto;
+            border: 1px #D3D3D3 solid;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .subpage {
+            padding: 0cm;
+            border: 0px red solid;
+            outline: 2cm #FFEAEA solid;
+        }
+
+        @@page {
+            size: auto;
+            margin: 0;
+        }
+
+        @@media print {
+                html, body {
+                width: 80mm;
+                height: 30cm;
+            }
+
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body id=body class="body" style="background-color: rgba(0,0,0,.4)">
+    <div id="principal">
+        <div class="container-fluid page">
+            <div class="row subpage">
+                <div class="col-lg-11 col-md-12">
+                    <div class="invoice-content">
+                        <div class="invoice-head" style="margin-bottom: 0">
+                            <table class="table table-condensed">
+                                <tbody>
+                                    <tr>
+                                        @if (Model.Emitente == null)
+                                        {
+                                            <td colspan="5" class="alert">
+                                                Você precisa configurar os dados do emitente. >>> <a asp-controller="Emitente" asp-action="Index">Configurar</a>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td style="width: 25% ;text-align: center">
+                                                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" style="max-height: 100px">
+                                            </td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; font-size: 11px;">
+                                            <span style="font-size: 12px; text-transform: uppercase">
+                                                <b>@Model?.Emitente?.Nome</b>
+                                            </span><br />
+
+                                            @if (Model?.Emitente?.Cnpj != "00.000.000/0000-00")
+                                            {
+                                                <span class="icon">
+                                                    @Model?.Emitente?.Cnpj
+                                                </span><br />
+                                            }
+                                            <span>
+                                                @Model?.Emitente?.Rua, @Model?.Emitente?.Numero
+                                            </span><br />
+                                            <span>
+                                                @Model?.Emitente?.Bairro
+                                            </span><br />
+                                            <span>
+                                                @Model?.Emitente?.Cidade/@Model?.Emitente?.Uf
+                                            </span><br />
+                                            <span>
+                                                @Model?.Emitente?.Cep
+                                            </span><br />
+                                            <span>@Model?.Emitente?.Email</span><br />
+                                            <span>@Model?.Emitente?.Telefone</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-condensend">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%; padding-left: 0; font-size: 11px;">
+                                            <ul>
+                                                <li>
+                                                    <span><b>CLIENTE</b></span><br />
+                                                    <span>@Model?.Os?.Clientes?.Nome</span><br />
+                                                    <span>
+                                                        @if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Contato))
+                                                        {
+                                                            @Model?.Os?.Clientes?.Contato
+                                                        }
+
+                                                        @if (Model?.Os?.Clientes?.Celular == Model?.Os?.Clientes?.Telefone)
+                                                        {
+                                                            @Model?.Os?.Clientes?.Celular
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Telefone))
+                                                            {
+                                                                @Model?.Os?.Clientes?.Telefone
+                                                            }
+
+                                                            if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Celular))
+                                                            {
+                                                                @Model?.Os?.Clientes?.Celular
+                                                            }
+                                                        }
+                                                    </span><br />
+                                                    @if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Email))
+                                                    {
+                                                        <span>@Model?.Os?.Clientes?.Email</span><br />
+                                                    }
+                                                    <span>
+                                                        @Model?.Os?.Clientes?.Rua, @Model?.Os?.Clientes?.NumeroRua, @Model?.Os?.Clientes?.Bairro
+                                                    </span><br />
+                                                    <span>
+                                                        @(!string.IsNullOrEmpty(Model?.Os?.Clientes?.Complemento) ? Model?.Os?.Clientes?.Complemento + " - " : "") @Model?.Os?.Clientes?.Cidade/@Model?.Os?.Clientes?.Estado
+                                                    </span><br />
+                                                    <span>
+                                                        CEP: @Model?.Os?.Clientes?.Cep
+                                                    </span><br />
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: center; width: 100%; font-size: 12px;">
+                                            <span><b>N° OS: </b>#@Model?.Os?.Id.ToString("D4")</span><br />
+                                            <span><b>Status: </b>@Model?.Os?.Status</span><br />
+                                            <span><b>Emissão:</b> @DateTime.Now.ToString("dd/MM/yyyy")</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 0; padding-top: 0; font-size: 12px;">
+                            <table class="table table-condensed table-borderless">
+                                <tbody>
+                                    @if (Model?.Os?.DataInicial != null)
+                                    {
+                                        <tr>
+                                            <td><b>Inicial: </b>@Model?.Os?.DataInicial?.ToString("dd/MM/yyyy")</td>
+                                            <td><b>Final: </b>@Model?.Os?.DataFinal?.ToString("dd/MM/yyyy")</td>
+                                            @if (Model?.Os?.Garantia != null)
+                                            {
+                                                <td><b>Garantia:</b><br />@Model?.Os?.Garantia dia(s)</td>
+                                            }
+                                        </tr>
+                                    }
+
+                                    @if (Model?.Os?.DescricaoProduto != null)
+                                    {
+                                        <tr>
+                                            <td colspan="3"><b>Descrição: </b>@Html.Raw(Model.Os.DescricaoProduto)</td>
+                                        </tr>
+                                    }
+
+                                    @if (Model?.Os?.Defeito != null)
+                                    {
+                                        <tr>
+                                            <td colspan="3"><b>Defeito apresentado: </b>@Html.Raw(Model.Os.Defeito)</td>
+                                        </tr>
+                                    }
+
+                                    @if (Model?.Os?.Observacoes != null)
+                                    {
+                                        <tr>
+                                            <td colspan="3"><b>Observações: </b>@Html.Raw(Model.Os.Observacoes)</td>
+                                        </tr>
+                                    }
+
+                                    @if (Model?.Os?.LaudoTecnico != null && Model?.Os?.Status != "Aberto")
+                                    {
+                                        <tr>
+                                            <td colspan="3"><b>Descrição: </b>@Html.Raw(Model?.Os?.LaudoTecnico)</td>
+                                        </tr>
+                                    }
+
+                                    @if (Model?.Os?.GarantiasId != null)
+                                    {
+                                        <tr>
+                                            <td colspan="3"><b>Termo de garantia: </b>@Html.Raw(Model?.Os?.Garantias?.TextoGarantia)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            @if (Model?.Produtos.Count > 0)
+                            {
+                                <table style="font-size: 11px;" class="table table-condensed table-borderless" id="tblProdutos">
+                                    <thead>
+                                        <tr>
+                                            <th>Qtd</th>
+                                            <th>Produto</th>
+                                            <th>Unitário</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var p in Model?.Produtos)
+                                        {
+                                            <tr>
+                                                <td>@p.Produtos?.Descricao</td>
+                                                <td class="text-center">@p.Quantidade</td>
+                                                <td class="text-center">R$ @p.Preco?.ToString("N2")</td>
+                                                <td class="text-end">R$ @p.SubTotal.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td colspan="2" class="text-end"><b>TOTAL PRODUTOS:</b></td>
+                                            <td colspan="2" class="text-left"><b>R$ @totalProdutos.ToString("N2")</b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                            @if (Model?.Servicos != null && Model?.Servicos.Count > 0)
+                            {
+                                <table style="font-size: 11px;" class="table table-condensed table-borderless">
+                                    <thead>
+                                        <tr>
+                                            <th>Qtd</th>
+                                            <th>Serviço</th>
+                                            <th>Unitário</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var s in Model.Servicos)
+                                        {
+                                            <tr>
+                                                <td>@s.Servicos?.Nome</td>
+                                                <td class="text-center">@s.Quantidade</td>
+                                                <td class="text-center">R$ @s.Preco?.ToString("N2")</td>
+                                                <td class="text-end">R$ @s.SubTotal?.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td colspan="2" class="text-end"><b>TOTAL SERVIÇOS:</b></td>
+                                            <td colspan="2" class="text-left"><b>R$ @totalServicos.ToString("N2")</b></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                            @if (totalProdutos != 0 || totalServicos != 0)
+                            {
+                                <table class="table table-condensed table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="5">
+                                                @if (totalProdutos != 0 || totalServicos != 0)
+                                                {
+                                                    @if (Model?.Os?.ValorDesconto != 0)
+                                                    {
+                                                        <h4 style="text-align: right; font-size: 13px;">Subtotal: R$ @((totalProdutos + totalServicos).ToString("N2"))</h4>
+                                                        <h4 style="text-align: right; font-size: 13px;">Desconto: R$ @Model?.Os?.Desconto.ToString("N2")</h4>
+                                                        <h4 style="text-align: right; font-size: 13px;">Total: R$ @(valorTotalOs.ToString("N2"))</h4>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h4 style="text-align: right; font-size: 13px;">Total: R$ @(valorTotalOs.ToString("N2"))</h4>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            @if (Model.Os.Status.Contains("Finalizado") || Model.Os.Status.Contains("Faturado"))
+                                            {
+                                                if (Model.PodeGerarPix == "S" || !string.IsNullOrEmpty(Model.QrCodeBase64))
+                                                {
+                                                    <td colspan="5" style="width: 15%; padding: 0;text-align:center;">
+                                                        <img style="margin:12px 0px 0px 0px" src="~/img/logo_pix.png" width="64" alt="QR Code de Pagamento" /> <br />
+                                                        <img style="margin:5px 0px 0px 0px" width="94" src="@Model.QrCodeBase64" alt="QR Code de Pagamento" /> <br />
+                                                        <span style="margin:0px;font-size: 80%;text-align:center;">Chave PIX: @Model.ChaveFormatada</span><hr>
+                                                    </td>
+                                                }
+                                            }
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+
+                            <table class="table table-condensed table-borderless" style="font-size: 15px">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5">
+                                            <br />
+                                            <br />
+                                            <hr>
+                                            <b><p class="text-center">Assinatura do Cliente</p></b>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Via da empresa  -->
+                    @if (Model?.Control2Vias == "1")
+                    {
+                        <div d="ViaEmpresa">
+                            <div class="invoice-head" style="margin-bottom: 0">
+                                <table class="table table-condensed table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            @if (Model.Emitente == null)
+                                            {
+                                                <td colspan="5" class="alert">
+                                                    Você precisa configurar os dados do emitente. >>> <a asp-controller="Emitente" asp-action="Index">Configurar</a>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td colspan="5" style="width: 25% ;text-align: center">
+                                                    <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" style="max-height: 100px">
+                                                </td>
+                                            }
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; font-size: 11px;">
+                                                <span style="font-size: 12px; text-transform: uppercase">
+                                                    <b>@Model?.Emitente?.Nome</b>
+                                                </span><br />
+
+                                                @if (Model?.Emitente?.Cnpj != "00.000.000/0000-00")
+                                                {
+                                                    <span class="icon">
+                                                        @Model?.Emitente?.Cnpj
+                                                    </span>
+
+                                                    <br />
+                                                }
+                                                <span>
+                                                    @Model?.Emitente?.Rua, @Model?.Emitente?.Numero
+                                                </span><br />
+                                                <span>
+                                                    @Model?.Emitente?.Bairro
+                                                </span><br />
+                                                <span>
+                                                    @Model?.Emitente?.Cidade/@Model?.Emitente?.Uf
+                                                </span><br />
+                                                <span>
+                                                    @Model?.Emitente?.Cep
+                                                </span><br />
+                                                <span>@Model?.Emitente?.Email</span><br />
+                                                <span>@Model?.Emitente?.Telefone</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="table table-condensend">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 50%; padding-left: 0; font-size: 11px;">
+                                                <ul>
+                                                    <li>
+                                                        <span><b>CLIENTE</b></span><br />
+                                                        <span>@Model?.Os?.Clientes?.Nome</span><br />
+                                                        <span>
+                                                            @if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Contato))
+                                                            {
+                                                                @Model?.Os?.Clientes?.Contato
+                                                            }
+
+                                                            @if (Model?.Os?.Clientes?.Celular == Model?.Os?.Clientes?.Telefone)
+                                                            {
+                                                                @Model?.Os?.Clientes?.Celular
+                                                            }
+                                                            else
+                                                            {
+                                                                if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Telefone))
+                                                                {
+                                                                    @Model?.Os?.Clientes?.Telefone
+                                                                }
+
+                                                                if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Celular))
+                                                                {
+                                                                    @Model?.Os?.Clientes?.Celular
+                                                                }
+                                                            }
+                                                        </span><br />
+                                                        @if (!string.IsNullOrEmpty(Model?.Os?.Clientes?.Email))
+                                                        {
+                                                            <span>@Model?.Os?.Clientes?.Email</span>
+                                                            <br />
+                                                        }
+                                                        <span>
+                                                            @Model?.Os?.Clientes?.Rua, @Model?.Os?.Clientes?.NumeroRua, @Model?.Os?.Clientes?.Bairro
+                                                        </span><br />
+                                                        <span>
+                                                            @(!string.IsNullOrEmpty(Model?.Os?.Clientes?.Complemento) ? Model?.Os?.Clientes?.Complemento + " - " : "") @Model?.Os?.Clientes?.Cidade/@Model?.Os?.Clientes?.Estado
+                                                        </span><br />
+                                                        <span>
+                                                            CEP: @Model?.Os?.Clientes?.Cep
+                                                        </span><br />
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center; width: 100%; font-size: 12px;">
+                                                <span><b>N° OS: </b>#@Model?.Os?.Id.ToString("D4")</span><br />
+                                                <span><b>Status: </b>@Model?.Os?.Status</span><br />
+                                                <span><b>Emissão:</b> @DateTime.Now.ToString("dd/MM/yyyy")</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="margin-top: 0; padding-top: 0; font-size: 12px;">
+                                <table class="table table-condensed table-borderless">
+                                    <tbody>
+                                        @if (Model?.Os?.DataInicial != null)
+                                        {
+                                            <tr>
+                                                <td><b>Inicial: </b>@Model?.Os.DataInicial?.ToString("dd/MM/yyyy")</td>
+                                                <td><b>Final: </b>@Model?.Os.DataFinal?.ToString("dd/MM/yyyy")</td>
+                                                @if (Model?.Os.Garantia != null)
+                                                {
+                                                    <td><b>Garantia:</b><br />@Model?.Os.Garantia dia(s)</td>
+                                                }
+                                            </tr>
+                                        }
+
+                                        @if (Model?.Os?.DescricaoProduto != null)
+                                        {
+                                            <tr>
+                                                <td colspan="3"><b>Descrição: </b>@Html.Raw(Model.Os.DescricaoProduto)</td>
+                                            </tr>
+                                        }
+
+                                        @if (Model?.Os?.Defeito != null)
+                                        {
+                                            <tr>
+                                                <td colspan="3"><b>Defeito apresentado: </b>@Html.Raw(Model.Os.Defeito)</td>
+                                            </tr>
+                                        }
+
+                                        @if (Model?.Os?.Observacoes != null)
+                                        {
+                                            <tr>
+                                                <td colspan="3"><b>Observações: </b>@Html.Raw(Model.Os.Observacoes)</td>
+                                            </tr>
+                                        }
+
+                                        @if (Model?.Os?.LaudoTecnico != null && Model?.Os.Status != "Aberto")
+                                        {
+                                            <tr>
+                                                <td colspan="3"><b>Descrição: </b>@Html.Raw(Model?.Os.LaudoTecnico)</td>
+                                            </tr>
+                                        }
+
+                                        @if (Model?.Os?.GarantiasId != null)
+                                        {
+                                            <tr>
+                                                <td colspan="3"><b>Termo de garantia: </b>@Html.Raw(Model?.Os?.Garantias?.TextoGarantia)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                @if (Model?.Produtos.Count > 0)
+                                {
+                                    <table style="font-size: 11px" class="table table-condensed table-borderless" id="tblProdutos">
+                                        <thead>
+                                            <tr>
+                                                <th>Qtd</th>
+                                                <th>Produto</th>
+                                                <th>Unitário</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var p in Model?.Produtos)
+                                            {
+                                                <tr>
+                                                    <td>@p.Produtos?.Descricao</td>
+                                                    <td class="text-center">@p.Quantidade</td>
+                                                    <td class="text-center">R$ @p.Preco?.ToString("N2")</td>
+                                                    <td class="text-end">R$ @p.SubTotal.ToString("N2")</td>
+                                                </tr>
+                                            }
+                                            <tr>
+                                                <td colspan="2" class="text-end"><b>TOTAL PRODUTOS:</b></td>
+                                                <td colspan="2" class="text-left"><b>R$ @totalProdutos.ToString("N2")</b></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                }
+                                @if (Model?.Servicos != null && Model?.Servicos.Count > 0)
+                                {
+                                    <table style="font-size: 11px;" class="table table-condensed table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Qtd</th>
+                                                <th>Serviço</th>
+                                                <th>Unitário</th>
+                                                <th>Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var s in Model.Servicos)
+                                            {
+                                                <tr>
+                                                    <td>@s.Servicos?.Nome</td>
+                                                    <td class="text-center">@s.Quantidade</td>
+                                                    <td class="text-center">R$ @s.Preco?.ToString("N2")</td>
+                                                    <td class="text-end">R$ @s.SubTotal?.ToString("N2")</td>
+                                                </tr>
+                                            }
+                                            <tr>
+                                                <td colspan="2" class="text-end"><b>TOTAL SERVIÇOS:</b></td>
+                                                <td colspan="2" class="text-left"><b>R$ @totalServicos.ToString("N2")</b></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                }
+                                @if (totalProdutos != 0 || totalServicos != 0)
+                                {
+                                    <table class="table table-condensed table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="5">
+                                                    @if (totalProdutos != 0 || totalServicos != 0)
+                                                    {
+                                                        @if (Model?.Os?.ValorDesconto != 0)
+                                                        {
+                                                            <h4 style="text-align: right; font-size: 13px;">Subtotal: R$ @((totalProdutos + totalServicos).ToString("N2"))</h4>
+                                                            <h4 style="text-align: right; font-size: 13px;">Desconto: R$ @Model?.Os?.Desconto.ToString("N2")</h4>
+                                                            <h4 style="text-align: right; font-size: 13px;">Total: R$ @(valorTotalOs.ToString("N2"))</h4>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h4 style="text-align: right; font-size: 13px;">Total: R$ @(valorTotalOs.ToString("N2"))</h4>
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                @if (Model.Os.Status.Contains("Finalizado") || Model.Os.Status.Contains("Faturado"))
+                                                {
+                                                    if (Model.PodeGerarPix == "S" || !string.IsNullOrEmpty(Model.QrCodeBase64))
+                                                    {
+                                                        <td colspan="5" style="width: 15%; padding: 0;text-align:center;">
+                                                            <img style="margin:12px 0px 0px 0px" src="~/img/logo_pix.png" width="64" alt="QR Code de Pagamento" /> <br />
+                                                            <img style="margin:5px 0px 0px 0px" width="94" src="@Model.QrCodeBase64" alt="QR Code de Pagamento" /> <br />
+                                                            <span style="margin:0px;font-size: 80%;text-align:center;">Chave PIX: @Model.ChaveFormatada</span><hr>
+                                                        </td>
+                                                    }
+                                                }
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                }
+
+                                <table class="table table-condensed table-borderless" style="font-size: 15px">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="5">
+                                                <br />
+                                                <br />
+                                                <hr>
+                                                <b><p class="text-center">Assinatura do Recebedor</p></b>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        window.print();
+    </script>
+</body>
+</html>

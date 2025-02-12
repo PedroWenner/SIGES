@@ -1,0 +1,195 @@
+﻿@using SIGES.Helpers
+@model OsEmailViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>@ConfiguracaoHelper.ObterValor("app_name") - @Model?.Os?.Id.ToString() - @Model?.Os?.Clientes?.Nome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/bootstrap-5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/matrix-style.css" />
+    <link rel="stylesheet" href="~/font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="~/css/custom.css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' rel='stylesheet' type='text/css'>
+    <style>
+        body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #FAFAFA;
+        }
+
+        *{
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        }
+
+        .page {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 4mm;
+        margin: 1mm auto;
+        border: 1px #D3D3D3 solid;
+        border-radius: 5px;
+        background: white;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .subpage {
+        padding: 0.5cm;
+        border: 0px red solid;
+        height: 257mm;
+        outline: 2cm #FFEAEA solid;
+        }
+
+        @@page {
+        size: A4;
+        margin: 0;
+        }
+
+        @@media print {
+
+        html, body {
+        width: 210mm;
+        height: 297mm;
+        }
+
+        .page {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+        }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid page" id="viaCliente">
+        <div class="subpage">
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <div class="invoice-content">
+                        <div class="invoice-head" style="margin-bottom: 0">
+                            <table class="table table-condensed">
+                                <tbody>
+                                    @if (Model.Emitente == null)
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="alert">
+                                                Você precisa configurar os dados do emitente. >>> <a asp-controller="Emitente" asp-action="Index">Configurar</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td style="width: 25%;">
+                                                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Emitente.ImagemBlob)" style="max-height: 100px">
+                                            </td>
+                                            <td colspan="5" style="font-size: 13px;">
+                                                <span style="text-transform: uppercase">
+                                                    <b>@Model?.Emitente?.Nome</b>
+                                                </span><br />
+
+                                                @if (Model?.Emitente?.Cnpj != "00.000.000/0000-00")
+                                                {
+                                                    <span class="icon">
+                                                        @Model?.Emitente?.Cnpj
+                                                    </span>
+
+                                                    <br />
+                                                }
+                                                <span>
+                                                    @Model?.Emitente?.Rua, @Model?.Emitente?.Numero, @Model?.Emitente?.Bairro
+                                                </span><br />
+                                                <span>
+                                                    @Model?.Emitente?.Cidade/@Model?.Emitente?.Uf - @Model?.Emitente?.Cep
+                                                </span><br />
+                                                <span>@Model?.Emitente?.Email</span> - fone: <span>@Model?.Emitente?.Telefone</span>
+                                            </td>
+                                            <td style="width: 20%; text-align: center">
+                                                <br />
+                                                <span>
+                                                    Garantia OS: #@Model?.Os?.Id.ToString("d4")
+                                                </span>
+                                                <br />
+                                                <span>
+                                                    Emissão: @Model?.Os?.DataFinal?.ToString("dd/MM/yyyy")
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 50%; padding-left: 0">
+                                            <ul>
+                                                <li>
+                                                    <span>
+                                                        <h5 class="text-center">Termo de Garantia</h5>
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 100%; padding-left: 0">
+                                            <ul>
+                                                <li>
+
+                                                    <span>@Html.Raw(Model?.Os?.Garantias?.TextoGarantia)</span><br />
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-borderless table-condensed">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center">
+                                            @DateTime.Now.ToString("dd/MM/yyyy")
+                                            <hr class="border border-dark border-1 opacity-50">
+                                            Data
+                                        </td>
+                                        <td class="text-center">
+                                            <br />
+                                            <hr class="border border-dark border-1 opacity-50">
+                                            Assinatura do Cliente
+                                        </td>
+                                        <td class="text-center">
+                                            <br />
+                                            <hr class="border border-dark border-1 opacity-50">
+                                            Assinatura do Técnico Responsável
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        window.print();
+    </script>
+</body>
+</html>
