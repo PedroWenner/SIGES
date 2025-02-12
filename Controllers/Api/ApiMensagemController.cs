@@ -12,17 +12,16 @@ namespace SIGES.Controllers.Api
     public class ApiMensagemController : ControllerBase
     {
         private readonly IOs _osRepositorio;
-        private readonly IConfiguracao _configuracaoRepositorio;
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
         private readonly IRepository<UsuarioModel> _repositorioUsuario;
         private readonly IRepository<EmailQueue> _repositorioEmail;
         private readonly IViewRenderService _viewRenderService;
 
-        public ApiMensagemController(IOs osRepositorio, IConfiguracao configuracaoRepositorio, IRepository<EmitenteModel> repositorioEmitente,
-            IViewRenderService viewRenderService, IRepository<UsuarioModel> repositorioUsuario, IRepository<EmailQueue> repositorioEmail)
+        public ApiMensagemController(IOs osRepositorio, IRepository<EmitenteModel> repositorioEmitente,
+            IViewRenderService viewRenderService, IRepository<UsuarioModel> repositorioUsuario,
+            IRepository<EmailQueue> repositorioEmail)
         {
             _osRepositorio = osRepositorio;
-            _configuracaoRepositorio = configuracaoRepositorio;
             _repositorioEmitente = repositorioEmitente;
             _viewRenderService = viewRenderService;
             _repositorioUsuario = repositorioUsuario;
@@ -47,7 +46,7 @@ namespace SIGES.Controllers.Api
                 }
 
                 var emitente = await _repositorioEmitente.GetLastRegister();
-                var textoBase = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("notifica_whats");
+                var textoBase = ConfiguracaoHelper.ObterValor("notifica_whats");
 
                 var zapnumber = new string(model.Clientes?.Telefone?.Where(char.IsDigit).ToArray());
 
@@ -131,8 +130,8 @@ namespace SIGES.Controllers.Api
                 var htmlBody = await _viewRenderService.RenderToStringAsync(email.Nomeview, viewmodel);
 
                 var tecnico = await _repositorioUsuario.ObterPorId(model.UsuariosId);
-                var osNotification = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("os_notification");
-                var emailAutomatico = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("email_automatico");
+                var osNotification = ConfiguracaoHelper.ObterValor("os_notification");
+                var emailAutomatico = ConfiguracaoHelper.ObterValor("email_automatico");
 
                 List<string> remetentes = DefinirRemetentes(osNotification, model?.Clientes?.Email ?? "", tecnico?.Email ?? "", emitente.Email);
 

@@ -8,6 +8,7 @@ using SIGES.Models;
 using Cobranca = pix_payload_generator.net.Models.CobrancaModels.Cobranca;
 using System.Globalization;
 using System.Text;
+using SIGES.Helpers;
 
 [Route("api/pix")]
 [ApiController]
@@ -15,14 +16,12 @@ public class PixController : ControllerBase
 {
     private readonly IPaymentGateway _paymentGateway;
     private readonly IOs _osRepositorio;
-    private readonly IConfiguracao _configuracaoRepositorio;
     private readonly IRepository<EmitenteModel> _repositorioEmitente;
 
-    public PixController(IPaymentGateway paymentGateway, IOs osRepositorio, IConfiguracao configuracaoRepositorio, IRepository<EmitenteModel> repositorioEmitente)
+    public PixController(IPaymentGateway paymentGateway, IOs osRepositorio, IRepository<EmitenteModel> repositorioEmitente)
     {
         _paymentGateway = paymentGateway;
         _osRepositorio = osRepositorio;
-        _configuracaoRepositorio = configuracaoRepositorio;
         _repositorioEmitente = repositorioEmitente;
     }
 
@@ -138,7 +137,7 @@ public class PixController : ControllerBase
 
             var model = await _osRepositorio.ObterPorId(id);
             var emitente = await _repositorioEmitente.GetLastRegister();
-            var pixKey = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("pix_key");
+            var pixKey = ConfiguracaoHelper.ObterValor("pix_key");
             
             if (model == null)
             {

@@ -17,7 +17,6 @@ namespace SIGES.Controllers
         private readonly IOs _osRepositorio;
         private readonly ILogService _logServiceRepositorio;
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
-        private readonly IConfiguracao _configuracaoRepositorio;
         private readonly IRepository<ProdutoModel> _repositorioProdutos;
         private readonly IRepository<ProdutosOs> _repositorioProdutosOs;
         private readonly IRepository<ServicosOs> _repositorioServicosOs;
@@ -28,16 +27,14 @@ namespace SIGES.Controllers
         private readonly IConfiguration _configuration;
 
         public OrdemController(IOs osRepositorio, ILogService logServiceRepositorio,
-            IRepository<EmitenteModel> repositorioEmitente, IConfiguracao configuracaoRepositorio,
-            IRepository<ProdutosOs> repositorioProdutosOs, IRepository<ServicosOs> repositorioServicosOs,
-            IRepository<ProdutoModel> repositorioProdutos, IRepository<ServicoModel> repositorioServico,
-            IRepository<AnotacoesOs> repositorioAnotacao, PaymentGatewaysService paymentGatewaysService,
-            HttpClient httpClient, IConfiguration configuration)
+            IRepository<EmitenteModel> repositorioEmitente, IRepository<ProdutosOs> repositorioProdutosOs,
+            IRepository<ServicosOs> repositorioServicosOs, IRepository<ProdutoModel> repositorioProdutos,
+            IRepository<ServicoModel> repositorioServico, IRepository<AnotacoesOs> repositorioAnotacao,
+            PaymentGatewaysService paymentGatewaysService, HttpClient httpClient, IConfiguration configuration)
         {
             _osRepositorio = osRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
             _repositorioEmitente = repositorioEmitente;
-            _configuracaoRepositorio = configuracaoRepositorio;
             _repositorioProdutosOs = repositorioProdutosOs;
             _repositorioServicosOs = repositorioServicosOs;
             _repositorioProdutos = repositorioProdutos;
@@ -317,7 +314,7 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "Produto não encontrado." });
             }
 
-            var controlEstoque = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque");
+            var controlEstoque = ConfiguracaoHelper.ObterValor("control_estoque");
             if (controlEstoque == "1")
             {
                 if (produtoOs.Quantidade > produto.Estoque)
@@ -389,7 +386,7 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "Produto não encontrado." });
             }
 
-            var controlEstoque = await _configuracaoRepositorio.ObterValorConfiguracaoAsync("control_estoque");
+            var controlEstoque = ConfiguracaoHelper.ObterValor("control_estoque");
             int quantidade = produtoOs.Quantidade;
             try
             {
