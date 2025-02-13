@@ -92,21 +92,21 @@
                     <!-- gerais -->
                     <div class="tab-pane fade show active" id="geral-tab-pane" role="tabpanel" aria-labelledby="navLinkGerais" tabindex="0">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="app_name" class="col-form-label">Nome do sistema</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="app_name" name="app_name" type="text" required value="@Model.GetValueOrDefault("app_name")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Nome do sistema</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="app_theme" class="col-form-label">Tema do sistema</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="app_theme" id="app_theme">
                                     <option value="default" selected="@(Model.GetValueOrDefault("app_theme") == "default" ? true : false)">Escuro</option>
                                     <option value="white" selected="@(Model.GetValueOrDefault("app_theme") == "white" ? true : false)">Claro</option>
@@ -117,15 +117,15 @@
                                     <option value="whiteblack" selected="@(Model.GetValueOrDefault("app_theme") == "whiteblack" ? true : false)">White black</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Selecione o tema que que deseja usar no sistema</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="per_page" class="form-label">Registros por página</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="per_page" id="theme">
                                     <option value="10" selected="@(Model.GetValueOrDefault("per_page") == "10" ? true : false)">10</option>
                                     <option value="20" selected="@(Model.GetValueOrDefault("per_page") == "20" ? true : false)">20</option>
@@ -133,7 +133,7 @@
                                     <option value="100" selected="@(Model.GetValueOrDefault("per_page") == "100" ? true : false)">100</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Selecione quantos registros deseja exibir nas listas</span>
                             </div>
                         </div>
@@ -142,55 +142,55 @@
                     <!-- financeiros -->
                     <div class="tab-pane fade" id="financeiro-tab-pane" role="tabpanel" aria-labelledby="navLinkFinanceiro" tabindex="1">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="control_baixa" class="col-form-label">Controle de baixa retroativa</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="control_baixa" id="control_baixa">
                                     <option value="1" selected="@(Model.GetValueOrDefault("control_baixa") == "1" ? true : false)">Ativar</option>
                                     <option value="0" selected="@(Model.GetValueOrDefault("control_baixa") == "0" ? true : false)">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar o controle de baixa financeira, com data retroativa.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="control_editos" class="col-form-label">Controle de edição de OS</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="control_editos" id="control_editos">
                                     <option value="1" selected="@(Model.GetValueOrDefault("control_editos") == "1" ? true : false)">Ativar</option>
                                     <option value="0" selected="@(Model.GetValueOrDefault("control_editos") == "0" ? true : false)">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar a permissão para alterar ou excluir OS faturada e/ou cancelada.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="control_edit_vendas" class="form-label">Controle de edição de vendas</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="control_edit_vendas" id="control_edit_vendas">
                                     <option value="1" selected="@(Model.GetValueOrDefault("control_edit_vendas") == "1" ? true : false)">Ativar</option>
                                     <option value="0" selected="@(Model.GetValueOrDefault("control_edit_vendas") == "0" ? true : false)">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar a permissão para alterar ou excluir vendas faturada.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="pix_key" class="form-label">Chave pix para recebimento de pagamentos</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="pix_key" name="pix_key" type="text" value="@Model.GetValueOrDefault("pix_key")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Chave pix para recebimento de pagamentos.</span>
                             </div>
                         </div>
@@ -199,49 +199,49 @@
                         <!-- Configrações do EFI -->
                         <h6>Configrações do EFI (antiga GerenciaNet)</h6>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EFI_PRODUCTION" class="form-label">Ambiente</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="PAYMENT_GATEWAYS_EFI_PRODUCTION" id="EFI_PRODUCTION">
                                     <option value="false" selected="@(Model.GetValueOrDefault("PAYMENT_GATEWAYS_EFI_PRODUCTION") == "false" ? true : false)">Sandbox</option>
                                     <option value="true" selected="@(Model.GetValueOrDefault("PAYMENT_GATEWAYS_EFI_PRODUCTION") == "true" ? true : false)">Produção</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Sandbox é um ambiente para testes.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EFI_CREDENTIAIS_CLIENT_ID" class="form-label">CLIENT_ID</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="EFI_CREDENTIAIS_CLIENT_ID" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID" type="text" value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_ID")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://app.sejaefi.com.br/api/aplicacoes" target="_blank" rel="noopener noreferrer">"API" -> "Aplicações"</a>.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EFI_CREDENTIAIS_CLIENT_SECRET" class="form-label">CLIENT_SECRET</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <div class="password-container">
                                     <input id="EFI_CREDENTIAIS_CLIENT_SECRET" name="PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET" type="password" value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_EFI_CREDENTIAIS_CLIENT_SECRET")" class="password-input" />
                                     <i class="fa fa-eye toggle-password" onclick="togglePassword('EFI_CREDENTIAIS_CLIENT_SECRET')"></i>
                                 </div>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://app.sejaefi.com.br/api/aplicacoes" target="_blank" rel="noopener noreferrer">"API" -> "Aplicações"</a>.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EFI_BOLETO_EXPIRATION" class="form-label">Dias para vencimento do boleto</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="PAYMENT_GATEWAYS_EFI_BOLETO_EXPIRATION" id="EFI_BOLETO_EXPIRATION">
                                     @for (int i = 1; i <= 30; i++)
                                     {
@@ -249,7 +249,7 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">A quantidade de dias selecionado será somado a data que a cobrança for gerada.</span>
                             </div>
                         </div>
@@ -258,45 +258,45 @@
                         <!-- Configrações do Mercado Pago -->
                         <h6>Configrações do mercado pago</h6>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY" class="form-label">PUBLIC_KEY</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY" type="text" value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_PUBLIC_KEY")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a>.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN" class="form-label">ACCESS_TOKEN</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN" type="text"
                                     value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_ACCESS_TOKEN")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a>.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="MERCADO_PAGO_CREDENTIALS_CLIENT_ID" class="form-label">CLIENT_ID</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="MERCADO_PAGO_CREDENTIALS_CLIENT_ID" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID" type="text"
                                        value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_ID")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a>.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" class="form-label">CLIENT_SECRET</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <div class="password-container">
                                     <input id="MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" name="PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET" type="password"
                                            value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_MERCADO_PAGO_CREDENTIALS_CLIENT_SECRET")" class="password-input" />
@@ -304,15 +304,15 @@
                                 </div>
                                 
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu <a href="https://www.mercadopago.com.br/settings/account/credentials" target="_blank" rel="noopener noreferrer">"Seu Negócio" -> "Configurações" -> "Credenciais"</a>.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="MERCADO_PAGO_BOLETO_EXPIRATION" class="form-label">Dias para vencimento do boleto</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="PAYMENT_GATEWAYS_MERCADO_PAGO_BOLETO_EXPIRATION" id="MERCADO_PAGO_BOLETO_EXPIRATION">
                                     @for (int i = 1; i <= 30; i++)
                                     {
@@ -320,7 +320,7 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">A quantidade de dias selecionado será somado a data que a cobrança for gerada.</span>
                             </div>
                         </div>
@@ -329,50 +329,50 @@
                         <!-- Configrações do ASAAS -->
                         <h6>Configrações do ASAAS</h6>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="ASAAS_PRODUCTION" class="form-label">Ambiente</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="PAYMENT_GATEWAYS_ASAAS_PRODUCTION" id="ASAAS_PRODUCTION">
                                     <option value="false" selected="@(Model.GetValueOrDefault("PAYMENT_GATEWAYS_ASAAS_PRODUCTION") == "false" ? true : false)">Sandbox</option>
                                     <option value="true" selected="@(Model.GetValueOrDefault("PAYMENT_GATEWAYS_ASAAS_PRODUCTION") == "true" ? true : false)">Produção</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Sandbox é um ambiente para testes.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="ASAAS_NOTIFY" class="form-label">Notify</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="PAYMENT_GATEWAYS_ASAAS_NOTIFY" id="ASAAS_NOTIFY">
                                     <option value="false" selected="@(Model.GetValueOrDefault("PAYMENT_GATEWAYS_ASAAS_NOTIFY") == "false" ? true : false)">Desativado</option>
                                     <option value="true" selected="@(Model.GetValueOrDefault("PAYMENT_GATEWAYS_ASAAS_NOTIFY") == "false" ? true : false)">Ativado</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar o Notify do Asaas.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="ASAAS_CREDENTIAIS_API_KEY" class="form-label">API_KEY</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="ASAAS_CREDENTIAIS_API_KEY" name="PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY" type="text"
                                        value="@Model.GetValueOrDefault("PAYMENT_GATEWAYS_ASAAS_CREDENTIAIS_API_KEY")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Pode ser encontrado no menu "Minha Conta", clique em "Integração" e depois em "Gerar API Key".</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="ASAAS_BOLETO_EXPIRATION" class="form-label">Notify</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="PAYMENT_GATEWAYS_ASAAS_BOLETO_EXPIRATION" id="ASAAS_BOLETO_EXPIRATION">
                                     @for (int i = 1; i <= 30; i++)
                                     {
@@ -380,7 +380,7 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">A quantidade de dias selecionado será somado a data que a cobrança for gerada.</span>
                             </div>
                         </div>
@@ -389,16 +389,16 @@
                     <!-- produtos -->
                     <div class="tab-pane fade" id="produto-tab-pane" role="tabpanel" aria-labelledby="navLinkProduto" tabindex="2">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="control_estoque" class="col-form-label">Controlar estoque</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="control_estoque" id="control_estoque">
                                     <option value="1" selected="@(Model.GetValueOrDefault("control_estoque") == "1" ? true : false)">Ativar</option>
                                     <option value="0" selected="@(Model.GetValueOrDefault("control_estoque") == "0" ? true : false)">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar o controle de estoque.</span>
                             </div>
                         </div>
@@ -407,10 +407,10 @@
                     <!-- notificacoes -->
                     <div class="tab-pane fade" id="notificacao-tab-pane" role="tabpanel" aria-labelledby="navLinkNotificacao" tabindex="3">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="os_notification" class="col-form-label">Notificação de OS</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="os_notification" id="os_notification">
                                     <option selected="@(Model.GetValueOrDefault("os_notification") == "todos" ? true : false)" value="todos">Notificar a Todos</option>
                                     <option selected="@(Model.GetValueOrDefault("os_notification") == "cliente" ? true : false)" value="cliente">Somente o Cliente</option>
@@ -419,26 +419,26 @@
                                     <option selected="@(Model.GetValueOrDefault("os_notification") == "nenhum" ? true : false)" value="nenhum">Não Notificar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Selecione a opção de notificação por e-mail no cadastro de OS.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="email_automatico" class="col-form-label">Enviar e-mail automático</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="email_automatico" id="email_automatico">
                                     <option value="1" selected="@(Model.GetValueOrDefault("email_automatico") == "1" ? true : false)">Ativar</option>
                                     <option value="0" selected="@(Model.GetValueOrDefault("email_automatico") == "0" ? true : false)">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar a opção de envio de e-mail automático no cadastro de OS.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="notifica_whats" class="col-form-label">Notificação do whatsapp</label>
                             </div>
                             <div class="col-6">
@@ -446,12 +446,12 @@
                                     placeholder="Use as tags abaixo para criar seu texto!"
                                     style="height: 86px;">@Model.GetValueOrDefault("notifica_whats")</textarea>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar a opção de envio de e-mail automático no cadastro de OS.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="notifica_whats_select" class="col-form-label">Tags de preenchimento</label>
                             </div>
                             <div class="col-3">
@@ -472,7 +472,7 @@
                                     <option value="{DATA_GARANTIA}">Data da garantia</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">
                                     Para negrito use: *palavra*
                                     Para itálico use: _palavra_
@@ -485,14 +485,14 @@
                     <!-- atualizacoes -->
                     <div class="tab-pane fade" id="atualizacao-tab-pane" role="tabpanel" aria-labelledby="navLinkAtualizacao" tabindex="4">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-auto">
-                                <button href="#modal-confirmabanco" data-toggle="modal" type="button" class="button btn btn-warning">
+                            <div class="col-md-auto">
+                                <button href="#modal-confirmabanco" data-toggle="modal" type="button" class="button btn btn-warning w-100">
                                     <span class="button__icon"><i class="bx bx-sync"></i></span>
                                     <span class="button__text2">Banco de dados</span>
                                 </button>
                             </div>
-                            <div class="col-auto">
-                                <button href="#modal-confirmaratualiza" data-toggle="modal" type="button" class="button btn btn-danger">
+                            <div class="col-md-auto">
+                                <button href="#modal-confirmaratualiza" data-toggle="modal" type="button" class="button btn btn-danger w-100">
                                     <span class="button__icon"><i class="bx bx-sync"></i></span>
                                     <span class="button__text2">Atualizar software</span>
                                 </button>
@@ -503,16 +503,16 @@
                     <!-- OS -->
                     <div class="tab-pane fade" id="os-tab-pane" role="tabpanel" aria-labelledby="navLinkOs" tabindex="5">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="control_2vias" class="col-form-label">Controle de impressão em 2 vias</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="control_2vias" id="control_2vias">
                                     <option value="1" selected="@(Model.GetValueOrDefault("control_2vias") == "1" ? true : false)">Ativar</option>
                                     <option value="0" selected="@(Model.GetValueOrDefault("control_2vias") == "0" ? true : false)">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar impressão de OS em 2 vias.</span>
                             </div>
                         </div>
@@ -532,16 +532,16 @@
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="imprmirAnexos" class="col-form-label">Imprimir anexos na A4?</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="IMPRIMIR_ANEXOS" id="imprmirAnexos">
                                     <option selected="@(Model.GetValueOrDefault("IMPRIMIR_ANEXOS") == "true" ? true : false)" value="true">Sim</option>
                                     <option selected="@(Model.GetValueOrDefault("IMPRIMIR_ANEXOS") == "false" ? true : false)" value="false">Não</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Gostaria de imprimir os Anexos na impressão A4?</span>
                             </div>
                         </div>
@@ -550,21 +550,21 @@
                     <!-- API -->
                     <div class="tab-pane fade" id="api-tab-pane" role="tabpanel" aria-labelledby="navLinkApi" tabindex="6">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="apiEnabled" class="col-form-label">Ativar acesso à API</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="API_ENABLED" id="apiEnabled">
                                     <option selected="@(Model.GetValueOrDefault("API_ENABLED") == "true" ? true : false)" value="true">Ativar</option>
                                     <option selected="@(Model.GetValueOrDefault("API_ENABLED") == "false" ? true : false)" value="false">Desativar</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Ativar ou desativar acesso à API.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="apiEnabled" class="col-form-label">URL API</label>
                             </div>
                             <div class="col-10">
@@ -572,10 +572,10 @@
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="apiExpireTime" class="col-form-label">Ativar acesso à API</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="API_TOKEN_EXPIRE_TIME" id="apiExpireTime">
                                     <option selected="@(Model.GetValueOrDefault("API_TOKEN_EXPIRE_TIME") == "60" ? true : false)" value="60">1 minuto</option>
                                     <option selected="@(Model.GetValueOrDefault("API_TOKEN_EXPIRE_TIME") == "3600" ? true : false)" value="3600">1 hora</option>
@@ -584,21 +584,21 @@
                                     <option selected="@(Model.GetValueOrDefault("API_TOKEN_EXPIRE_TIME") == "2592000" ? true : false)" value="2592000">1 mês</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Tempo de duração da sessão na API.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="resetJwtToken" class="col-form-label">Resetar token JWT</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="API_JWT_KEY" id="resetJwtToken">
                                     <option value="nao" selected="@(Model.GetValueOrDefault("API_JWT_KEY") == "nao" ? true : false)">Não</option>
                                     <option value="sim" selected="@(Model.GetValueOrDefault("API_JWT_KEY") == "sim" ? true : false)">Sim</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Gerar um novo token JWT.</span>
                             </div>
                         </div>
@@ -607,72 +607,72 @@
                     <!-- e-mail -->
                     <div class="tab-pane fade" id="email-tab-pane" role="tabpanel" aria-labelledby="navLinkEmail" tabindex="7">
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EMAIL_PROTOCOL" class="form-label">Protocolo de e-mail</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="EMAIL_PROTOCOL" name="EMAIL_PROTOCOL" type="text"
                                     value="@Model.GetValueOrDefault("EMAIL_PROTOCOL")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Informe o protocolo que será utilizado.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EMAIL_SMTP_HOST" class="form-label">Endereço do host</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="EMAIL_SMTP_HOST" name="EMAIL_SMTP_HOST" type="text"
                                        value="@Model.GetValueOrDefault("EMAIL_SMTP_HOST")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Informe o endereço do host.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EMAIL_SMTP_CRYPTO" class="form-label">Tipo de criptografia</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <select name="EMAIL_SMTP_CRYPTO" id="EMAIL_SMTP_CRYPTO">
                                     <option value="tls" selected="@(Model.GetValueOrDefault("EMAIL_SMTP_CRYPTO") == "tls" ? true : false)">tls</option>
                                     <option value="ssl" selected="@(Model.GetValueOrDefault("EMAIL_SMTP_CRYPTO") == "ssl" ? true : false)">ssl</option>
                                 </select>
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Tipo de criptografia que será utilizada.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EMAIL_SMTP_PORT" class="form-label">Porta</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="EMAIL_SMTP_PORT" name="EMAIL_SMTP_PORT" type="text"
                                        value="@Model.GetValueOrDefault("EMAIL_SMTP_PORT")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Informe a porta que será utilizada.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EMAIL_SMTP_USER" class="form-label">Usuário</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <input id="EMAIL_SMTP_USER" name="EMAIL_SMTP_USER" type="text"
                                        value="@Model.GetValueOrDefault("EMAIL_SMTP_USER")" />
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Informe nome de usuário do e-mail.</span>
                             </div>
                         </div>
                         <div class="row mt-2 g-3 align-items-center">
-                            <div class="col-2 text-end">
+                            <div class="col-md-2 text-md-end">
                                 <label for="EMAIL_SMTP_PASS" class="form-label">Senha</label>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-4">
                                 <div class="password-container">
                                     <input id="EMAIL_SMTP_PASS" name="EMAIL_SMTP_PASS" type="password"
                                            class="password-input" value="@Model.GetValueOrDefault("EMAIL_SMTP_PASS")" />
@@ -680,7 +680,7 @@
                                 </div>
                                 
                             </div>
-                            <div class="col-auto">
+                            <div class="col-md-6">
                                 <span class="form-text">Informe a senha do e-mail.</span>
                             </div>
                         </div>
@@ -688,7 +688,7 @@
 
                     <div class="row mt-4 g-3 align-items-center">
                         <div class="col-md-2">
-                            <button type="submit" class="button btn btn-primary">
+                            <button type="submit" class="button btn btn-primary w-100">
                                 <span class="button__icon"><i class='bx bx-save'></i></span>
                                 <span class="button__text2">Salvar alterações</span>
                             </button>
