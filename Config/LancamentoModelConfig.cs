@@ -38,6 +38,12 @@ namespace SIGES.Config
                    .HasForeignKey(o => o.UsuariosId)
                    .OnDelete(DeleteBehavior.Restrict);
 
+            // Relacionamento Lançamento -> Os
+            builder.HasOne(o => o.Os)
+                   .WithMany(l => l.Lancamentos)
+                   .HasForeignKey(o => o.OsId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

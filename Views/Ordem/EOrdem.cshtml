@@ -4,9 +4,9 @@
 
 @{
     ViewData["Titulo"] = "Editar OS";
-    decimal total = 0;
-    decimal totalServicos = 0;
-    decimal valorTotalOs = Model.Produtos.Sum(x => x.SubTotal) + Model.Servicos.Sum(x => x.SubTotal ?? 0);
+    decimal totalProdutos = Model.Produtos.Sum(i => i.SubTotal);
+    decimal totalServicos = Model.Servicos.Sum(i => i.SubTotal ?? 0);
+    decimal valorTotalOs = Model.Os.ValorDesconto > 0 ? Model.Os.ValorDesconto : totalProdutos + totalServicos;
 }
 
 <link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
@@ -68,7 +68,7 @@
     }
 
     #ui-datepicker-div {
-        z-index: 999 !important;
+        z-index: 100000 !important;
     }
 
     .card-custom {
@@ -113,7 +113,7 @@
             <div class="buttons d-flex flex-wrap gap-2">
                 @if (Model.Os?.faturado == 0)
                 {
-                    <a href="#modal-faturar" id="btn-faturar" role="button" data-toggle="modal" class="button btn btn-mini btn-danger">
+                    <a href="#modal-faturar" id="btn-faturar" role="button" class="button btn btn-mini btn-danger" data-bs-target="#modal-faturar" data-bs-toggle="modal">
                         <span class="button__icon"><i class='bx bx-dollar'></i></span>
                         <span class="button__text">Faturar</span>
                     </a>
@@ -402,7 +402,6 @@
 
                                             @foreach (var p in Model.Produtos)
                                             {
-                                                total += p.SubTotal;
                                                 <tr>
                                                     <td class="text-left">@p.Produtos?.Descricao</td>
                                                     <td class="text-center">@p.Quantidade</td>
@@ -427,8 +426,8 @@
                                                 <td>
                                                     <div class="text-center">
                                                         <strong>
-                                                            R$ @total.ToString("N2")
-                                                            <input type="hidden" id="total-produto" value="@total.ToString("N2")">
+                                                            R$ @totalProdutos.ToString("N2")
+                                                            <input type="hidden" id="total-produto" value="@totalProdutos.ToString("N2")">
                                                         </strong>
                                                     </div>
                                                 </td>
@@ -505,7 +504,6 @@
 
                                             @foreach (var s in Model.Servicos)
                                             {
-                                                totalServicos += s.SubTotal ?? 0;
                                                 <tr>
                                                     <td class="text-left">@s.Servicos?.Nome</td>
                                                     <td class="text-center">@s.Quantidade</td>
@@ -703,6 +701,84 @@
     </div>
 </div>
 
+<!-- Modal Faturar-->
+<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="formFaturar" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-5">Faturar venda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
+                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <label for="descricao">Descrição</label>
+                        <input class="col-md-12" id="descricao" type="text" name="Descricao" value="Fatura de Venda Nº: #@Model?.Os?.Id.ToString("d4")" required />
+                    </div>
+                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-md-12" style="margin-left: 0">
+                            <label for="cliente">Cliente</label>
+                            <input class="col-md-12" id="cliente" type="text" name="Cliente" value="@Model?.Os?.Clientes?.Nome" required />
+                            <input type="hidden" name="clienteId" id="ClienteId" value="@Model?.Os?.ClientesId">
+                            <input type="hidden" name="OsId" id="osId" value="@Model?.Os?.Id">
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-md-5" style="margin-left: 0;">
+                            <label for="valor">Valor</label>
+                            <input type="hidden" id="tipo" name="Tipo" value="receita" />
+                            <input class="col-md-12 money" id="Valor" type="text" name="Valor" value="@((totalProdutos + totalServicos).ToString("N2"))" required />
+                        </div>
+                        <div class="col-md-5" style="margin-left: 2px;">
+                            <label for="faturar-desconto">Valor Com Desconto</label>
+                            <input class="col-md-12 money" id="faturar-desconto" type="text" name="FaturarDesconto" value="@valorTotalOs.ToString("N2")" required />
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-md-4" style="margin-left: 0">
+                            <label for="dataVencimento">Data entrada</label>
+                            <input class="col-md-12 datetime" autocomplete="off" id="dataVencimento" type="text" name="DataVencimento" required />
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-md-4" style="margin-left: 0">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="recebido" name="Recebido">
+                                <label class="form-check-label" for="recebido">Recebido</label>
+                            </div>
+                        </div>
+                        <div id="divRecebimento" class="span8" style=" display: none">
+                            <div class="col-md-6">
+                                <label for="recebimento">Data Recebimento</label>
+                                <input class="col-md-12 datetime" autocomplete="off" id="recebimento" type="text" name="Recebimento" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formaPgto">Forma Pgto</label>
+                                <select name="FormaPgto" id="formaPgto" class="col-md-12">
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    <option value="Débito">Débito</option>
+                                    <option value="Boleto">Boleto</option>
+                                    <option value="Depósito">Depósito</option>
+                                    <option value="Pix">Pix</option>
+                                    <option value="Cheque">Cheque</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:flex">
+                    <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
+                        <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span>
+                    </button>
+                    <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="~/js/jquery.validate.js"></script>
 <script src="~/trumbowyg/dist/trumbowyg.min.js"></script>
 <script src="~/trumbowyg/dist/plugins/fontsize/trumbowyg.fontsize.min.js"></script>
@@ -748,5 +824,96 @@
                 });
             }
         });
+    });
+
+    $('#recebido').click(function(event) {
+        var flag = $(this).is(':checked');
+        if (flag == true) {
+            $('#divRecebimento').show();
+            $('#recebido').val("1");
+        } else {
+            $('#divRecebimento').hide();
+            $('#recebido').val("0");
+        }
+    });
+
+    $("#formFaturar").validate({
+        rules: {
+            Descricao: {
+                required: true
+            },
+            Cliente: {
+                required: true
+            },
+            Valor: {
+                required: true
+            },
+            FaturarDesconto: {
+                required: true
+            },
+            DataVencimento: {
+                required: true
+            }
+
+        },
+        messages: {
+            Descricao: {
+                required: 'Campo Requerido.'
+            },
+            Cliente: {
+                required: 'Campo Requerido.'
+            },
+            Valor: {
+                required: 'Campo Requerido.'
+            },
+            FaturarDesconto: {
+                required: 'Campo Requerido.'
+            },
+            DataVencimento: {
+                required: 'Campo Requerido.'
+            }
+        },
+        submitHandler: function (form) {
+            var dados = $(form).serialize();
+            var qtdProdutos = $('.tblProdutos > tbody > tr').length;
+            var qtdServicos = $('.tblServicos > tbody > tr').length;
+            var qtdTotalProdutosServicos = qtdProdutos + qtdServicos;
+
+            $('#btn-cancelar-faturar').trigger('click');
+
+            if (qtdTotalProdutosServicos <= 0) {
+                Swal.fire({
+                    type: "error",
+                    title: "Atenção",
+                    text: "Não é possível faturar uma OS sem serviços e/ou produtos"
+                });
+            } else if (qtdTotalProdutosServicos > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/os/faturar/",
+                    data: dados,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.result == true) {
+                            Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: data.mensagem
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                        } else {
+                            Swal.fire({
+                                type: "error",
+                                title: "Atenção",
+                                text: "Ocorreu um erro ao tentar faturar OS."
+                            });
+                        }
+                    }
+                });
+
+                return false;
+            }
+        }
     });
 </script>

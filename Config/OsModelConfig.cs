@@ -37,6 +37,12 @@ namespace SIGES.Config
                 .WithOne(s => s.Os)
                 .HasForeignKey(s => s.OsId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Relacionamento OS -> AnotacoesOs ()
+            builder.HasMany(o => o.Lancamentos)
+                .WithOne(s => s.Os)
+                .HasForeignKey(s => s.OsId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

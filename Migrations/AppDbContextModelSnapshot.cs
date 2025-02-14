@@ -582,6 +582,10 @@ namespace SIGES.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("observacoes");
 
+                    b.Property<int?>("OsId")
+                        .HasColumnType("int")
+                        .HasColumnName("os_id");
+
                     b.Property<string>("Tipo")
                         .HasColumnType("longtext")
                         .HasColumnName("tipo");
@@ -613,6 +617,8 @@ namespace SIGES.Migrations
                     b.HasIndex("ClientesId");
 
                     b.HasIndex("ContasId");
+
+                    b.HasIndex("OsId");
 
                     b.HasIndex("UsuariosId");
 
@@ -697,9 +703,9 @@ namespace SIGES.Migrations
                         .HasColumnType("int")
                         .HasColumnName("garantias_id");
 
-                    b.Property<int?>("Lancamento")
+                    b.Property<int?>("LancamentoId")
                         .HasColumnType("int")
-                        .HasColumnName("lancamento");
+                        .HasColumnName("lancamento_id");
 
                     b.Property<string>("LaudoTecnico")
                         .HasColumnType("longtext")
@@ -738,6 +744,8 @@ namespace SIGES.Migrations
                     b.HasIndex("ClientesId");
 
                     b.HasIndex("GarantiasId");
+
+                    b.HasIndex("LancamentoId");
 
                     b.HasIndex("UsuariosId");
 
@@ -1012,7 +1020,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$z2YzO8tv10GO3fvCuMmyjOLPUqKGm/hJ/3FLN7CluTFtR7UKK5Wr.",
+                            Senha = "$2a$11$36myZ.seixfU1tH0UGDnV.NXr/56p39VLwc/HC3RF96JzpbqnsvaC",
                             Situacao = 1
                         });
                 });
@@ -1160,6 +1168,11 @@ namespace SIGES.Migrations
                         .HasForeignKey("ContasId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("SIGES.Models.OsModel", "Os")
+                        .WithMany("Lancamentos")
+                        .HasForeignKey("OsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuarios")
                         .WithMany("Lancamentos")
                         .HasForeignKey("UsuariosId")
@@ -1175,6 +1188,8 @@ namespace SIGES.Migrations
                     b.Navigation("Clientes");
 
                     b.Navigation("Contas");
+
+                    b.Navigation("Os");
 
                     b.Navigation("Usuarios");
 
@@ -1194,6 +1209,10 @@ namespace SIGES.Migrations
                         .HasForeignKey("GarantiasId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("SIGES.Models.LancamentoModel", "Lancamento")
+                        .WithMany("Ordem")
+                        .HasForeignKey("LancamentoId");
+
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuarios")
                         .WithMany("Ordens")
                         .HasForeignKey("UsuariosId")
@@ -1203,6 +1222,8 @@ namespace SIGES.Migrations
                     b.Navigation("Clientes");
 
                     b.Navigation("Garantias");
+
+                    b.Navigation("Lancamento");
 
                     b.Navigation("Usuarios");
                 });
@@ -1308,12 +1329,16 @@ namespace SIGES.Migrations
 
             modelBuilder.Entity("SIGES.Models.LancamentoModel", b =>
                 {
+                    b.Navigation("Ordem");
+
                     b.Navigation("Vendas");
                 });
 
             modelBuilder.Entity("SIGES.Models.OsModel", b =>
                 {
                     b.Navigation("Anotacoes");
+
+                    b.Navigation("Lancamentos");
 
                     b.Navigation("Produtos");
 

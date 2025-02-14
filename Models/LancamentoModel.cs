@@ -70,16 +70,22 @@ namespace SIGES.Models
         [IgnoreLog]
         [Column("usuario_id")]
         public int? UsuariosId { get; set; }
+
+        [IgnoreLog]
+        [Column("os_id")]
+        public int? OsId { get; set; }
         
         public virtual ClienteModel? Clientes { get; set; }
         public virtual CategoriaModel? Categorias { get; set; }
         public virtual ContasModel? Contas { get; set; }
         public virtual VendaModel? Venda { get; set; }
         public virtual UsuarioModel? Usuarios { get; set; }
+        public virtual OsModel? Os { get; set; }
 
-        [IgnoreLog]
         [ValidateNever]
         public ICollection<VendaModel> Vendas { get; set; } = new List<VendaModel>();
+        [ValidateNever]
+        public ICollection<OsModel> Ordem { get; set; } = new List<OsModel>();
 
     }
 }

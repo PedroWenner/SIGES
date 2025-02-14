@@ -54,8 +54,8 @@ namespace SIGES.Models
         [Column("usuarios_id")]
         public int UsuariosId { get; set; }
 
-        [Column("lancamento")]
-        public int? Lancamento { get; set; }
+        [Column("lancamento_id")]
+        public int? LancamentoId { get; set; }
 
         [Column("faturado")]
         public int? faturado { get; set; } = 0;
@@ -66,6 +66,7 @@ namespace SIGES.Models
         public virtual ClienteModel? Clientes { get; set; }
         public virtual UsuarioModel? Usuarios { get; set; }
         public virtual GarantiaModel? Garantias { get; set; }
+        public virtual LancamentoModel? Lancamento { get; set; }
 
         [ValidateNever]
         public List<ServicosOs> Servicos { get; set; } = new List<ServicosOs>();
@@ -75,6 +76,9 @@ namespace SIGES.Models
 
         [ValidateNever]
         public List<AnotacoesOs> Anotacoes { get; set; } = new List<AnotacoesOs>();
+        
+        [ValidateNever]
+        public List<LancamentoModel> Lancamentos { get; set; } = new List<LancamentoModel>();
 
     }
 }
