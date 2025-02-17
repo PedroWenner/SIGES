@@ -54,9 +54,9 @@ namespace SIGES.Controllers
         public async Task<IActionResult> Index()
         {
             var ordens = _osRepositorio.Listar();
-            var viewModel = new OsViewModel
+            var viewModel = new OsEmailViewModel
             {
-                Ordens = ordens.ToList(),
+                OrdemServicos = ordens.ToList(),
             };
 
             return View("LOrdem", viewModel);

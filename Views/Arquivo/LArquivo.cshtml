@@ -35,76 +35,77 @@
     <div class="widget-box">
         <h5 style="padding: 3px 0"></h5>
         <div class="widget-content nopadding tab-content">
-            <table id="tabela">
-                <thead>
-                    <tr>
-                        <th width="5%">#</th>
-                        <th width="10%">Miniatura</th>
-                        <th width="10%">Nome</th>
-                        <th width="8%">Data</th>
-                        <th>Descrição</th>
-                        <th width="8%">Tamanho</th>
-                        <th width="5%">Extensão</th>
-                        <th width="14%">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Arquivos == null || Model.Arquivos.Count == 0)
-                    {
+            <div class="table-responsive">
+                <table id="tabela">
+                    <thead>
                         <tr>
-                            <td colspan="8">Nenhum arquivo cadastrado</td>
+                            <th width="5%">#</th>
+                            <th width="10%">Miniatura</th>
+                            <th width="10%">Nome</th>
+                            <th width="8%">Data</th>
+                            <th>Descrição</th>
+                            <th width="8%">Tamanho</th>
+                            <th width="5%">Extensão</th>
+                            <th width="14%">Ações</th>
                         </tr>
-                    }
-                    else
-                    {
-                        @foreach (var archive in Model.Arquivos)
+                    </thead>
+                    <tbody>
+                        @if (Model.Arquivos == null || Model.Arquivos.Count == 0)
                         {
                             <tr>
-                                <td>@archive.Id</td>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(archive.Path) &&
-                                   (archive.Tipo == ".jpg" || archive.Tipo == ".jpeg" || archive.Tipo == ".png" || archive.Tipo == ".gif" || archive.Tipo == ".bmp"))
-                                    {
-                                        <a href="@archive.Url" target="_blank">
-                                            <img src="@archive.Url" style="width: 50px; height: 50px; object-fit: cover;" alt="Miniatura" />
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <span>-</span>
-                                    }
-                                </td>
-                                <td>@archive.Documento</td>
-                                <td>@archive.Cadastro?.ToString("dd/MM/yyyy")</td>
-                                <td>@archive.Descricao</td>
-                                <td>@archive.Tamanho</td>
-                                <td>@archive.Tipo</td>
-                                <td>
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vArquivo"))
-                                    {
-                                        <a asp-controller="Arquivos" asp-action="Download" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Baixar arquivo">
-                                            <i class="bx bx-download bx-xs"></i>
-                                        </a>
-                                    }
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eArquivo"))
-                                    {
-                                        <a asp-controller="Arquivos" asp-action="Editar" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar">
-                                            <i class="bx bx-edit bx-xs"></i>
-                                        </a>
-                                    }
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCategoria"))
-                                    {
-                                        <a href="#modal-excluir" data-id="@archive.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir arquivo">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
-                                        </a>
-                                    }
-                                </td>
+                                <td colspan="8">Nenhum arquivo cadastrado</td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-            
+                        else
+                        {
+                            @foreach (var archive in Model.Arquivos)
+                            {
+                                <tr>
+                                    <td>@archive.Id</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(archive.Path) &&
+                                       (archive.Tipo == ".jpg" || archive.Tipo == ".jpeg" || archive.Tipo == ".png" || archive.Tipo == ".gif" || archive.Tipo == ".bmp"))
+                                        {
+                                            <a href="@archive.Url" target="_blank">
+                                                <img src="@archive.Url" style="width: 50px; height: 50px; object-fit: cover;" alt="Miniatura" />
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+                                    </td>
+                                    <td>@archive.Documento</td>
+                                    <td>@archive.Cadastro?.ToString("dd/MM/yyyy")</td>
+                                    <td>@archive.Descricao</td>
+                                    <td>@archive.Tamanho</td>
+                                    <td>@archive.Tipo</td>
+                                    <td>
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vArquivo"))
+                                        {
+                                            <a asp-controller="Arquivos" asp-action="Download" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Baixar arquivo">
+                                                <i class="bx bx-download bx-xs"></i>
+                                            </a>
+                                        }
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eArquivo"))
+                                        {
+                                            <a asp-controller="Arquivos" asp-action="Editar" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar">
+                                                <i class="bx bx-edit bx-xs"></i>
+                                            </a>
+                                        }
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCategoria"))
+                                        {
+                                            <a href="#modal-excluir" data-id="@archive.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir arquivo">
+                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
