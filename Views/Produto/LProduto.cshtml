@@ -18,11 +18,11 @@
             @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aProduto"))
             {
                 <div class="d-flex">
-                    <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Produto" asp-action="Adicionar">
+                    <a role="button" class="button btn btn-mini btn-success w-100" asp-controller="Produto" asp-action="Adicionar">
                         <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                         <span class="button__text2">Produto</span>
                     </a>
-                    <a href="#modal-etiquetas" role="button" data-bs-target="#modal-etiquetas" data-bs-toggle="modal" class="button btn btn-mini btn-warning" style="max-width: 100px">
+                    <a href="#modal-etiquetas" role="button" data-bs-target="#modal-etiquetas" data-bs-toggle="modal" class="button btn btn-mini btn-warning w-100">
                         <span class="button__icon"><i class='bx bx-barcode-reader'></i></span>
                         <span class="button__text2">Gerar etiquetas</span>
                     </a>
@@ -30,7 +30,7 @@
             }
             else
             {
-                <a role="button" class="button btn btn-mini btn-secondary disabled" style="max-width: 100px" title="Você não tem permissão para adicionar">
+                <a role="button" class="button btn btn-mini btn-secondary disabled w-100" title="Você não tem permissão para adicionar">
                     <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                     <span class="button__text2">Produto</span>
                 </a>
@@ -40,7 +40,7 @@
 
     <div class="widget-box">
         <h5 style="padding: 3px 0"></h5>
-        <div class="widget-content nopadding tab-content">
+        <div class="widget-content nopadding tab-content table-responsive">
             <table id="tabela">
                 <thead>
                     <tr>
@@ -76,40 +76,25 @@
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eProduto"))
                                     {
                                         <a asp-controller="Produto" asp-action="Editar" asp-route-id="@produto.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar produto">
-                                            <i class="bx bx-edit bx-xs"></i>
+                                            <i class="bx bx-edit"></i>
                                         </a>
                                     }
-                                    else
-                                    {
-                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para editar">
-                                            <i class="bx bx-edit bx-xs"></i>
-                                        </a>
-                                    }
+                                    
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dProduto"))
                                     {
                                         <a href="#modal-excluir" data-id="@produto.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir categoria">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
+                                            <i class="bx bx-trash-alt"></i>
                                         </a>
                                     }
-                                    else
-                                    {
-                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para excluir">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
-                                        </a>
-                                    }
+                                    
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eProduto"))
                                     {
                                         <a id="btn-controla-estoque" href="#modal-atualizar-estoque" data-id="@produto.Id" data-estoque="@produto.Estoque" role="button" data-bs-target="#modal-atualizar-estoque"
                                             data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe5 text-decoration-none" title="Atualizar estoque">
-                                            <i class="bx bx-plus-circle bx-xs"></i>
+                                            <i class="bx bx-plus-circle"></i>
                                         </a>
                                     }
-                                    else
-                                    {
-                                        <a id="btn-controla-estoque" role="button" class="btn-nwe4-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para atualizar estoque">
-                                            <i class="bx bx-plus-circle bx-xs"></i>
-                                        </a>
-                                    }
+                                    
                                 </td>
                             </tr>
                         }
@@ -195,7 +180,7 @@
 <div id="modal-etiquetas" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="get" asp-controller="Relatorio" asp-action="ProdutosEtiquetas">
+            <form id="form-etiquetas" method="get" asp-controller="Relatorio" asp-action="ProdutosEtiquetas">
                 <div class="modal-header">
                     <h5 class="modal-title fs-5">Gerar etiquetas com código de barras</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -226,7 +211,6 @@
                             <select id="formatoEtiqueta" class="col-md-6" name="etiquetaCode">
                                 <option value="EAN13">EAN-13</option>
                                 <option value="UPCA">UPCA</option>
-                                @* <option value="C93">CODE 93</option> *@
                                 <option value="C128A">CODE 128</option>
                                 <option value="CODABAR">CODABAR</option>
                                 <option value="QR">QR-CODE</option>
@@ -245,6 +229,13 @@
                     </button>
                 </div>
             </form>
+            <!-- Spinner de carregamento -->
+            <div id="loading-spinner" style="display: none; text-align: center; padding: 20px;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p>Gerando etiquetas, aguarde...</p>
+            </div>
         </div>
     </div>
 </div>
@@ -278,6 +269,48 @@
                 $(element).removeClass("is-invalid").addClass("is-valid");
                 $(element).attr("placeholder", "");
             }
+        });
+
+        $('#form-etiquetas').on('submit', function (e) {
+            e.preventDefault();
+
+            // Exibe o spinner de carregamento
+            $('#loading-spinner').show();
+            $('#btn-gerar').prop('disabled', true);
+
+            // Obtém os dados do formulário
+            var formData = $(this).serialize();
+            console.log(formData);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'GET',
+                data: formData,
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    // Cria um link temporário para forçar o download do PDF
+                    var blob = new Blob([data], { type: 'application/pdf' });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = 'etiquetas.pdf';
+
+                    setTimeout(function () {
+                        $('#loading-spinner').hide();
+                        link.click();
+                        $('#btn-gerar').prop('disabled', false);
+                    }, 3000);
+                },
+                error: function (xhr, status, error) {
+                    setTimeout(function () {
+                        Swal.fire("Erro!", "Ocorreu um erro ao gerar as etiquetas.", "error");
+
+                        $('#loading-spinner').hide();
+                        $('#btn-gerar').prop('disabled', false);
+                    }, 3000);
+                }
+            });
         });
     });
 </script>

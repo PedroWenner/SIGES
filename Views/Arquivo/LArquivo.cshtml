@@ -13,18 +13,11 @@
         </span>
         <h5>Arquivos</h5>
     </div>
-    <div class="span12" style="margin-left: 0">
-        <div class="span3">
+    <div class="col-md-12" style="margin-left: 0">
+        <div class="col-md-2">
             @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aArquivo"))
             {
-                <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Arquivo" asp-action="Adicionar">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
-                    <span class="button__text2">Arquivo</span>
-                </a>
-            }
-            else
-            {
-                <a role="button" class="button btn btn-mini btn-secondary disabled" style="max-width: 100px" title="Você não tem permissão para adicionar">
+                <a role="button" class="button btn btn-success w-100" asp-controller="Arquivo" asp-action="Adicionar">
                     <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                     <span class="button__text2">Arquivo</span>
                 </a>

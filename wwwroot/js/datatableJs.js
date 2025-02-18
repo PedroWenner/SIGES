@@ -4,7 +4,13 @@
     $('#tabela').DataTable({
         language: {
             url: '/json/datatable_pt-br.json',
-            emptyTable: "Nenhum registro encontrado"
+            emptyTable: "Nenhum registro encontrado",
+            paginate: {
+                first: "<<",
+                last: ">>",
+                next: ">",
+                previous: "<"
+            }
         },
         paging: true,
         searching: true,

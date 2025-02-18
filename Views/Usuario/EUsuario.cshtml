@@ -7,9 +7,38 @@
 <script src="~/js/jquery.mask.min.js"></script>
 
 <style>
-    #imgSenha {
-        width: 18px;
+    .password-container {
+        position: relative;
+        /* width: fit-content; */
+    }
+
+    .password-input {
+        padding-right: 30px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        height: 35px;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
         cursor: pointer;
+        color: #888;
+    }
+
+    .toggle-datetime {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+
+    .toggle-password:hover {
+        color: #333;
     }
 
     .nopadding {
@@ -114,11 +143,9 @@
                 <div class="row">
                     <div class="col-md-2 mb-3 position-relative">
                         <label for="senha" class="form-label">Senha</label>
-                        <div class="input-group">
-                            <input id="senha" type="password" asp-for="Usuario.Senha" aria-describedby="imgSenha">
-                            <button class="btn btn-outline-secondary" type="button" id="button-addon2">
-                                <img id="imgSenha" src="@Url.Content("~/img/eye.svg")" alt="Mostrar Senha">
-                            </button>
+                        <div class="password-container">
+                            <input id="senha" type="password" asp-for="Usuario.Senha" required aria-describedby="imgSenha">
+                            <i class="fa fa-eye toggle-password" onclick="togglePassword('senha')"></i>
                         </div>
                         <span asp-validation-for="Usuario.Senha" class="help-block"></span>
                     </div>
@@ -126,7 +153,10 @@
                     <!-- Data de Expiração -->
                     <div class="col-md-2 mb-3">
                         <label for="dataExpiracao" class="form-label">Expira em</label>
-                        <input id="dataExpiracao" type="date" asp-for="Usuario.DataExpiracao" required>
+                        <div class="password-container">
+                            <input id="dataExpiracao" type="text" asp-for="Usuario.DataExpiracao" class="datetime" required>
+                            <i class="fas fa-calendar-alt toggle-datetime"></i>
+                        </div>
                     </div>
                 </div>
 
@@ -184,7 +214,7 @@
                 <div class="row">
                     <!-- Botões -->
                     <div class="d-flex justify-content-center mt-4">
-                        <a title="Voltar" class="button btn btn-warning" asp-controller="Usuario" asp-action="Index">
+                        <a class="button btn btn-warning" asp-controller="Usuario" asp-action="Index">
                             <span class="button__icon"><i class="bx bx-undo"></i></span>
                             <span class="button__text2">Voltar</span>
                         </a>
@@ -202,12 +232,26 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script type="text/javascript">
 
+    function togglePassword(id) {
+        var input = document.getElementById(id);
+        var icon = document.querySelector(".toggle-password");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    }
+
     function previewImage(event) {
         const img = document.getElementById('previewImg');
         if (event.target.files.length > 0) {
             img.src = URL.createObjectURL(event.target.files[0]);
             img.onload = () => {
-                URL.revokeObjectURL(img.src); // Libera memória
+                URL.revokeObjectURL(img.src);
                 img.style.display = "block";
             };
         } else {
@@ -220,21 +264,6 @@
             var extension = value.split('.').pop().toLowerCase();
             return this.optional(element) || param.split('|').indexOf(extension) !== -1;
         }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
-
-        let container = document.querySelector('div');
-        let input = document.querySelector('#senha');
-        let icon = document.querySelector('#imgSenha');
-
-        icon.addEventListener('click', function () {
-            container.classList.toggle('visible');
-            if (container.classList.contains('visible')) {
-                icon.src = '@Url.Content("~/img/eye-off.svg")'
-                input.type = 'text';
-            } else {
-                icon.src = '@Url.Content("~/img/eye.svg")'
-                input.type = 'password';
-            }
-        });
 
         $('#formUsuario').validate({
             rules: {
@@ -270,7 +299,6 @@
                 'Usuario.Imagem': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
             },
             errorPlacement: function (error, element) {
-                // Insere o texto do erro como placeholder dentro do input
                 element.attr("placeholder", error.text());
             },
             highlight: function (element, errorClass, validClass) {
@@ -278,8 +306,6 @@
             },
             unhighlight: function (element, errorClass, validClass) {
                 $(element).removeClass("is-invalid").addClass("is-valid");
-
-                // Remove o placeholder ao corrigir o campo
                 $(element).attr("placeholder", "");
             }
         });

@@ -16,7 +16,7 @@
 
     <div class="widget-box">
         <h5 style="padding: 3px 0"></h5>
-        <div class="widget-content nopadding tab-content">
+        <div class="widget-content nopadding tab-content table-responsive">
             <table id="tabela">
                 <thead>
                     <tr>
@@ -63,30 +63,30 @@
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca"))
                                     {
                                         <a href="#modal-cancelar" data-id="@cobranca.Id" role="button" data-bs-target="#modal-cancelar" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Cancelar cobrança">
-                                            <i class="bx bx-x bx-xs"></i>
+                                            <i class="bx bx-x"></i>
                                         </a>
                                         <a asp-controller="Cobranca" asp-action="Atualizar" asp-route-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Atualizar cobrança">
-                                            <i class="bx bx-refresh bx-xs"></i>
+                                            <i class="bx bx-refresh"></i>
                                         </a>
                                         <a href="#modal-confirmar" data-id="@cobranca.Id" role="button" data-bs-target="#modal-confirmar" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Confirmar pagamento">
-                                            <i class="bx bx-check bx-xs"></i>
+                                            <i class="bx bx-check"></i>
                                         </a>
                                         <a asp-controller="Cobranca" asp-action="Visualizar" asp-route-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe2 text-decoration-none" title="Ver mais detalhes">
-                                            <i class="bx bx-show bx-xs"></i>
+                                            <i class="bx bx-show"></i>
                                         </a>
                                         <a role="button" data-id="@cobranca.Id" style="margin-right: 1%" class="btn-nwe5 text-decoration-none btn-enviar-email" title="Enviar por e-mail">
-                                            <i class="bx bx-envelope bx-xs"></i>
+                                            <i class="bx bx-envelope"></i>
                                         </a>
                                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCobranca") && !string.IsNullOrEmpty(cobranca.Barcode))
                                         {
                                             <a role="button" href="@cobranca.Link" target="_blank" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Visualizar boleto">
-                                                <i class="bx bx-barcode bx-xs"></i>
+                                                <i class="bx bx-barcode"></i>
                                             </a>
                                         }
                                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCobranca"))
                                         {
                                             <a href="#modal-excluir" data-id="@cobranca.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir cobrança">
-                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                                <i class="bx bx-trash-alt"></i>
                                             </a>
                                         }
                                     }

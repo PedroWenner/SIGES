@@ -15,129 +15,185 @@
                 <input type="hidden" asp-for="Id" />
 
                 <!-- Código de barra -->
-                <div class="mb-3 col-md-2">
-                    <label for="codigoBarras" class="form-label">Codigo de barra</label>
-                    <input id="codigoBarras" type="text" asp-for="CodigoBarras" />
-                    <span asp-validation-for="CodigoBarras" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="codigoBarras" class="col-form-label">Codigo de barra</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="codigoBarras" type="text" asp-for="CodigoBarras" />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="CodigoBarras" class="text-danger"></span>
+                        <span class="form-text">Informe o código de barras caso possúa.</span>
+                    </div>
                 </div>
 
                 <!-- Descricao -->
-                <div class="mb-3 col-md-2">
-                    <label for="descricao" class="form-label">Descrição</label>
-                    <input id="descricao" type="text" asp-for="Descricao" required />
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="descricao" class="col-form-label">Descrição</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="descricao" type="text" asp-for="Descricao" />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <span class="form-text">Informe a descrição do produto.</span>
+                    </div>
                 </div>
 
                 <!-- Tipo de Movimento -->
-                <div class="mb-3">
-                    <label for="tipoMovimento" class="form-label">Tipo movimento</label><br />
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="TipoMovimento" id="entrada" value="1"
-                        @if (Model.TipoMovimento.Equals(1))
-                        {
-                            <text>checked</text>
-                        }>
-                        <label class="form-check-label" for="entrada">Entrada</label>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="tipoMovimento" class="col-form-label">Tipo movimento</label>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="TipoMovimento" id="saida" value="0"
-                        @if (Model.TipoMovimento.Equals(0))
-                        {
-                            <text>checked</text>
-                        }>
-                        <label class="form-check-label" for="saida">Saída</label>
+                    <div class="col-md-4">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="TipoMovimento" id="entrada" value="1"
+                            @if (Model.TipoMovimento.Equals(1))
+                            {
+                                <text>checked</text>
+                            }>
+                            <label class="form-check-label" for="entrada">Entrada</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="TipoMovimento" id="saida" value="0"
+                            @if (Model.TipoMovimento.Equals(0))
+                            {
+                                <text>checked</text>
+                            }>
+                            <label class="form-check-label" for="saida">Saída</label>
+                        </div>
                     </div>
-                    <span asp-validation-for="TipoMovimento" class="text-danger"></span>
+                    <div class="col-md-6">
+                        <span asp-validation-for="TipoMovimento" class="text-danger"></span>
+                        <span class="form-text">Informe se o produto é de entrada ou saída.</span>
+                    </div>
                 </div>
 
-                <div class="row">
-                    <!-- Preço de compra -->
-                    <div class="mb-3 col-md-2">
-                        <label for="precoCompra" class="form-label">Preço de compra</label>
+                <!-- Preço de compra -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="precoCompra" class="col-form-label">Preço de compra | % lucro</label>
+                    </div>
+                    <div class="col-md-3">
                         <input id="precoCompra" type="text" asp-for="PrecoCompra" class="money" required />
                         <span asp-validation-for="PrecoCompra" class="text-danger"></span>
                     </div>
-
-                    <!-- Margem -->
-                    <div class="mb-3 col-1">
-                        <label for="margem" class="form-label">Margem</label>
-                        <input id="margem" type="text" asp-for="MargemLucro" placeholder="%"
-                               onblur="calcLucro($('#precoCompra').val().replace('.', '').replace(',', '.'), $('#margem').val().replace('.', '').replace(',', '.')); return false;" />
-                        <span asp-validation-for="MargemLucro" class="text-danger"></span>
+                    <div class="col-md-1">
+                        <input id="margem" type="text" asp-for="MargemLucro" placeholder="%" onblur="return calcular();" />
                     </div>
-
-                    <div class="mb-3 col-4 d-flex align-content-end flex-wrap">
-                        <strong>
-                            <span style="color: red" id="errorAlert"></span>
-                        </strong>
+                    <div class="col-md-6">
+                        <span class="form-text">Informe o preço de compra e a margem que deseja obter sobre.</span>
                     </div>
                 </div>
 
-                <!-- Preço da venda -->
-                <div class="mb-3 col-md-2">
-                    <label for="precoVenda" class="form-label">Preço de venda</label>
-                    <input id="precoVenda" type="text" asp-for="PrecoVenda" class="money" required />
-                    <span asp-validation-for="PrecoVenda" class="text-danger"></span>
+                <!-- Preço de venda -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="precoVenda" class="col-form-label">Preço de venda</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="precoVenda" type="text" asp-for="PrecoVenda" class="money" required />
+                        <span asp-validation-for="PrecoCompra" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-6">
+                        <span class="form-text">O preço de venda será calcualado automaticamente com base na multiplicação (P.C x %).</span>
+                    </div>
                 </div>
 
                 <!-- Unidade -->
-                <div class="mb-3 col-md-2">
-                    <label for="unidade" class="form-label">Unidade</label>
-                    <select id="unidade" asp-for="UnidadeMedida" required>
-                        <option value="">Selecione</option>
-                    </select>
-                    <span asp-validation-for="UnidadeMedida" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="unidade" class="col-form-label">Unidade</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="unidade" asp-for="UnidadeMedida" required>
+                            <option value="">Selecione</option>
+                        </select>
+                        <span asp-validation-for="UnidadeMedida" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-text">Informe a unidade de medida do produto.</span>
+                    </div>
                 </div>
 
                 <!-- Estoque -->
-                <div class="mb-3 col-md-2">
-                    <label for="estoque" class="form-label">Estoque</label>
-                    <input id="estoque" type="text" asp-for="Estoque" onkeypress="return somenteNumeros(this)" required />
-                    <span asp-validation-for="Estoque" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="estoque" class="col-form-label">Estoque</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="estoque" type="text" asp-for="Estoque" onkeypress="return somenteNumeros(this)" required />
+                        <span asp-validation-for="Estoque" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-text">Informe a quantidade do produto em estoque.</span>
+                    </div>
                 </div>
 
                 <!-- Estoque mínimo -->
-                <div class="mb-3 col-md-2">
-                    <label for="estoqueMin" class="form-label">Estoque mínimo</label>
-                    <input id="estoqueMin" type="text" asp-for="EstoqueMin" onkeypress="return somenteNumeros(this)" />
-                    <span asp-validation-for="EstoqueMin" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="estoqueMin" class="col-form-label">Estoque mínimo</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="estoqueMin" type="text" asp-for="EstoqueMin" onkeypress="return somenteNumeros(this)" required />
+                        <span asp-validation-for="EstoqueMin" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-text">Informe a quantidade mínima que que produto pode ficar em estoque.</span>
+                    </div>
                 </div>
 
                 <!-- Imagem -->
-                <div class="mb-3 col-md-4">
-                    <label for="imagem" class="form-label">Imagem</label>
-                    <input type="file" id="imagem" name="imagemProduto" accept="image/*" />
-                    @if (Model.ImagemBlob != null)
-                    {
-                        <p class="mt-2">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>
-                    }
-                    else
-                    {
-                        <span class="text-danger mt-2">Nenhuma imagem cadastrada. É obrigatório adicionar uma imagem.</span>
-                    }
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="imagem" class="col-form-label">Imagem</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" id="imagem" name="imagemProduto" accept="image/*" />
+                    </div>
+                    <div class="col-md-6">
+                        @if (Model.ImagemBlob != null)
+                        {
+                            <p class="form-text">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>
+                        }
+                        else
+                        {
+                            <span class="form-text text-warning">Nenhuma imagem cadastrada. Selecione a imagem do produto caso necessário.</span>
+                        }
+                    </div>
                 </div>
 
-                <div class="mb-3 text-center">
-                    @if (Model.ImagemBlob != null)
-                    {
-                        <img src="data:image/png;base64,@Convert.ToBase64String(Model.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do produto" style="max-width: 200px;" />
-                    }
-                    else
-                    {
-                        <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
-                    }
+                <div class="row mt-2 g-3 align-items-center text-center">
+                    <div class="col-md-4 offset-md-4">
+                        @if (Model.ImagemBlob != null)
+                        {
+                            <img src="data:image/png;base64,@Convert.ToBase64String(Model.ImagemBlob)" id="previewImg" class="img-fluid rounded w-100" alt="Imagem do produto" />
+                        }
+                        else
+                        {
+                            <img src="" id="previewImg" class="img-fluid rounded w-100" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
+                        }
+                    </div>
                 </div>
 
                 <!-- Botões -->
-                <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Produto" asp-action="Index">
-                        <span class="button__icon"><i class="bx bx-undo"></i></span>
-                        <span class="button__text2">Voltar</span>
-                    </a>
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Atualizar</span>
-                    </button>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2">
+                        <a class="button btn btn-warning w-100" asp-controller="Produto" asp-action="Index">
+                            <span class="button__icon"><i class="bx bx-undo"></i></span>
+                            <span class="button__text2">Voltar</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="button btn btn-success w-100">
+                            <span class="button__icon"><i class='bx bx-save'></i></span>
+                            <span class="button__text2">Adicionar</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -160,19 +216,32 @@
         }
     }
 
+    // Função para calcular o lucro
     function calcLucro(precoCompra, margemLucro) {
-        var precoVenda = (precoCompra * (1 + (margemLucro / 100))).toFixed(2);
-        $('#precoVenda').val(precoVenda.replace(".", ","));
-    }
-
-    $("#margem").keyup(function() {
         if ($("#precoCompra").val() == null || $("#precoCompra").val() == '') {
-            $('#errorAlert').text('Preencher valor da compra primeiro.').css("display", "inline").fadeOut(5000);
+            Swal.fire("Atenção!", "Preencher valor da compra primeiro.", "warning");
             $('#margem').val('');
             $('#precoVenda').val('');
             $("#precoCompra").focus();
+            return false;
         }
-    });
+
+        var precoVenda = (precoCompra * (1 + (margemLucro / 100))).toFixed(2);
+        var precoVendaFormatado = parseFloat(precoVenda).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        $('#precoVenda').val(precoVendaFormatado.replace('R$', '').trim());
+    }
+
+    function calcular() {
+        var precoCompra = parseFloat($("#precoCompra").cleanVal().replace('.', '').replace(',', '.'));
+        var margemLucro = parseFloat($("#margem").val().replace('%', ''));
+        calcLucro(precoCompra, margemLucro);
+    }
 
     $(document).ready(function () {
         $(".money").mask("#.##0,00", {reverse: true});
@@ -202,64 +271,39 @@
             return this.optional(element) || param.split('|').indexOf(extension) !== -1;
         }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
 
-        ConfiguracaoJsService.carregarConfiguracoes(function () {
-            var controlaEstoque = parseInt(ConfiguracaoJsService.obterConfiguracao("control_estoque", 0));
+        
+        $.validator.addMethod("extension", function (value, element, param) {
+            var extension = value.split('.').pop().toLowerCase();
+            return this.optional(element) || param.split('|').indexOf(extension) !== -1;
+        }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
 
-            let required = true;
-            let msgRequired = 'Campo estoque é obrigatório';
-
-            if (controlaEstoque === 0) {
-                required = false;
-                msgRequired = '';
-                $("#estoque").removeAttr("required");
+        $('#formProduto').validate({
+            rules: {
+                'Descricao': { required: true },
+                'PrecoCompra': { required: true },
+                'PrecoVenda': { required: true },
+                'UnidadeMedida': { required: true },
+                'Estoque': { required: true },
+                'imagemProduto': { extension: "jpg|jpeg|png|gif|bmp" }
+            },
+            messages: {
+                'Descricao': { required: 'Campo requerido.' },
+                'PrecoCompra': { required: 'Campo requerido.' },
+                'PrecoVenda': { required: 'Campo requerido.' },
+                'UnidadeMedida': { required: 'Campo requerido.' },
+                'Estoque': { required: "Campo requerido" },
+                'imagemProduto': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
             }
-            else {
-                $("#estoque").attr("required", "required");
-            }
-
-            $.validator.addMethod("extension", function (value, element, param) {
-                var extension = value.split('.').pop().toLowerCase();
-                return this.optional(element) || param.split('|').indexOf(extension) !== -1;
-            }, "Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).");
-
-            $('#formProduto').validate({
-                rules: {
-                    'Descricao': { required: true },
-                    'PrecoCompra': { required: true },
-                    'PrecoVenda': { required: true },
-                    'UnidadeMedida': { required: true },
-                    'Estoque': { required: required },
-                    'imagemCategoria': { extension: "jpg|jpeg|png|gif|bmp" }
-                },
-                messages: {
-                    'Descricao': { required: 'Campo descrição é obrigatório.' },
-                    'PrecoCompra': { required: 'Campo preço de compra é obrigatório.' },
-                    'PrecoVenda': { required: 'Campo preço de venda é obrigatório.' },
-                    'UnidadeMedida': { required: 'Unidade deve ser selecionado.' },
-                    'Estoque': { required: msgRequired },
-                    'imagemCategoria': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
-                },
-                errorPlacement: function (error, element) {
-                    element.attr("placeholder", error.text());
-                },
-                highlight: function (element, errorClass, validClass) {
-                    $(element).addClass("is-invalid").removeClass("is-valid");
-                },
-                unhighlight: function (element, errorClass, validClass) {
-                    $(element).removeClass("is-invalid").addClass("is-valid");
-                    $(element).attr("placeholder", "");
-                }
-            });
-
-            console.log("Required =", required);
-            console.log("msgRequired =", msgRequired);
-            const requiredFields = document.querySelectorAll("[required]");
-                requiredFields.forEach((field) => {
-                    const label = field.closest("form").querySelector(`label[for='${field.id}']`);
-                    if (label && !label.innerHTML.includes("*")) {
-                        label.innerHTML += ' <span class="text-danger">*</span>';
-                    }
-                });
         });
     });
 </script>

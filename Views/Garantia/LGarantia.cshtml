@@ -13,9 +13,9 @@
         </span>
         <h5>Garantia</h5>
     </div>
-    <div class="span12" style="margin-left: 0">
-        <div class="span3">
-            <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Garantia" asp-action="Adicionar">
+    <div class="col-lg-12" style="margin-left: 0">
+        <div class="col-md-2">
+            <a role="button" class="button btn btn-mini btn-success w-100" asp-controller="Garantia" asp-action="Adicionar">
                 <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                 <span class="button__text2">Garantia</span>
             </a>
@@ -24,7 +24,7 @@
 
     <div class="widget-box">
         <h5 style="padding: 3px 0"></h5>
-        <div class="widget-content nopadding tab-content">
+        <div class="widget-content nopadding tab-content table-responsive">
             <table id="tabela">
                 <thead>
                     <tr>
@@ -40,7 +40,7 @@
                     @if (Model.Garantias == null || Model.Garantias.Count == 0)
                     {
                         <tr>
-                            <td colspan="4">Nenhum garantia cadastrada</td>
+                            <td colspan="6">Nenhum garantia cadastrada</td>
                         </tr>
                     }
                     else
@@ -62,31 +62,19 @@
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eGarantia"))
                                     {
                                         <a asp-controller="Garantia" asp-action="Editar" asp-route-id="@garantia.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar garantia">
-                                            <i class="bx bx-edit bx-xs"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para editar">
-                                            <i class="bx bx-edit bx-xs"></i>
+                                            <i class="bx bx-edit"></i>
                                         </a>
                                     }
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vGarantia"))
                                     {
                                         <a asp-controller="Garantia" asp-action="Imprimir" asp-route-id="@garantia.Id" asp-route-tipo="termo-garantia" target="_blank" style="margin-right: 1%" class="btn-nwe6 text-decoration-none" title="Imprimir">
-                                            <i class="bx bx-printer bx-xs"></i>
+                                            <i class="bx bx-printer"></i>
                                         </a>
                                     }
                                     @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dGarantia"))
                                     {
                                         <a href="#modal-excluir" data-id="@garantia.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir garantia">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para excluir">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
+                                            <i class="bx bx-trash-alt"></i>
                                         </a>
                                     }
                                 </td>

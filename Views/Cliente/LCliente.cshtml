@@ -14,17 +14,10 @@
         <h5>Clientes</h5>
     </div>
     <div class="col-lg-12" style="margin-left: 0">
-        <div class="col-md-3">
+        <div class="col-md-2">
             @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aCliente"))
             {
-                <a role="button" class="button btn btn-mini btn-success" style="max-width: 100px" asp-controller="Cliente" asp-action="Adicionar">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
-                    <span class="button__text2">Cliente</span>
-                </a>
-            }
-            else
-            {
-                <a role="button" class="button btn btn-mini btn-secondary disabled" style="max-width: 100px" title="Você não tem permissão para adicionar">
+                <a role="button" class="button btn btn-success w-100" asp-controller="Cliente" asp-action="Adicionar">
                     <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
                     <span class="button__text2">Cliente</span>
                 </a>
@@ -35,71 +28,60 @@
     <div class="widget-box">
         <h5 style="padding: 3px 0"></h5>
         <div class="widget-content nopadding tab-content">
-            <table id="tabela">
-                <thead>
-                    <tr>
-                        <th>Cod.</th>
-                        <th>Nome</th>
-                        <th>CPF/CNPJ</th>
-                        <th>Celular</th>
-                        <th>Email</th>
-                        <th>Fornecedor</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.Clientes == null || Model.Clientes.Count == 0)
-                    {
+            <div class="table-responsive">
+                <table id="tabela">
+                    <thead>
                         <tr>
-                            <td colspan="9">Nenhum cliente cadastrado</td>
+                            <th>Cod.</th>
+                            <th>Nome</th>
+                            <th>CPF/CNPJ</th>
+                            <th>Celular</th>
+                            <th>Email</th>
+                            <th>Fornecedor</th>
+                            <th>Ações</th>
                         </tr>
-                    }
-                    else
-                    {
-                        @foreach (var cliente in Model.Clientes)
+                    </thead>
+                    <tbody>
+                        @if (Model.Clientes == null || Model.Clientes.Count == 0)
                         {
                             <tr>
-                                <td>@cliente.Id</td>
-                                <td>@cliente.Nome</td>
-                                <td>@cliente.Documento</td>
-                                <td>@cliente.Celular</td>
-                                <td>@cliente.Email</td>
-                                <td>@(cliente.Fornecedor.Equals(0) ? "Não" : "Sim")</td>
-                                <td>
-                                    <a href="#" data-entidade="ClienteModel" data-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
-                                        <i class='bx bx-history'></i>
-                                    </a>
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCliente"))
-                                    {
-                                        <a asp-controller="Cliente" asp-action="Editar" asp-route-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar cliente">
-                                            <i class="bx bx-edit bx-xs"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para editar">
-                                            <i class="bx bx-edit bx-xs"></i>
-                                        </a>
-                                    }
-                                    @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCliente"))
-                                    {
-                                        <a href="#modal-excluir" data-id="@cliente.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir cliente">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <a role="button" class="btn-nwe3-disabled text-decoration-none disabled" style="margin-right: 1%" title="Você não tem permissão para excluir">
-                                            <i class="bx bx-trash-alt bx-xs"></i>
-                                        </a>
-                                    }
-                                </td>
+                                <td colspan="9">Nenhum cliente cadastrado</td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
-
+                        else
+                        {
+                            @foreach (var cliente in Model.Clientes)
+                            {
+                                <tr>
+                                    <td>@cliente.Id</td>
+                                    <td>@cliente.Nome</td>
+                                    <td>@cliente.Documento</td>
+                                    <td>@cliente.Celular</td>
+                                    <td>@cliente.Email</td>
+                                    <td>@(cliente.Fornecedor.Equals(0) ? "Não" : "Sim")</td>
+                                    <td>
+                                        <a href="#" data-entidade="ClienteModel" data-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
+                                            <i class='bx bx-history'></i>
+                                        </a>
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCliente"))
+                                        {
+                                            <a asp-controller="Cliente" asp-action="Editar" asp-route-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar cliente">
+                                                <i class="bx bx-edit"></i>
+                                            </a>
+                                        }
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCliente"))
+                                        {
+                                            <a href="#modal-excluir" data-id="@cliente.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir cliente">
+                                                <i class="bx bx-trash-alt"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

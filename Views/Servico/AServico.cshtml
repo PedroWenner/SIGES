@@ -13,39 +13,62 @@
             <form id="formServico" method="post" asp-controller="Servico" asp-action="Adicionar">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <div class="row">
-                    <!-- Nome -->
-                    <div class="mb-3 col-md-4">
-                        <label for="nome" class="form-label">Nome</label>
-                        <input id="nome" type="text" asp-for="Nome" required />
-                        <span asp-validation-for="Nome" class="text-danger"></span>
+                <!-- Nome -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="nome" class="col-form-label">Nome</label>
                     </div>
-
-                    <!-- Preço -->
-                    <div class="mb-3 col-md-2">
-                        <label for="valor" class="form-label">Valor</label>
-                        <input id="valor" type="text" asp-for="Valor" class="money" required />
-                        <span asp-validation-for="Valor" class="text-danger"></span>
+                    <div class="col-md-4">
+                        <input id="nome" type="text" asp-for="Nome" required />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Nome" class="text-danger"></span>
+                        <span class="form-text">Informe o código do serviço.</span>
                     </div>
                 </div>
 
+                <!-- Preço -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="valor" class="col-form-label">Valor</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="valor" type="text" asp-for="Valor" class="money" required />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Valor" class="text-danger"></span>
+                        <span class="form-text">Informe o valor do serviço.</span>
+                    </div>
+                </div>
+                
                 <!-- Descrição -->
-                <div class="mb-3">
-                    <label for="descricao" class="form-label">Descricao</label>
-                    <input id="descricao" type="text" asp-for="Descricao" />
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="descricao" class="col-form-label">Descrição</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="descricao" type="text" asp-for="Descricao" />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <span class="form-text">Informe a descrição do serviço.</span>
+                    </div>
                 </div>
 
                 <!-- Botões -->
-                <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Servico" asp-action="Index">
-                        <span class="button__icon"><i class="bx bx-undo"></i></span>
-                        <span class="button__text2">Voltar</span>
-                    </a>
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Adicionar</span>
-                    </button>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-auto">
+                        <a class="button btn btn-warning w-100" asp-controller="Servico" asp-action="Index">
+                            <span class="button__icon"><i class="bx bx-undo"></i></span>
+                            <span class="button__text2">Voltar</span>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="button btn btn-mini btn-success w-100">
+                            <span class="button__icon"><i class='bx bx-save'></i></span>
+                            <span class="button__text2">Adicionar</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -56,6 +79,8 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+        $(".money").mask("#.##0,00", {reverse: true});
+
         $('#formServico').validate({
             rules: {
                 'Nome': { required: true },

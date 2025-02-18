@@ -5,6 +5,65 @@
     ViewData["Titulo"] = "Editar venda";
 }
 
+<style>
+    #ui-datepicker-div {
+        z-index: 9999!important;
+    }
+
+    .custom-counter {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        justify-content: space-between;
+        transition: border 0.3s ease;
+    }
+
+    .custom-counter:focus-within {
+        border: 1px solid #aaa;
+    }
+
+    .custom-counter input[type="text"] {
+        border: none;
+        outline: none;
+        width: 60px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+        background: transparent;
+    }
+
+    .custom-counter input::placeholder {
+        color: #bbb;
+        font-style: italic;
+    }
+
+    .counter-buttons {
+        display: flex;
+        gap: 8px;
+        padding-right: 10px;
+    }
+
+    .counter-buttons button {
+        background: none;
+        border: none;
+        color: #aaa;
+        font-size: 18px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        padding: 0;
+    }
+
+    .counter-buttons button:hover {
+        color: #333;
+    }
+
+    .counter-buttons button:disabled {
+        color: #ddd;
+        cursor: default;
+    }
+</style>
 <link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
 
 <div class="container mt-4">
@@ -30,31 +89,30 @@
                         <input type="hidden" asp-for="Venda.Id" />
 
                         <div class="row mb-3 mt-3">
-                            <div class="col-4">
-                                <h6>Venda: <span>@ViewData["VendaId"]</span></h6>
+                            <div class="col-md-4">
+                                <h6>Venda: #@Model.Venda.Id.ToString("d4")</h6>
                             </div>
                         </div>
 
-
                         <div class="row mb-3 mt-3">
-                            <div class="col-2">
+                            <div class="col-md-2 mt-2">
                                 <label for="dataVenda" class="form-label">Data da venda</label>
                                 <input id="dataVenda" type="text" asp-for="Venda.DataVenda" class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
                                 <span asp-validation-for="Venda.DataVenda" class="text-danger"></span>
                             </div>
-                            <div class="col-3">
+                            <div class="col-md-3 mt-2">
                                 <label for="cliente" class="form-label">Cliente</label>
-                                <input id="cliente" type="text" value="@ViewData["ClienteNome"]" placeholder="Digite o nome do cliente" required />
+                                <input id="cliente" type="text" value="@Model.Venda.Cliente.Nome" placeholder="Digite o nome do cliente" required />
                                 <input id="cliente-id" type="hidden" asp-for="Venda.ClienteId" />
                                 <span asp-validation-for="Venda.ClienteId" class="text-danger"></span>
                             </div>
-                            <div class="col-3">
+                            <div class="col-md-3 mt-2">
                                 <label for="vendedor" class="form-label">Vendedor</label>
-                                <input id="vendedor" type="text" value="@ViewData["VendedorNome"]" placeholder="Digite o nome do vendedor" required />
+                                <input id="vendedor" type="text" value="@Model.Venda.Usuario.Nome" placeholder="Digite o nome do vendedor" required />
                                 <input id="vendedor-id" type="hidden" asp-for="Venda.UsuarioId" />
                                 <span asp-validation-for="Venda.UsuarioId" class="text-danger"></span>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-2 mt-2">
                                 <label for="status" class="form-label">Status</label>
                                 <select asp-for="Venda.Status" id="status" required>
                                     <option value="Orçamento">Orçamento</option>
@@ -68,27 +126,34 @@
                                 </select>
                                 <span asp-validation-for="Venda.Status" class="text-danger"></span>
                             </div>
-                            <div class="col-2">
+                            <div class="col-md-2 mt-2">
                                 <label for="garantia" class="form-label">Garantia (dias)</label>
-                                <input id="garantia" type="text" asp-for="Venda.GarantiaDias" onkeypress="return somenteNumeros(this)" />
+                                <div class="custom-counter">
+                                    <input id="garantia" type="text" asp-for="Venda.GarantiaDias" onkeypress="return somenteNumeros(this)" />
+                                    <div class="counter-buttons">
+                                        <button id="btn-decrement-garantia" type="button" onclick="decrement('btn-decrement-garantia', 'garantia');">–</button>
+                                        <button id="btn-increment-garantia" type="button" onclick="increment('btn-decrement-garantia', 'garantia');">+</button>
+                                    </div>
+                                </div>
+                                
                                 <span asp-validation-for="Venda.GarantiaDias" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="row mb-3 mt-3">
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Observações</h6>
                                 <textarea asp-for="Venda.Observacao" id="observacao"></textarea>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Observações para o cliente</h6>
                                 <textarea asp-for="Venda.ObservacaoCliente" id="observacaoCliente"></textarea>
                             </div>
                         </div>
 
                         <!-- Botões -->
-                        <div class="d-flex justify-content-center">
-                            <a title="Voltar" class="button btn btn-warning" asp-controller="Venda" asp-action="Index">
+                        <div class ="buttons d-flex flex-wrap gap-2">
+                            <a class="button btn btn-warning" asp-controller="Venda" asp-action="Index">
                                 <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
                                 <span class="button__text2">Voltar</span>
                             </a>
@@ -96,7 +161,7 @@
                                 <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
                                 <span class="button__text2">Atualizar</span>
                             </button>
-                            <a title="Visualizar" class="button btn btn-primary" asp-controller="Venda" asp-action="Visualizar" asp-route-id="@ViewData["VendaId"]">
+                            <a class="button btn btn-primary" asp-controller="Venda" asp-action="Visualizar" asp-route-id="@Model.Venda.Id">
                                 <span class="button__icon"><i class='bx bx-show bx-xs'></i></span>
                                 <span class="button__text2">Visualizar</span>
                             </a>
@@ -111,72 +176,81 @@
                     </form>
                 </div>
 
-                <div class="tab-pane fade" id="produto-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutos" tabindex="0">
-                    <div class="col-lg-12 mt-3 p-3 text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <form id="formProdutos" method="post" asp-controller="Venda" asp-action="AdicionarProduto">
-                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <div class="tab-pane fade show" id="produto-tab-pane" role="tabpanel" aria-labelledby="navLinkProdutos" tabindex="1">
+                    <div class="container-fluid mt-3">
+                        <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                
+                                    <form id="formProdutos" method="post" asp-controller="Venda" asp-action="AdicionarProduto">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                                    <div class="row mb-3 mt-3">
-                                        <div class="col-5">
-                                            <label for="produto" class="form-label">Produto</label>
-                                            <input id="produto" type="text" placeholder="Digite o nome do produto" />
-                                            <input id="produto-id" type="hidden" asp-for="Item.ProdutoId" />
-                                            <input id="venda-id" type="hidden" asp-for="Item.VendaId" value="@ViewData["VendaId"]" />
-                                            <span asp-validation-for="Item.ProdutoId" class="text-danger"></span>
+                                        <div class="row">
+                                            <div class="col-md-6 mt-2">
+                                                <label for="produto" class="form-label">Produto</label>
+                                                <input id="produto" type="text" placeholder="Digite o nome do produto" />
+                                                <input id="produto-id" type="hidden" asp-for="Item.ProdutoId" />
+                                                <input id="venda-id" type="hidden" asp-for="Item.VendaId" value="@Model.Venda.Id" />
+                                                <span asp-validation-for="Item.ProdutoId" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-2 mt-2">
+                                                <label for="preco" class="form-label">Preço</label>
+                                                <input id="preco" type="text" asp-for="Item.Preco" class="money" />
+                                            </div>
+                                            <div class="col-md-2 mt-2">
+                                                <label for="quantidade" class="form-label">Quantidade</label>
+                                                <div class="custom-counter">
+                                                    <input id="quantidade" type="text" asp-for="Item.Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                    <div class="counter-buttons">
+                                                        <button id="btn-decrement-quantidade" type="button" onclick="decrement('btn-decrement-quantidade', 'quantidade');">–</button>
+                                                        <button id="btn-increment-quantidade" type="button" onclick="increment('btn-decrement-quantidade', 'quantidade');">+</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span class="button__text2">Adicionar</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-2">
-                                            <label for="preco" class="form-label">Preço</label>
-                                            <input id="preco" type="text" asp-for="Item.Preco" class="money" />
-                                        </div>
-                                        <div class="col-2">
-                                            <label for="quantidade" class="form-label">Quantidade</label>
-                                            <input id="quantidade" type="text" asp-for="Item.Quantidade" onkeypress="return somenteNumeros(this)" />
-                                        </div>
-                                        <div class="col-2 align-content-end flex-wrap">
-                                            <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                <span class="button__text2">Adicionar</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <form id="formDesconto" method="post" asp-controller="Venda" asp-action="AdicionarDesconto">
-                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                                    <input type="hidden" asp-for="Venda.Id" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form id="formDesconto" method="post" asp-controller="Venda" asp-action="AdicionarDesconto">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                        <input type="hidden" asp-for="Venda.Id" />
 
-                                    <div class="row">
-                                        <div class="col-2">
-                                            <label for="desconto" class="form-label">Desconto</label>                                            
-                                            <input id="desconto" type="text" asp-for="Venda.Desconto" class="money" required placeholder="0,00"
-                                            onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;" />
+                                        <div class="row">
+                                            <div class="col-md-2 mt-2">
+                                                <label for="desconto" class="form-label">Desconto</label>                                            
+                                                <input id="desconto" type="text" asp-for="Venda.Desconto" class="money" required placeholder="0,00"
+                                                onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;" />
+                                            </div>
+                                            <div class="col-md-2 mt-2">
+                                                <label for="tipoDesconto" class="form-label">Tipo desc.</label>
+                                                <select id="tipoDesconto" asp-for="Venda.TipoDesconto" onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;">
+                                                    <option value="real">R$</option>
+                                                    <option value="porcento">%</option>
+                                                </select>
+                                                <span asp-validation-for="Venda.TipoDesconto" class="text-danger"></span>
+                                            </div>
+                                            <div class="col-md-3 mt-2">
+                                                <label for="valorDesconto" class="form-label">Total com desconto</label>
+                                                <input id="valorDesconto" type="text" asp-for="Venda.ValorDesconto" class="money" readonly placeholder="0,00" />
+                                            </div>
+                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="col-1">
-                                            <label for="tipoDesconto" class="form-label">Tipo desc.</label>
-                                            <select id="tipoDesconto" asp-for="Venda.TipoDesconto" onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;">
-                                                <option value="real">R$</option>
-                                                <option value="porcento">%</option>
-                                            </select>
-                                            <span asp-validation-for="Venda.TipoDesconto" class="text-danger"></span>
-                                        </div>
-                                        <div class="col-3">
-                                            <label for="valorDesconto" class="form-label">Total com desconto</label>
-                                            <input id="valorDesconto" type="text" asp-for="Venda.ValorDesconto" class="money" readonly placeholder="0,00" />
-                                        </div>
-                                        <div class="col-2 align-content-end flex-wrap">
-                                            <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -993,4 +1067,24 @@
             $('#faturar-desconto').val(valor);
         }
     });
+</script>
+
+<script>
+    function increment(btnDecrement, id) {
+        const input = document.getElementById(id);
+        const decrement = document.getElementById(btnDecrement);
+        input.value = parseInt(input.value || 0) + 1;
+        updateButtons(decrement, input);
+    }
+
+    function decrement(btnDecrement, id) {
+        const input = document.getElementById(id);
+        const decrement = document.getElementById(btnDecrement);
+        input.value = parseInt(input.value || 0) - 1;
+        updateButtons(decrement, input);
+    }
+
+    function updateButtons(btnDecrement, id) {
+        btnDecrement.disabled = id.value <= 0;
+    }
 </script>

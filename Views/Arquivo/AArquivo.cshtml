@@ -4,6 +4,20 @@
     ViewData["Titulo"] = "Adicionar arquivo";
 }
 
+<style>
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-datetime {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+</style>
+
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex align-items-center">
@@ -13,39 +27,73 @@
             <form id="formArquivo" method="post" enctype="multipart/form-data" asp-controller="Arquivo" asp-action="Adicionar">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-                <div class="mb-3">
-                    <label for="arquivoFile" class="form-label">Arquivo</label>
-                    <input type="file" id="arquivoFile" name="userfile" accept=".txt,.pdf,.gif,.png,.jpg,.jpeg" required />
-                    <small class="form-text text-muted">(Arquivos suportados: .txt, .pdf, .gif, .png, .jpg, .jpeg)</small>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="arquivoFile" class="col-form-label">Arquivo</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" id="arquivoFile" name="userfile" accept=".txt,.pdf,.gif,.png,.jpg,.jpeg" required />
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-text">(Arquivos suportados: .txt, .pdf, .gif, .png, .jpg, .jpeg)</span>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="documento" class="form-label">Nome do Arquivo</label>
-                    <input id="documento" type="text" asp-for="Documento" required />
-                    <span asp-validation-for="Documento" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="documento" class="col-form-label">Nome do arquivo</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="documento" type="text" asp-for="Documento" required />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Documento" class="text-danger"></span>
+                        <span class="form-text">Campo para informar o nome do arquivo.</span>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição</label>
-                    <textarea id="descricao" asp-for="Descricao" class="form-control"></textarea>
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="descricao" class="col-form-label">Descrição</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea id="descricao" asp-for="Descricao" class="form-control"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <span class="form-text">Campo para informar a descrição do arquivo.</span>
+                    </div>
                 </div>
 
-                <div class="mb-3 col-md-2">
-                    <label for="cadastro" class="form-label">Data de cadastro</label>
-                    <input id="cadastro" type="date" asp-for="Cadastro" class="datetime" required />
-                    <span asp-validation-for="Cadastro" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="cadastro" class="col-form-label">Data de cadastro</label>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="password-container">
+                            <input id="cadastro" type="text" asp-for="Cadastro" class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" required>
+                            <i class="fas fa-calendar-alt toggle-datetime"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Cadastro" class="text-danger"></span>
+                        <span class="form-text">Campo para informar a descrição do arquivo.</span>
+                    </div>
                 </div>
 
-                <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Arquivo" asp-action="Index">
-                        <span class="button__icon"><i class="bx bx-undo"></i></span>
-                        <span class="button__text2">Voltar</span>
-                    </a>
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Adicionar</span>
-                    </button>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2">
+                        <a class="button btn btn-warning w-100" asp-controller="Arquivo" asp-action="Index">
+                            <span class="button__icon"><i class="bx bx-undo"></i></span>
+                            <span class="button__text2">Voltar</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="button btn btn-success w-100">
+                            <span class="button__icon"><i class='bx bx-save'></i></span>
+                            <span class="button__text2">Adicionar</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -62,12 +110,12 @@
                 'Cadastro': { required: true }
             },
             messages: {
-                'Documento': { required: 'Campo nome do arquivo é obrigatório.' },
+                'Documento': { required: 'Campo requerido.' },
                 'userfile': {
-                    required: 'Obrigatório selecionar um arquivo.',
+                    required: 'Campo requerido.',
                     extension: 'Por favor, insira um arquivo com uma extensão válida (txt, pdf, gif, png, jpg, jpeg).'
                 },
-                'Cadastro': { required: 'Campo data de cadastro é obrigatório.' }
+                'Cadastro': { required: 'Campo requerido.' }
             },
             errorPlacement: function (error, element) {
                 element.attr("placeholder", error.text());

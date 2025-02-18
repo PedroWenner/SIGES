@@ -238,8 +238,8 @@
                                 <div class="custom-counter">
                                     <input id="garantia" type="text" asp-for="Os.Garantia" onkeypress="return somenteNumeros(this)" />
                                     <div class="counter-buttons">
-                                        <button id="btn-decrement-garantia" type="button" onclick="decrement('btn-decrement-servico', 'servico-quantidade');">–</button>
-                                        <button id="btn-increment-garantia" type="button" onclick="increment('btn-decrement-servico', 'servico-quantidade');">+</button>
+                                        <button id="btn-decrement-garantia" type="button" onclick="decrement('btn-decrement-garantia', 'garantia');">–</button>
+                                        <button id="btn-increment-garantia" type="button" onclick="increment('btn-decrement-garantia', 'garantia');">+</button>
                                     </div>
                                 </div>
                                 <span asp-validation-for="Os.Garantia" class="text-danger"></span>
@@ -809,7 +809,6 @@
                     success: function (response) {
                         if (response.status === "success") {
                             Swal.fire("Excluído!", response.message, "success");
-                            console.log(@Model?.Os?.Id);
                             carregarAnexos(@Model?.Os?.Id);
                         } else {
                             Swal.fire("Erro!", response.message, "error");

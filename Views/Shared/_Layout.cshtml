@@ -146,7 +146,15 @@
 
         /* Espaçamento entre os botões */
         .dt-paging .page-item {
-            margin: 0 5px; /* Espaçamento entre os botões */
+            margin: 0 1px; /* Espaçamento entre os botões */
+        }
+
+        /* estilização para os itens disabled */
+        .dt-paging .page-item.disabled .page-link {
+            background-color: #e9ecef; /* Fundo cinza */
+            color: #6c757d; /* Cor do texto */
+            border-color: #dee2e6; /* Borda leve */
+            cursor: not-allowed; /* Cursor indicando que não é clicável */
         }
     </style>
 
@@ -202,6 +210,19 @@
         .autocomplete-details {
             color: #777;
             font-size: 0.9em;
+        }
+
+        .form-control.is-valid,
+        .form-control.is-invalid {
+            background-image: none !important;
+            padding-right: 0.75rem; /* Restaura o padding padrão */
+        }
+
+        /* Remove os ícones de validação dos selects */
+        .form-select.is-valid,
+        .form-select.is-invalid {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            padding-right: 0.75rem; /* Restaura o padding padrão */
         }
     </style>
 </head>

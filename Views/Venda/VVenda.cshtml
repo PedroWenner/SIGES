@@ -3,46 +3,55 @@
 
 @{
     ViewData["Titulo"] = "Editar venda";
+    List<string> status = new List<string> { "Finalizado", "Faturado", "Orçamento", "Aberto", "Em Andamento", "Aguardando Peças" };
 }
 
 <style>
     .ck-editor__editable {
-        min-height: 300px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        width: 100%;
-        white-space: normal !important;
-        overflow-wrap: break-word;
-        word-wrap: break-word;
+    min-height: 300px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    white-space: normal !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
     }
 </style>
 
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white d-flex align-items-center">
-            <h5 class="mb-0">Dados da venda nº @Model.Venda.Id</h5>
+            <h5 class="mb-0">Dados da venda nº #@Model.Venda.Id.ToString("d4")</h5>
         </div>
         <div class="card-body">
 
-            <div class="d-flex">
+            <div class="buttons d-flex flex-wrap gap-2">
                 <a class="button btn btn-mini btn-success" asp-controller="Venda" asp-action="Editar" asp-route-id="@Model.Venda.Id">
                     <span class="button__icon"><i class="bx bx-edit bx-xs"></i></span>
                     <span class="button__text2">Editar</span>
                 </a>
-                <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
-                    <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
-                    <span class="button__text2">Orçamento</span>
-                </a>
-                <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
-                    <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
-                    <span class="button__text2">Papel A4</span>
-                </a>
-                <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="nao-fiscal" target="_blank">
-                    <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
-                    <span class="button__text2">CP não fiscal</span>
-                </a>
+                <div class="button-container">
+                    <a class="button btn btn-mini btn-secondary">
+                        <span class="button__icon"><i class="bx bx-printer"></i></span>
+                        <span class="button__text">Imprimir</span>
+                    </a>
+                    <div class="cascading-buttons">
+                        <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
+                            <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
+                            <span class="button__text2">Orçamento</span>
+                        </a>
+                        <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="a4" target="_blank">
+                            <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
+                            <span class="button__text2">Papel A4</span>
+                        </a>
+                        <a class="button btn btn-mini btn-secondary" asp-controller="Venda" asp-action="Imprimir" asp-route-id="@Model.Venda.Id" asp-route-tipo="nao-fiscal" target="_blank">
+                            <span class="button__icon"><i class="bx bx-printer bx-xs"></i></span>
+                            <span class="button__text2">CP não fiscal</span>
+                        </a>
+                    </div>
+                </div>
                 <a data-bs-target="#modalGerarPagamento" data-bs-toggle="modal" class="button btn btn-mini btn-info"
-                    data-id="@Model.Venda.Id" data-tipo="venda">
+                data-id="@Model.Venda.Id" data-tipo="venda">
                     <span class="button__icon"><i class="bx bx-qr bx-xs"></i></span>
                     <span class="button__text2">Gerar pagamento</span>
                 </a>
@@ -52,26 +61,46 @@
                 </a>
             </div>
 
-            <div class="col-lg-12 mt-3 p-3 text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3">
+            <div class="container-fluid mt-3">
                 <div class="row">
-                    <div class="col-md-6">
-                        <h6>Cliente</h6>
-                        <p style="margin-bottom: 0px!important;">@Model.Venda.Cliente.Nome</p>
-                        <p style="margin-bottom: 0px!important;">@Model.Venda.Cliente.Rua - @Model.Venda.Cliente.NumeroRua - @Model.Venda.Cliente.Bairro</p>
-                        <p style="margin-bottom: 0px!important;">@Model.Venda.Cliente.Cidade - @Model.Venda.Cliente.Estado - @Model.Venda.Cliente.Cep</p>
-                        <p style="margin-bottom: 0px!important;">E-mail: @Model.Venda.Cliente.Email</p>
-                        <p style="margin-bottom: 0px!important;">Celular: @Model.Venda.Cliente.Celular</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Vendedor</h6>
-                        <p style="margin-bottom: 0px!important;">@Model.Venda.Usuario.Nome</p>
-                        <p style="margin-bottom: 0px!important;">E-mail: @Model.Venda.Usuario.Email</p>
-                        <p style="margin-bottom: 0px!important;">Celular: @Model.Venda.Usuario.Telefone</p>
+                    <div class="col-12">
+                        <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
+                            <div class="row">
+                                <div class="col-lg-5 col-md-6 mt-2">
+                                    <h6>Cliente</h6>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="bx bxs-business"></i> @Model.Venda.Cliente.Nome
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="bx bxs-phone"></i> E-mail: @Model.Venda.Cliente.Celular
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-map-marker-alt"></i> @Model.Venda.Cliente.Rua, @Model.Venda.Cliente.NumeroRua, @Model.Venda.Cliente.Bairro - @Model.Venda.Cliente.Cep
+                                        @Model.Venda.Cliente.Cidade/@Model.Venda.Cliente.Estado
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-envelope"></i> Celular: @Model.Venda.Cliente.Email
+                                    </p>
+                                </div>
+                                <div class="col-lg-5 col-md-6 mt-2">
+                                    <h6>Responsável</h6>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-user"></i> @Model.Venda.Usuario.Nome
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="fas fa-envelope"></i> E-mail: @Model.Venda.Usuario.Email
+                                    </p>
+                                    <p style="margin-bottom: 0px!important;">
+                                        <i class="bx bxs-phone"></i> Celular: @Model.Venda.Usuario.Telefone
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-12 mt-3 p-3">
+            <div class="col-lg-12 mt-3 p-3 table-responsive">
                 <table class="table table-condensed">
                     <tbody>
                         @foreach (var item in Model.Vendas)
@@ -79,26 +108,33 @@
                             <tr>
                                 <td><b>Status Venda: </b> @item.Status </td>
                                 <td><b>Data da Venda: </b> @item.DataVenda.ToString("dd/MM/yyyy") </td>
-                                <td><b>Garantia: </b> @item.GarantiaDias </td>
-                                @* <td><?php if (in_array($result->status, ['Finalizado', 'Faturado', 'Orçamento', 'Aberto', 'Em Andamento', 'Aguardando Peças'])): ?><b>Venc. da Garantia: </b><?php echo dateInterval($result->dataVenda, $result->garantia); ?><?php endif; ?></td> *@
+
+                                @if (@item.GarantiaDias != 0)
+                                {
+                                    <td><b>Garantia: </b> @item.GarantiaDias </td>
+                                    @if (status.Contains(item.Status))
+                                    {
+                                        <td><b>Venc. da Garantia: </b> @item.DataVenda.AddDays(@item.GarantiaDias.Value).ToString("dd/MM/yyyy") </td>
+                                    }
+                                }
                             </tr>
                         }
                         <tr>
-                            <td colspan="3"><b>Observações: </b>@ViewData["VendaObservacao"]</td>
+                            <td colspan="4"><b>Observações: </b> @Html.Raw(Model.Venda.Observacao)</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="col-lg-12 mt-3 p-3">
+            <div class="col-lg-12 mt-3 p-3 table-responsive">
                 <table class="table table-condensed" id="tblProdutos">
                     <thead>
                         <tr>
-                            <th style="font-size: 15px">Cód. de barra</th>
-                            <th style="font-size: 15px">Produto</th>
-                            <th style="font-size: 15px">Quantidade</th>
-                            <th style="font-size: 15px">Preço unit.</th>
-                            <th style="font-size: 15px">Sub-total</th>
+                            <th>Cód. de barra</th>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Preço unit.</th>
+                            <th>Sub-total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,18 +150,17 @@
                         }
                         <tr>
                             <td colspan="4" style="text-align: right"><strong>Total:</strong></td>
-                            <td><strong>R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)</strong></td>
+                            <td><strong>R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)?.ToString("n2")</strong></td>
                         </tr>
                     </tbody>
                 </table>
                 <hr />
-                <h4 style="text-align: right">Total: R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)</h4>
-                <!--
-                <?php if ($result->valor_desconto != 0 && $result->desconto != 0): ?>
-                <h4 style="text-align: right">Desconto: R$ <?php echo number_format($result->valor_desconto - $totalProdutos, 2, ',', '.'); ?></h4>
-                <h4 style="text-align: right">Total Com Desconto: R$ <?php echo number_format($result->valor_desconto, 2, ',', '.'); ?></h4>
-                <?php endif; ?>
-                -->
+                <h6 style="text-align: right">Total: R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)</h6>
+                @if (Model.Venda.Desconto != 0 && Model.Venda.Desconto != null)
+                {
+                    <h6 style="text-align: right">Desconto: R$ @Model.Venda.Desconto?.ToString("N2")</h6>
+                    <h6 style="text-align: right">Total Com Desconto: R$ @((Model.Itens.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto)?.ToString("N2"))</h6>
+                }
             </div>
 
         </div>

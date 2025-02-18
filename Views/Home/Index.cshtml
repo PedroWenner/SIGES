@@ -139,13 +139,93 @@
 </ul>
 <!--End Cards-->
 
-<div class="row-fluid" style="margin-top: 0; display: flex">
-    <div class="Sspan12">
-        <div class="widget-box2" style="height: 300px; overflow-x: auto;">
-            <div>
-                <h5 class="cardHeader">OS em aberto</h5>
+<div class="row">
+    <div class="col-md-6">
+        <div class="widget-box2 mt-2">
+            <h5 class="cardHeader">OS em aberto</h5>
+            <div class="table-responsive" style="height: 300px;">
+                <div class="widget-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Cliente</th>
+                                <th>Qtd</th>
+                                <th>Valor</th>
+                                <th>Solicitado em</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Os == null || Model.Os.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="7">Nenhuma OS cadastrada</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var os in Model.Os)
+                                {
+                                    <tr>
+                                        <td>@os.Id</td>
+                                        <td>@os.Clientes.Nome</td>
+                                        <td><span class="badge">@os.Status</span></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="widget-content">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="new-statisc mt-2">
+            <div class="widget-box-new widbox-blak h-100">
+                <h5 class="cardHeader">Estatísticas</h5>
+                <div class="new-bottons p-2">
+                    <a href="#" class="card tip-top text-decoration-none m-1" title="Add clientes e fornecedores">
+                        <div><i class='bx bxs-group iconBx'></i></div>
+                        <div>
+                            <div class="cardName2">@Model.Clientes.Count()</div>
+                            <div class="cardName">Clientes</div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="card tip-top text-decoration-none m-1" title="Adicionar produtos">
+                        <div><i class='bx bxs-package iconBx2'></i></div>
+                        <div>
+                            <div class="cardName2">@Model.Produtos.Count()</div>
+                            <div class="cardName">Produtos</div>
+                        </div>
+                    </a>
+
+                    <a href="#" class="card tip-top text-decoration-none m-1" title="Adicionar pedido">
+                        <div><i class='bx bxs-cart-alt iconBx5'></i></div>
+                        <div>
+                            <div class="cardName2">@Model.Os.Count()</div>
+                            <div class="cardName">Pedidos</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="widget-box0 widbox-blak mt-2" style="height: 300px;">
+            <div>
+                <h5 class="cardHeader">Pedidos em andamento</h5>
+            </div>
+            <div class="widget-content table-responsive">
                 <table>
                     <thead>
                         <tr>
@@ -159,112 +239,39 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.Os == null || Model.Os.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="7">Nenhuma OS cadastrada</td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var os in Model.Os)
-                            {
-                                <tr>
-                                    <td style="width: 5%; text-align: center;">@os.Id</td>
-                                    <td style="width: 50%;">@os.Clientes.Nome</td>
-                                    <td style="width: 10%;"><span class="badge">@os.Status</span></td>
-                                    <td style="width: 10%;"></td>
-                                </tr>
-                            }
-                        }
+                        <tr>
+                            <td colspan="7">Nenhum pedido entregue</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="new-statisc">
-            <div class="widget-box-new widbox-blak" style="height:100%">
-                <div>
-                    <h5 class="cardHeader">Estatísticas</h5>
-                </div>
-                <div class="new-bottons">
-                    <a href="#" class="card tip-top text-decoration-none" title="Add clientes e fornecedores">
-                        <div><i class='bx bxs-group iconBx'></i></div>
-                        <div>
-                            <div class="cardName2">@Model.Clientes.Count()</div>
-                            <div class="cardName">Clientes</div>
-                        </div>
-                    </a>
-
-                    <a href="#" class="card tip-top text-decoration-none" title="Adicionar produtos">
-                        <div><i class='bx bxs-package iconBx2'></i></div>
-                        <div>
-                            <div class="cardName2">@Model.Produtos.Count()</div>
-                            <div class="cardName">Produtos</div>
-                        </div>
-                    </a>
-
-                    <a href="#" class="card tip-top text-decoration-none" title="Adicionar pedido">
-                        <div><i class='bx bxs-cart-alt iconBx5'></i></div>
-                        <div>
-                            <div class="cardName2">@Model.Os.Count()</div>
-                            <div class="cardName">Pedidos</div>
-                        </div>
-                    </a>
-                </div>
+    </div>
+    <div class="col-md-6">
+        <div class="widget-box0 widbox-blak  mt-2" style="height: 300px; overflow-x: auto;">
+            <div>
+                <h5 class="cardHeader">Pedidos entregues</h5>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="span12A" style="margin-left: 0">
-    <div class="widget-box0 widbox-blak" style="height: 300px; overflow-x: auto;">
-        <div>
-            <h5 class="cardHeader">Pedidos em andamento</h5>
-        </div>
-        <div class="widget-content">
-            <table>
-                <thead>
-                    <tr>
-                        <th>N°</th>
-                        <th>Cliente</th>
-                        <th style="text-align: center;">Qtd</th>
-                        <th style="text-align: center;">Valor</th>
-                        <th>Solicitado em</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="7">Nenhum pedido entregue</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="widget-box0 widbox-blak" style="height: 300px; overflow-x: auto;">
-        <div>
-            <h5 class="cardHeader">Pedidos entregues</h5>
-        </div>
-        <div class="widget-content">
-            <table>
-                <thead>
-                    <tr>
-                        <th>N°</th>
-                        <th>Cliente</th>
-                        <th style="text-align: center;">Qtd</th>
-                        <th style="text-align: center;">Valor</th>
-                        <th>Solicitado em</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="7">Nenhum pedido entregue</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="widget-content table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Cliente</th>
+                            <th style="text-align: center;">Qtd</th>
+                            <th style="text-align: center;">Valor</th>
+                            <th>Solicitado em</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="7">Nenhum pedido entregue</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

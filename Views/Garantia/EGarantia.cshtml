@@ -22,18 +22,18 @@
                 <input type="hidden" asp-for="Garantia.Id" />
 
                 <div class="row mb-3 mt-3">
-                    <div class="col-2">
+                    <div class="col-md-2">
                         <label for="dataGarantia" class="form-label">Data</label>
                         <input id="dataGarantia" type="text" asp-for="Garantia.DataGarantia" class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
                         <span asp-validation-for="Garantia.DataGarantia" class="text-danger"></span>
                     </div>
-                    <div class="col-3">
+                    <div class="col-md-3">
                         <label for="responsavel" class="form-label">Responsável</label>
                         <input id="responsavel" type="text" placeholder="Digite o nome do responsável" asp-for="Garantia.Usuario.Nome" required />
                         <input id="responsavel-id" type="hidden" asp-for="Garantia.UsuarioId" />
                         <span asp-validation-for="Garantia.UsuarioId" class="text-danger"></span>
                     </div>
-                    <div class="col-7">
+                    <div class="col-md-7">
                         <label for="refGarantia" class="form-label">Ref. garantia</label>
                         <input id="refGarantia" type="text" asp-for="Garantia.RefGarantia" placeholder="Informe uma referência: Exemplos: TV, Notebook, Celular" required />
                         <span asp-validation-for="Garantia.RefGarantia" class="text-danger"></span>
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="row mb-3 mt-3">
-                    <div class="col-12">
+                    <div class="col-md-12">
                         <label for="textoGarantia" class="form-label">Termo de garantia</label>
                         <textarea asp-for="Garantia.TextoGarantia" id="textoGarantia" required></textarea>
                     </div>
@@ -49,13 +49,13 @@
 
                 <!-- Botões -->
                 <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Garantia" asp-action="Index">
+                    <a class="button btn btn-warning" asp-controller="Garantia" asp-action="Index">
                         <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
                         <span class="button__text2">Voltar</span>
                     </a>
                     <button type="submit" class="button btn btn-mini btn-success">
                         <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
-                        <span class="button__text2">Cadastrar</span>
+                        <span class="button__text2">Atualizar</span>
                     </button>
                 </div>
             </form>
@@ -136,9 +136,9 @@
                 'RefGarantia': { required: true }
             },
             messages: {
-                'TextoGarantia': { required: 'Campo termo de garantia é obrigatório.' },
-                'DataGarantia': { required: 'Campo data é obrigatório.' },
-                'RefGarantia': { required: 'Campo ref. garantia é obrigatório.' }
+                'TextoGarantia': { required: 'Campo requerido.' },
+                'DataGarantia': { required: 'Campo requerido.' },
+                'RefGarantia': { required: 'Campo requerido.' }
             },
             errorPlacement: function (error, element) {
                 element.attr("placeholder", error.text());

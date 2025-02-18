@@ -14,46 +14,59 @@
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                 <!-- Código -->
-                <div class="mb-3">
-                    <label for="codigo" class="form-label">Código</label>
-                    <input type="text" value="@Model.ProximoCodigo" disabled />
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="codigo" class="col-form-label">Código</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" value="@Model.ProximoCodigo" disabled />
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-text">Código da categoria.</span>
+                    </div>
                 </div>
 
                 <!-- Descrição -->
-                <div class="mb-3">
-                    <label for="descricao" class="form-label">Descrição <span class="text-danger">*</span></label>
-                    <input type="text" asp-for="Descricao" required />
-                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="descricao" class="col-form-label">Descrição</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="descricao" type="text" asp-for="Descricao" required />
+                    </div>
+                    <div class="col-md-6">
+                        <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <span class="form-text">Campo para informar a descrição da categoria.</span>
+                    </div>
                 </div>
 
                 <!-- Imagem -->
-                <div class="mb-3">
-                    <label for="imagem" class="form-label">Imagem</label>
-                    <input type="file" id="imagem" name="imagemCategoria" accept="image/*" onchange="previewImage(event)" required />
-                </div>
-
-                <!-- Pré-visualização da imagem -->
-                <div class="mb-3 text-center">
-                    @if (Model.ImagemBlob != null)
-                    {
-                        <img src="data:image/png;base64,@Convert.ToBase64String(Model.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem da categoria" style="max-width: 200px;" />
-                    }
-                    else
-                    {
-                        <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
-                    }
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2 text-md-end">
+                        <label for="imagem" class="col-form-label">Imagem</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="file" id="imagem" name="imagemCategoria" accept="image/*" />
+                    </div>
+                    <div class="col-md-6">
+                        <span class="form-text">Selecione a imagem da categoria caso necessário.</span>
+                    </div>
                 </div>
 
                 <!-- Botões -->
-                <div class="d-flex justify-content-center">
-                    <a title="Voltar" class="button btn btn-warning" asp-controller="Categoria" asp-action="Index">
-                        <span class="button__icon"><i class="bx bx-undo"></i></span>
-                        <span class="button__text2">Voltar</span>
-                    </a>
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Adicionar</span>
-                    </button>
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-2">
+                        <a class="button btn btn-warning w-100" asp-controller="Categoria" asp-action="Index">
+                            <span class="button__icon"><i class="bx bx-undo"></i></span>
+                            <span class="button__text2">Voltar</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="button btn btn-success w-100">
+                            <span class="button__icon"><i class='bx bx-save'></i></span>
+                            <span class="button__text2">Adicionar</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -62,20 +75,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script type="text/javascript">
-
-    function previewImage(event) {
-        const img = document.getElementById('previewImg');
-        if (event.target.files.length > 0) {
-            img.src = URL.createObjectURL(event.target.files[0]);
-            img.onload = () => {
-                URL.revokeObjectURL(img.src); // Libera memória
-                img.style.display = "block";
-            };
-        } else {
-            img.style.display = "none";
-        }
-    }
-
     $(document).ready(function () {
         $.validator.addMethod("extension", function (value, element, param) {
             var extension = value.split('.').pop().toLowerCase();
@@ -88,11 +87,8 @@
                 'imagemCategoria': { required: true, extension: "jpg|jpeg|png|gif|bmp" }
             },
             messages: {
-                'Descricao': { required: 'Campo descrição é obrigatório.' },
-                'imagemCategoria': {
-                    required: 'Obrigatório selecionar imagem para categoria.',
-                    extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).'
-                }
+                'Descricao': { required: 'Campo requerido.' },
+                'imagemCategoria': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
             },
             errorPlacement: function (error, element) {
                 // Insere o texto do erro como placeholder dentro do input
