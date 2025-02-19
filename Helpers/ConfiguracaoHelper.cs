@@ -1,4 +1,5 @@
-﻿using SIGES.Interfaces;
+﻿using SIGES.Data;
+using SIGES.Interfaces;
 using SIGES.Repositorios;
 using SIGES.Services;
 using System.Text.Json;

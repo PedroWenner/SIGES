@@ -1,215 +1,151 @@
 ﻿@using SIGES.Helpers
 
 <style>
-    .dropdown-item-custom:hover {
-        color: black!important;
-        background: none!important;
+    #sidebar {
+        width: 250px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #343a40;
+        color: white;
+        overflow-y: auto;
+        transition: width 0.3s;
     }
 
-    .expand-icon {
-        transition: transform 0.3s ease-in-out;
-        font-size: 16px;
-        color: #6c757d;
-        margin-left: auto;
+    #sidebar.collapsed {
+        width: 60px;
     }
 
-    .nav-item .nav-link[aria-expanded="true"] .expand-icon {
-        transform: rotate(180deg);
+    #sidebar .nav-link {
+        color: white;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
     }
 
-    .nav-item .nav-link:hover .expand-icon {
-        color: #6c757d;
+    #sidebar .nav-link:hover {
+        background-color: #495057;
     }
 
-    #sidebar.open .expand-icon {
-        font-size: 14px;
-        transform: rotate(-90deg);
+    #sidebar .nav-link i {
+        margin-right: 10px;
     }
 
-    #sidebar.open .expand-icon {
-        display: none;
+    #sidebar .dropdown-menu {
+        background-color: #495057;
+        border: none;
+        margin-left: 20px;
     }
 
-    #sidebar .expand-icon {
-        display: inline-block;
+    #sidebar .dropdown-item {
+        color: white;
+        padding: 5px 15px;
+    }
+
+    #sidebar .dropdown-item:hover {
+        background-color: #6c757d;
+    }
+
+    .content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s;
+    }
+
+    .content.collapsed {
+        margin-left: 60px;
+    }
+
+    @@media (max-width: 768px) {
+        #sidebar
+        {
+            width: 60px;
+        }
+
+        #sidebar.collapsed {
+            width: 60px;
+        }
+
+        .content {
+            margin-left: 60px;
+        }
+
+        .content.collapsed {
+            margin-left: 60px;
+        }
     }
 </style>
 
-<link href="~/css/site.css" rel="stylesheet" />
-
 <!--sidebar-menu-->
 <nav id="sidebar">
-    <div id="newlog">
-        <div class="icon2">
-            <img src="~/img/01.png">
+    <div class="d-flex flex-column h-100">
+        <div class="p-3">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none">
+                <i class="bi bi-house-door fs-4"></i>
+                <span class="ms-2 fs-4">Logo</span>
+            </a>
         </div>
-    </div>
-    <a href="#" class="visible-phone">
-        <div class="mode">
-            <div class="moon-menu">
-                <i class='bx bx-chevron-right iconX open-2'></i>
-                <i class='bx bx-chevron-left iconX close-2'></i>
-            </div>
-        </div>
-    </a>
-    <!-- Start Pesquisar-->
-    <li class="search-box">
-        <form style="display: flex" action="#">
-            <button style="background:transparent;border:transparent" type="submit" title="">
-                <i class='bx bx-search iconX'></i>
-            </button>
-            <input style="background:transparent;color:#313030;border:transparent" type="search" name="termo" placeholder="Pesquise aqui...">
-            <span class="title-tooltip">Pesquisar</span>
-        </form>
-    </li>
-    <!-- End Pesquisar-->
-
-    <div class="menu-bar">
-        <div class="menu">
-            <ul class="menu-links" style="position: relative;">
-
-                <!--Bloco home-->
-                <li title="Início" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Home" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                    <a href="/">
-                        <i class='bx bx-home-alt iconX'></i>
-                        <span class="title nav-title">Início</span>
-                        <span class="title-tooltip">Início</span>
-                    </a>
-                </li>
-
-                <!-- Bloco Cadastro com Itens Dentro -->
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link d-flex justify-content-between align-items-center"
-                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div style="display: inline-flex;">
-                            <i class='bx bx-folder-open iconX'></i>
-                            <span class="title">Cadastro</span>
-                        </div>
-                        <i class="bx bx-chevron-down expand-icon"></i>
-                    </a>
-                    <ul class="dropdown-menu" id="submenuCadastro" style="padding: 5px 20px 5px 0px!important;">
-                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCliente"))
-                        {
-                            <li>
-                                <a asp-controller="Cliente" asp-action="Index" class="dropdown-item dropdown-item-custom">
-                                    <i class='bx bx-user iconX'></i> Clientes
-                                </a>
-                            </li>
-                        }
-                        @* @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vUsuario"))
-                        {
-                            <li>
-                                <a asp-controller="Usuario" asp-action="Index" class="dropdown-item dropdown-item-custom">
-                                    <i class='bx bx-group iconX'></i> Usuários
-                                </a>
-                            </li>
-                        } *@
-                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCategoria"))
-                        {
-                            <li>
-                                <a asp-controller="Categoria" asp-action="Index" class="dropdown-item dropdown-item-custom">
-                                    <i class='bx bx-category iconX'></i> Categorias
-                                </a>
-                            </li>
-                        }
-                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vProduto"))
-                        {
-                            <li>
-                                <a asp-controller="Produto" asp-action="Index" class="dropdown-item dropdown-item-custom">
-                                    <i class='bx bx-basket iconX'></i> Produtos
-                                </a>
-                            </li>
-                        }
-                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vServico"))
-                        {
-                            <li>
-                                <a asp-controller="Servicos" asp-action="Index" class="dropdown-item dropdown-item-custom">
-                                    <i class='bx bx-wrench iconX'></i> Serviços
-                                </a>
-                            </li>
-                        }
-                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vGarantia"))
-                        {
-                            <li>
-                                <a asp-controller="Garantia" asp-action="Index" class="dropdown-item dropdown-item-custom">
-                                    <i class='bx bx-receipt iconX'></i> Termos de garantia
-                                </a>
-                            </li>
-                        }
-                    </ul>
-                </li>
-
-                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vVenda"))
-                {
-                    <!--Bloco de Vendas-->
-                    <li title="Vendas" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Venda" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a asp-controller="Venda" asp-action="Index">
-                            <i class='bx bx-cart-alt iconX'></i>
-                            <span class="title">Vendas</span>
-                            <span class="title-tooltip">Vendas</span>
-                        </a>
-                    </li>
-                }
-
-                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vOs"))
-                {
-                    <!--Bloco de OS-->
-                    <li title="OS" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Ordem" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a asp-controller="Ordem" asp-action="Index">
-                            <i class='bx bx-file iconX'></i>
-                            <span class="title">Ordens de serviço</span>
-                            <span class="title-tooltip">Ordens</span>
-                        </a>
-                    </li>
-                }
-
-                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vArquivo"))
-                {
-                    <!--Bloco de OS-->
-                    <li title="OS" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Arquivo" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a asp-controller="Arquivo" asp-action="Index">
-                            <i class='bx bx-box iconX'></i>
-                            <span class="title">Arquivos</span>
-                            <span class="title-tooltip">Arquivos</span>
-                        </a>
-                    </li>
-                }
-
-                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vLancamento"))
-                {
-                    <!--Bloco de Lancamentos-->
-                    <li title="Lancamentos" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Lancamento" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a asp-controller="Ordem" asp-action="Index">
-                            <i class='bx bx-bar-chart-alt-2 iconX'></i>
-                            <span class="title">Lançamentos</span>
-                            <span class="title-tooltip">Lançamentos</span>
-                        </a>
-                    </li>
-                }
-
-                @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCobranca"))
-                {
-                    <!--Bloco de Lancamentos-->
-                    <li title="Lancamentos" class="@(ViewContext.RouteData.Values["Controller"].ToString() == "Cobranca" && ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">
-                        <a asp-controller="Cobranca" asp-action="Index">
-                            <i class='bx bx-dollar-circle iconX'></i>
-                            <span class="title">Cobranças</span>
-                            <span class="title-tooltip">Cobranças</span>
-                        </a>
-                    </li>
-                }
-            </ul>
-        </div>
-
-        <div class="botton-content">
-            <li class="">
-                <a asp-controller="Login" asp-action="Logout">
-                    <i class='bx bx-log-out-circle iconX'></i>
-                    <span class="title">Sair</span>
-                    <span class="title-tooltip">Sair</span>
+        <ul class="nav flex-column flex-grow-1">
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-house-door"></i>
+                    <span>Início</span>
                 </a>
             </li>
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-folder"></i>
+                    <span>Cadastro</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Clientes</a></li>
+                    <li><a class="dropdown-item" href="#">Produtos</a></li>
+                    <li><a class="dropdown-item" href="#">Serviços</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-cart"></i>
+                    <span>Vendas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-file-earmark"></i>
+                    <span>Ordens de Serviço</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="bi bi-box"></i>
+                    <span>Arquivos</span>
+                </a>
+            </li>
+        </ul>
+        <div class="p-3">
+            <a href="#" class="nav-link">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sair</span>
+            </a>
         </div>
     </div>
 </nav>
 <!--End sidebar-menu-->
+
+<script>
+    document.getElementById('toggleSidebar').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+        document.querySelector('.content').classList.toggle('collapsed');
+    });
+
+    document.querySelectorAll('.nav-item.dropdown').forEach(item => {
+        item.addEventListener('mouseenter', function () {
+            this.querySelector('.dropdown-menu').style.display = 'block';
+        });
+
+        item.addEventListener('mouseleave', function () {
+            this.querySelector('.dropdown-menu').style.display = 'none';
+        });
+    });
+</script>
