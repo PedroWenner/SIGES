@@ -151,10 +151,10 @@ namespace SIGES.Migrations
 
                     b.Property<string>("Documento")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Estado")
                         .HasColumnType("longtext");
@@ -176,7 +176,6 @@ namespace SIGES.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Senha")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Sexo")
@@ -186,6 +185,12 @@ namespace SIGES.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Documento")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Clientes");
                 });
@@ -962,13 +967,14 @@ namespace SIGES.Migrations
 
                     b.Property<string>("Cpf")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime?>("DataExpiracao")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Estado")
                         .HasColumnType("longtext");
@@ -1007,6 +1013,12 @@ namespace SIGES.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Cpf")
+                        .IsUnique();
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("PermissaoId");
 
                     b.ToTable("Usuarios");
@@ -1020,7 +1032,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$36myZ.seixfU1tH0UGDnV.NXr/56p39VLwc/HC3RF96JzpbqnsvaC",
+                            Senha = "$2a$11$QwUVqIvTXqVHqPBuY0bYMeVTgyaJT0Ekc1GpnwFB4ZN3z58llE0ka",
                             Situacao = 1
                         });
                 });

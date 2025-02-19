@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using SIGES.Attributes;
+using DataAnnotations;
 
 namespace SIGES.Models
 {
@@ -13,6 +14,7 @@ namespace SIGES.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O documento é obrigatório.")]
+        [Cpf(ErrorMessage = "CPF/Cnpj inválido")]
         public string? Documento { get; set; }
 
         [Required(ErrorMessage = "O nome é obrigatório.")]
@@ -30,10 +32,10 @@ namespace SIGES.Models
 
         public string? Celular { get; set; }
 
+        [EmailAddress(ErrorMessage = "Informe um e-mail válido.")]
         public string? Email { get; set; }
 
-        [Required(ErrorMessage = "A senha é obrigatória.")]
-        public string Senha { get; set; }
+        public string? Senha { get; set; }
 
         [Required]
         [Range(0, 1)]

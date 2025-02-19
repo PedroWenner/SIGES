@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using SIGES.Attributes;
+using DataAnnotations;
 
 namespace SIGES.Models
 {
@@ -18,10 +19,13 @@ namespace SIGES.Models
         public string? RgNumero { get; set; }
 
         [Required(ErrorMessage = "O cpf é obrigatório.")]
+        [Cpf(ErrorMessage = "CPF inválido")]
         public string Cpf {  get; set; }
 
         public string? Telefone { get; set; }
 
+        [Required(ErrorMessage = "O e-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "O e-mail informado não é válido.")]
         public string? Email { get; set; }
 
         [IgnoreLog]

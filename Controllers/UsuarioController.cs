@@ -50,9 +50,31 @@ namespace SIGES.Controllers
         [HttpPost("adicionar")]
         public async Task<IActionResult> Adicionar(UsuarioModel usuario, IFormFile? imagemUsuario)
         {
+            var permissoes = _permissaoRepositorio.Listar().AsQueryable();
+            var usuarioViewModel = new UsuarioViewModel
+            {
+                Usuario = usuario,
+                Permissoes = permissoes.ToList()
+            };
+
+            if (await _usuarioRepositorio.DocumentoExiste(usuario.Cpf))
+            {
+                TempData["Error"] = "Este CPF já está cadastrado.";
+                return View("AUsuario", usuarioViewModel);
+            }
+
+            if (!string.IsNullOrEmpty(usuario.Email))
+            {
+                if (await _usuarioRepositorio.EmailExiste(usuario.Email ?? ""))
+                {
+                    TempData["Error"] = "Este e-mail já está cadastrado.";
+                    return View("AUsuario", usuarioViewModel);
+                }
+            }
+
             if (!ModelState.IsValid)
             {
-                return View("AUsuario");
+                return View("AUsuario", usuarioViewModel);
             }
 
             if (imagemUsuario != null)
@@ -68,7 +90,7 @@ namespace SIGES.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError("", $"Erro ao processar a imagem: {ex.Message}");
-                    return View("AUsuario", usuario);
+                    return View("AUsuario", usuarioViewModel);
                 }
             }
 
@@ -114,8 +136,6 @@ namespace SIGES.Controllers
             if (string.IsNullOrEmpty(usuario.Senha))
             {
                 usuario.Senha = usuarioExistente.Senha;
-                senhaCript = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
-                usuario.Senha = senhaCript;
             }
             else
             {
@@ -132,6 +152,7 @@ namespace SIGES.Controllers
 
             if (!ModelState.IsValid)
             {
+                ModelState.AddModelError("key", "");
                 return View("EUsuario", usuarioViewModel);
             }
 

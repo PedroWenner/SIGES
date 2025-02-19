@@ -1,6 +1,7 @@
 ﻿using SIGES.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using DataAnnotations;
 
 namespace SIGES.Models
 {
@@ -15,6 +16,7 @@ namespace SIGES.Models
         public string Nome { get; set; }
 
         [Required]
+        [Cpf(ErrorMessage = "Cnpj inválido")]
         public string Cnpj { get; set; }
 
         [Required]

@@ -103,65 +103,67 @@
         .dt-length {
             margin-bottom: 20px;
         }
+
+        .bg-theme-gray {
+            background: #343a40!important;
+            background-color: #343a40!important;
+        }
     </style>
 
     <style type="text/css">
         .dt-paging {
             display: flex;
-            justify-content: center; /* Centraliza horizontalmente */
-            align-items: center; /* Centraliza verticalmente, caso necessário */
-            margin-top: 1rem !important; /* Espaçamento superior opcional */
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem !important;
         }
 
         /* Estilo padrão dos botões de paginação */
         .dt-paging .page-item .page-link {
-            color: #6c757d; /* Cor padrão do texto */
-            background-color: #ffffff; /* Fundo branco */
-            border: 1px solid #dee2e6; /* Borda leve */
-            padding: 0.15rem 0.45rem; /* Espaçamento maior */
-            border-radius: 5px; /* Borda arredondada */
-            transition: all 0.2s ease-in-out; /* Transição suave */
+            color: #6c757d;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 0.15rem 0.45rem;
+            border-radius: 5px;
+            transition: all 0.2s ease-in-out;
             font-size: 0.7rem;
         }
 
         /* Estilo para o botão ativo */
         .dt-paging .page-item.active .page-link {
-            background-color: #999; /* Fundo preto */
-            color: #ffffff; /* Texto branco */
-            border-color: #dee2e6; /* Borda preta */
+            background-color: #999;
+            color: #ffffff;
+            border-color: #dee2e6;
         }
 
-        /* Estilo no hover */
         .dt-paging .page-item .page-link:hover {
-            background-color: #f8f9fa; /* Fundo cinza claro no hover */
-            color: #000000; /* Texto preto */
-            border-color: #dee2e6; /* Borda leve */
+            background-color: #f8f9fa;
+            color: #000000;
+            border-color: #dee2e6;
         }
 
         /* Botões "Primeiro" e "Último" com destaque */
         .dt-paging .page-item:first-child .page-link,
         .dt-paging .page-item:last-child .page-link {
-            font-weight: bold; /* Destaque para "Primeiro" e "Último" */
+            font-weight: bold;
         }
 
-        /* Espaçamento entre os botões */
         .dt-paging .page-item {
-            margin: 0 1px; /* Espaçamento entre os botões */
+            margin: 0 1px;
         }
 
-        /* estilização para os itens disabled */
         .dt-paging .page-item.disabled .page-link {
-            background-color: #e9ecef; /* Fundo cinza */
-            color: #6c757d; /* Cor do texto */
-            border-color: #dee2e6; /* Borda leve */
-            cursor: not-allowed; /* Cursor indicando que não é clicável */
+            background-color: #e9ecef;
+            color: #6c757d;
+            border-color: #dee2e6;
+            cursor: not-allowed;
         }
     </style>
 
     <style type="text/css">
         input.is-invalid::placeholder {
-            color: #dc3545; /* Vermelho para erro */
-            opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
+            color: #dc3545;
+            opacity: 0.8;
             font-size: 12px;
         }
     </style>
@@ -215,14 +217,14 @@
         .form-control.is-valid,
         .form-control.is-invalid {
             background-image: none !important;
-            padding-right: 0.75rem; /* Restaura o padding padrão */
+            padding-right: 0.75rem;
         }
 
         /* Remove os ícones de validação dos selects */
         .form-select.is-valid,
         .form-select.is-invalid {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-            padding-right: 0.75rem; /* Restaura o padding padrão */
+            padding-right: 0.75rem;
         }
     </style>
 </head>
@@ -301,12 +303,11 @@
         </div>
     </div>
 
-    @await Html.PartialAsync("_Rodape")
-
     <script src="~/bootstrap-5.3.3/js/bootstrap.bundle.js"></script>
 
     <script charset="ISO-8859-1" src="~/js/datatableJs.js" type="text/javascript"></script>
     <script charset="ISO-8859-1" src="~/js/logJs.js" type="text/javascript"></script>
     <script src="@Url.Content("~/js/jquery.mask.js")"></script>
+    @await Html.PartialAsync("_Rodape")
 </body>
 </html>

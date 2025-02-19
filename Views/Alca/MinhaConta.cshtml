@@ -34,9 +34,9 @@
         transition: background 0.3s ease;
     }
 
-    .edit-icon:hover {
-        background: rgba(200, 200, 200, 0.9);
-    }
+        .edit-icon:hover {
+            background: rgba(200, 200, 200, 0.9);
+        }
 
     .user-info p {
         margin: 5px 0;
@@ -64,16 +64,16 @@
         color: #888;
     }
 
-    .toggle-password:hover {
-        color: #333;
-    }
+        .toggle-password:hover {
+            color: #333;
+        }
 </style>
 
 <div class="mt-4">
     <div class="row">
         <div class="col-md-6 mt-2">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-theme-gray text-white">
                     <h6>Minha conta</h6>
                 </div>
                 <div class="card-body text-center">
@@ -104,7 +104,7 @@
 
         <div class="col-md-6 mt-2">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-theme-gray text-white">
                     <h6>Alterar minha senha</h6>
                 </div>
                 <div class="card-body">
@@ -171,18 +171,23 @@
                             <input type="file" name="userfile" value="" />
                         </div>
                     </div>
-                    <div class="alert alert-danger d-none mt-2" id="errorUpload"></div>
-                    <div class="alert alert-success d-none mt-2" id="successUpload"></div>
                 </div>
                 <div class="modal-footer" style="display:flex;justify-content: center">
                     <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
                         <span class="button__icon"><i class="bx bx-x"></i></span>
                         <span class="button__text2">Cancelar</span>
                     </button>
-                    <button type="submit" class="button btn btn-primary">
+                    <button id="btn-atualizar" type="submit" class="button btn btn-primary">
                         <span class="button__icon"><i class='bx bx-sync'></i></span>
                         <span class="button__text2">Atualizar</span>
                     </button>
+                </div>
+                <!-- Spinner de carregamento -->
+                <div id="loading-spinner" style="display: none; text-align: center; padding: 20px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p>Atualizando imagem, aguarde...</p>
                 </div>
             </form>
         </div>
@@ -231,6 +236,9 @@
                 // Envio via AJAX após a validação
                 var formData = new FormData(form);
 
+                $('#loading-spinner').show();
+                $('#btn-atualizar').prop('disabled', true);
+
                 $.ajax({
                     type: "POST",
                     url: "/configurar/upload-imagem-usuario",
@@ -239,28 +247,46 @@
                     contentType: false,
                     success: function (response) {
                         if (response.status === "success") {
-                            $("#successUpload").removeClass("d-none").text(response.message);
-                            $("#errorUpload").addClass("d-none");
-
-                            // Recarregar a página após 1,5 segundos
                             setTimeout(function () {
-                                location.reload();
+                                $('#loading-spinner').hide();
+                                $('#btn-atualizar').prop('disabled', false);
+                                $('#modalImageUser').hide();
+
+                                Swal.fire({
+                                    title: 'Sucesso!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK',
+                                    didOpen: () => {
+                                        // Ajusta o z-index do SweetAlert2
+                                        Swal.getPopup().style.zIndex = 9999; // Um valor alto para garantir que fique acima de tudo
+                                    }
+                                }).then(() => {
+                                    location.reload();
+                                });
                             }, 1500);
                         } else {
-                            $("#errorUpload").removeClass("d-none").text(response.message);
-                            $("#successUpload").addClass("d-none");
+                            $('#loading-spinner').hide();
+                            $('#btn-atualizar').prop('disabled', false);
+                            $('#modalImageUser').hide();
+                            
+                            Swal.fire("Erro!", response.message, "error").then(() => {
+                                location.reload();
+                            });
                         }
                     },
                     error: function () {
-                        $("#errorUpload").removeClass("d-none").text("Erro ao enviar a imagem.");
-                        $("#successUpload").addClass("d-none");
+                        $('#loading-spinner').hide();
+                        $('#btn-atualizar').prop('disabled', false);
+                        $('#modalImageUser').hide();
+                        Swal.fire("Erro!", "Error ao trocar imagem.", "error");
                     }
                 });
             }
         });
 
         $("#formMinhaConta").submit(function (event) {
-            event.preventDefault(); // Evita o reload da página
+            event.preventDefault();
 
             const oldSenha = $("#oldSenha").val();
             const novaSenha = $("#novaSenha").val();

@@ -13,6 +13,12 @@ namespace SIGES.Config
                    .WithMany(p => p.Usuarios)
                    .HasForeignKey(u => u.PermissaoId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(u => u.Email)
+                .IsUnique();
+
+            builder.HasIndex(u => u.Cpf)
+                .IsUnique();
         }
     }
 }

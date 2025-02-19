@@ -29,161 +29,209 @@
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex align-items-center">
+        <div class="card-header bg-theme-gray text-white d-flex align-items-center">
             <h5 class="mb-0">Editar cliente</h5>
         </div>
         <div class="card-body">
             <form id="formCliente" method="post" asp-controller="Cliente" asp-action="Editar">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <h6 class="alert-heading">Atenção!</h6>
+                        <hr>
+                        <div asp-validation-summary="All"></div>
+                    </div>
+                }
                 <input type="hidden" asp-for="Id" />
 
-                <div class="row">
+                <!-- CPF/CNPJ -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-1 text-md-end">
+                        <label for="documento" class="col-form-label">CPF/CNPJ</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="documento" type="text" asp-for="Documento" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
+                    </div>
                     <div class="col-md-6">
-                        <!-- CPF/CNPJ -->
-                        <div class="mb-3 col-md-12">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="documento" class="form-label">CPF/CNPJ</label>
-                                    <input id="documento" type="text" asp-for="Documento" class="cpfcnpj" required />
-                                    <span asp-validation-for="Documento" class="text-danger"></span>
-                                </div>
-                                <div class="col-md-4 d-flex align-content-end flex-wrap">
-                                    <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
-                                </div>
-                            </div>
-                        </div>
+                        <span class="form-text">Informe um cpf/cnpj válido.</span>
+                    </div>
+                </div>
 
-                        <!-- Nome/Razão Social -->
-                        <div class="mb-3 col-md-6">
-                            <label for="nome" class="form-label">Nome/Razão Social</label>
-                            <input id="nome" type="text" asp-for="Nome" required />
-                            <span asp-validation-for="Nome" class="text-danger"></span>
-                        </div>
+                <!-- Nome/Razão Social -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-1 text-md-end">
+                        <label for="nomeCliente" class="col-form-label">Nome/Razão Social</label>
+                    </div>
+                    <div class="col-md-7">
+                        <input id="nomeCliente" type="text" asp-for="Nome" required />
+                    </div>
+                    <div class="col-md-4">
+                        <span class="form-text">Campo para informar o nome do cliente.</span>
+                    </div>
+                </div>
 
-                        <!-- Telefone -->
-                        <div class="mb-3 col-md-6">
-                            <label for="telefone" class="form-label">Telefone</label>
-                            <input id="telefone" type="text" asp-for="Telefone" />
-                            <span asp-validation-for="Telefone" class="text-danger"></span>
-                        </div>
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Telefone -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="telefone" class="col-form-label">Telefone</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="telefone" type="text" asp-for="Telefone" />
+                    </div>
 
-                        <!-- Celular -->
-                        <div class="mb-3 col-md-6">
-                            <label for="celular" class="form-label">Celular</label>
-                            <input id="celular" type="text" asp-for="Celular" />
-                            <span asp-validation-for="Celular" class="text-danger"></span>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3 col-md-6">
-                            <label for="email" class="form-label">E-mail</label>
-                            <input id="email" type="text" asp-for="Email" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <!-- Senha -->
-                        <div class="mb-3 col-md-4">
-                            <label for="senha" class="form-label">Senha</label>
-                            <div class="input-group">
-                                <div class="password-container">
-                                    <input id="senha" type="password" asp-for="Senha" required aria-describedby="imgSenha">
-                                    <i class="fa fa-eye toggle-password" onclick="togglePassword('senha')"></i>
-                                </div>
-                                <span asp-validation-for="Senha" class="help-block"></span>
-                            </div>
-                        </div>
-
-                        <!-- Tipo de Cliente -->
-                        <div class="mb-3 col-md-4">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" name="Fornecedor" value="1" id="fornecedor"
-                                @if (@Model.Fornecedor.Equals(1))
-                                {
-                                    <text>checked</text>
-                                }>
-                                <label class="form-check-label" for="fornecedor">
-                                    Fornecedor
-                                </label>
-                                <span asp-validation-for="Fornecedor" class="text-danger"></span>
-                            </div>
-                        </div>
+                    <!-- Celular -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="celular" class="col-form-label">Celular</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="celular" type="text" asp-for="Celular" />
                     </div>
 
                     <div class="col-md-6">
+                        <span class="form-text">Campo para informar os contatos do cliente.</span>
+                    </div>
+                </div>
 
-                        <!-- CEP -->
-                        <div class="mb-3 col-md-4">
-                            <label for="cep" class="form-label">CEP</label>
-                            <input id="cep" type="text" asp-for="Cep" />
-                            <span asp-validation-for="Cep" class="text-danger"></span>
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Email -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="email" class="col-form-label">E-mail</label>
+                    </div>
+                    <div class="col-md-7">
+                        <input id="email" type="email" asp-for="Email" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <span class="form-text">Campo para informar o e-mail do cliente.</span>
+                    </div>
+                </div>
+
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- CEP -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="cep" class="col-form-label">CEP</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="cep" type="text" asp-for="Cep" />
+                    </div>
+
+                    <!-- Rua -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="rua" class="col-form-label">Rua</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="rua" type="text" asp-for="Rua" />
+                    </div>
+
+                    <!-- Número -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="numeroRua" class="col-form-label">Número</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input id="numeroRua" type="text" asp-for="NumeroRua" />
+                    </div>
+                </div>
+
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Bairro -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="bairro" class="col-form-label">Bairro</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="bairro" type="text" asp-for="Bairro" />
+                    </div>
+
+                    <!-- Cidade -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="cidade" class="col-form-label">Cidade</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input id="cidade" type="text" asp-for="Cidade" />
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="estado" class="col-form-label">Estado</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="estado" asp-for="Estado">
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Complemento -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="complemento" class="col-form-label">Complemento</label>
+                    </div>
+                    <div class="col-md-7">
+                        <input id="complemento" type="text" asp-for="Complemento" />
+                    </div>
+                    <div class="col-md-4">
+                        <span class="form-text">Campo para informar todos os dados de endereço do cliente.</span>
+                    </div>
+                </div>
+
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Senha -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="senha" class="col-form-label">Senha</label>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="password-container">
+                            <input id="senha" type="password" asp-for="Senha" />
+                            <i class="fa fa-eye toggle-password" onclick="togglePassword('senha')"></i>
                         </div>
+                    </div>
+                    <div class="col-md-9">
+                        <span class="form-text">Essa senha será a que o cliente utilizará para acessar o painel do cliente.</span>
+                    </div>
+                </div>
 
-                        <div class="row">
-                            <!-- Rua -->
-                            <div class="mb-3 col-md-6">
-                                <label for="rua" class="form-label">Rua</label>
-                                <input id="rua" type="text" asp-for="Rua" />
-                                <span asp-validation-for="Rua" class="text-danger"></span>
-                            </div>
-
-                            <!-- Número -->
-                            <div class="mb-3 col-md-4">
-                                <label for="numeroRua" class="form-label">Número</label>
-                                <input id="numeroRua" type="text" asp-for="NumeroRua" />
-                                <span asp-validation-for="NumeroRua" class="text-danger"></span>
-                            </div>
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Tipo de Cliente -->
+                    <div class="col-md-1 text-md-end">
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" name="Fornecedor" value="1" id="fornecedor"
+                            @if (@Model.Fornecedor.Equals(1))
+                            {
+                                <text>checked</text>
+                            }>
+                            <label class="form-check-label" for="fornecedor">
+                                Fornecedor
+                            </label>
                         </div>
-
-                        <!-- Complemento -->
-                        <div class="mb-3 col-md-6">
-                            <label for="complemento" class="form-label">Complemento</label>
-                            <input id="complemento" type="text" asp-for="Complemento" />
-                            <span asp-validation-for="Complemento" class="text-danger"></span>
-                        </div>
-
-                        <!-- Bairro -->
-                        <div class="mb-3 col-md-6">
-                            <label for="bairro" class="form-label">Bairro</label>
-                            <input id="bairro" type="text" asp-for="Bairro" />
-                            <span asp-validation-for="Bairro" class="text-danger"></span>
-                        </div>
-
-                        <!-- Cidade -->
-                        <div class="mb-3 col-md-6">
-                            <label for="cidade" class="form-label">Cidade</label>
-                            <input id="cidade" type="text" asp-for="Cidade" />
-                            <span asp-validation-for="Cidade" class="text-danger"></span>
-                        </div>
-
-                        <!-- Estado -->
-                        <div class="mb-3 col-md-6">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select id="estado" asp-for="Estado">
-                                <option value="">Selecione...</option>
-                            </select>
-                            <span asp-validation-for="Estado" class="text-danger"></span>
-                        </div>
-
+                    </div>
+                    <div class="col-md-9">
+                        <span class="form-text">Clientes marcados como fornecedor, será apresentado ao realizar lançamento de despesas.</span>
                     </div>
                 </div>
 
                 <!-- Botões -->
-                <div class="d-flex justify-content-center mt-2">
-                    <a class="button btn btn-warning" asp-controller="Cliente" asp-action="Index">
-                        <span class="button__icon"><i class="bx bx-undo"></i></span>
-                        <span class="button__text2">Voltar</span>
-                    </a>
-                    <button type="submit" class="button btn btn-mini btn-success">
-                        <span class="button__icon"><i class='bx bx-save'></i></span>
-                        <span class="button__text2">Atualizar</span>
-                    </button>
+                <div class="row">
+                    <div class="d-flex justify-content-center mt-4">
+                        <a class="button btn btn-warning" asp-controller="Cliente" asp-action="Index">
+                            <span class="button__icon"><i class="bx bx-undo"></i></span>
+                            <span class="button__text2">Voltar</span>
+                        </a>
+                        <button type="submit" class="button btn btn-mini btn-success">
+                            <span class="button__icon"><i class='bx bx-save'></i></span>
+                            <span class="button__text2">Atualizar</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="~/js/jquery.validate.js"></script>
 <script type="text/javascript">
 
     function togglePassword(id) {

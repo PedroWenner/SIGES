@@ -283,6 +283,13 @@ namespace SIGES.Controllers
 
                 if (userfile != null && userfile.Length > 0)
                 {
+                    string filename = userfile.FileName;
+                    string extensao = Path.GetExtension(filename);
+                    if (!AllowedExtensions(extensao))
+                    {
+                        return Json(new { status = "error", message = "Arquivo não é uma imagem válida." });
+                    }
+
                     using (var memoryStream = new MemoryStream())
                     {
                         await userfile.CopyToAsync(memoryStream);
@@ -299,6 +306,23 @@ namespace SIGES.Controllers
             {
                 return Json(new { status = "error", message = $"Erro ao processar a imagem: {ex.Message}" });
             }
+        }
+
+        private bool AllowedExtensions(string extensao)
+        {
+            // Lista de extensões permitidas (imagens e outros tipos de arquivos)
+            List<string> extensoesPermitidas = new List<string>
+            {
+                // Imagens
+                ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp", ".svg",
+                // Documentos
+                //".pdf", ".doc", ".docx", ".txt", ".rtf",
+                // Outros
+                //".cdr"
+            };
+
+            // Verifica se a extensão fornecida está na lista de permitidas
+            return extensoesPermitidas.Contains(extensao, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

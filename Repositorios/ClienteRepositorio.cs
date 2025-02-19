@@ -47,5 +47,9 @@ namespace SIGES.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<bool> DocumentoExiste(string documento)
+        {
+            return await _context.Clientes.AnyAsync(u => u.Documento == documento);
+        }
     }
 }

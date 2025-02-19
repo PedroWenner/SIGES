@@ -4,166 +4,218 @@
     ViewData["Titulo"] = "Editar usuário";
 }
 <script src="~/js/funcoes.js"></script>
-<script src="~/js/jquery.mask.min.js"></script>
+<script src="@Url.Content("~/js/jquery.mask.js")"></script>
 
 <style>
     .password-container {
-        position: relative;
-        /* width: fit-content; */
+    position: relative;
     }
 
     .password-input {
-        padding-right: 30px;
-        width: 100%;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        height: 35px;
+    padding-right: 30px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 35px;
     }
 
     .toggle-password {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        color: #888;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
     }
 
     .toggle-datetime {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #888;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
     }
 
     .toggle-password:hover {
-        color: #333;
+    color: #333;
     }
 
     .nopadding {
-        padding: 0 20px !important;
-        margin-right: 20px;
+    padding: 0 20px !important;
+    margin-right: 20px;
     }
 
     input.is-invalid::placeholder {
-        color: #dc3545; /* Vermelho para erro */
-        opacity: 0.8; /* Garante que o placeholder seja totalmente visível */
-        font-size: 12px;
+    color: #dc3545;
+    opacity: 0.8;
+    font-size: 12px;
     }
 </style>
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex align-items-center">
+        <div class="card-header bg-theme-gray text-white d-flex align-items-center">
             <h5 class="mb-0">Editar usuário</h5>
         </div>
 
         <div class="card-body">
             <form id="formUsuario" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <h6 class="alert-heading">Atenção!</h6>
+                        <hr>
+                        <div asp-validation-summary="All"></div>
+                    </div>
+                }
+
                 <input type="hidden" asp-for="Usuario.Id" />
 
-                <div class="row">
-                    <!-- Nome -->
-                    <div class="col-md-8 mb-3">
-                        <label for="nome" class="form-label">Nome</label>
+                <!-- Nome -->
+                <div class="row mt-2 g-3 align-items-center">
+                    <div class="col-md-1 text-md-end">
+                        <label for="nome" class="col-form-label">Nome</label>
+                    </div>
+                    <div class="col-md-9">
                         <input id="nome" type="text" asp-for="Usuario.Nome" required>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="form-text">Informe o nome do usuário.</span>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mt-2 g-3 align-items-center">
                     <!-- RG -->
-                    <div class="col-md-2 mb-3">
-                        <label for="rg" class="form-label">RG</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="rg" class="col-form-label">RG</label>
+                    </div>
+                    <div class="col-md-3">
                         <input id="rg" type="text" asp-for="Usuario.RgNumero" required>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="form-text">Informe o rg do usuário.</span>
                     </div>
 
                     <!-- CPF -->
-                    <div class="col-md-2 mb-3">
-                        <label for="cpfUser" class="form-label">CPF</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="cpfUser" class="col-form-label">CPF</label>
+                    </div>
+                    <div class="col-md-3">
                         <input id="cpfUser" type="text" asp-for="Usuario.Cpf" required>
                     </div>
+                    <div class="col-md-2">
+                        <span class="form-text">Informe o CPF válido do usuário.</span>
+                    </div>
+                </div>
 
+                <div class="row mt-2 g-3 align-items-center">
                     <!-- Celular -->
-                    <div class="col-md-2 mb-3">
-                        <label for="celular" class="form-label">Celular</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="celular" class="col-form-label">Celular</label>
+                    </div>
+                    <div class="col-md-3">
                         <input id="celular" type="text" asp-for="Usuario.Telefone" required>
                     </div>
-                </div>
-
-                <div class="row">
-                    <!-- Email -->
-                    <div class="col-md-8 mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input id="email" type="text" asp-for="Usuario.Email" required>
+                    <div class="col-md-2">
+                        <span class="form-text">Informe o nº do celular do usuário.</span>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Email -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="email" class="col-form-label">E-mail</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input id="email" type="email" asp-for="Usuario.Email" required>
+                    </div>
+                    <div class="col-md-2">
+                        <span class="form-text">Informe o e-mail válido do usuário.</span>
+                    </div>
+                </div>
+
+                <div class="row mt-2 g-3 align-items-center">
                     <!-- CEP -->
-                    <div class="col-md-2 mb-3">
-                        <label for="cep" class="form-label">CEP</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="cep" class="col-form-label">CEP</label>
+                    </div>
+                    <div class="col-md-2">
                         <input id="cep" type="text" asp-for="Usuario.Cep" required>
                     </div>
 
                     <!-- Rua -->
-                    <div class="col-md-6 mb-3">
-                        <label for="rua" class="form-label">Rua</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="rua" class="col-form-label">Rua</label>
+                    </div>
+                    <div class="col-md-5">
                         <input id="rua" type="text" asp-for="Usuario.Rua" required>
                     </div>
 
                     <!-- Número -->
-                    <div class="col-md-2 mb-3">
-                        <label for="numero" class="form-label">Número</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="numero" class="col-form-label">Número</label>
+                    </div>
+                    <div class="col-md-2">
                         <input id="numero" type="text" asp-for="Usuario.NumeroRua" required>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mt-2 g-3 align-items-center">
                     <!-- Bairro -->
-                    <div class="col-md-2 mb-3">
-                        <label for="bairro" class="form-label">Bairro</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="bairro" class="col-form-label">Bairro</label>
+                    </div>
+                    <div class="col-md-3">
                         <input id="bairro" type="text" asp-for="Usuario.Bairro" required>
                     </div>
 
                     <!-- Cidade -->
-                    <div class="col-md-2 mb-3">
-                        <label for="cidade" class="form-label">Cidade</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="cidade" class="col-form-label">Cidade</label>
+                    </div>
+                    <div class="col-md-3">
                         <input id="cidade" type="text" asp-for="Usuario.Cidade" required>
                     </div>
 
                     <!-- Estado -->
-                    <div class="col-md-2 mb-3">
-                        <label for="estado" class="form-label">Estado</label>
-                        <input id="estado" type="text" asp-for="Usuario.Estado" required>
+                    <div class="col-md-1 text-md-end">
+                        <label for="estado" class="col-form-label">Estado</label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="estado" asp-for="Usuario.Estado">
+                            <option value="">Selecione...</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-2 mb-3 position-relative">
-                        <label for="senha" class="form-label">Senha</label>
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Senha -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="senha" class="col-form-label">Senha</label>
+                    </div>
+                    <div class="col-md-2">
                         <div class="password-container">
-                            <input id="senha" type="password" asp-for="Usuario.Senha" required aria-describedby="imgSenha">
+                            <input id="senha" type="password" asp-for="Usuario.Senha" aria-describedby="imgSenha">
                             <i class="fa fa-eye toggle-password" onclick="togglePassword('senha')"></i>
                         </div>
-                        <span asp-validation-for="Usuario.Senha" class="help-block"></span>
                     </div>
 
-                    <!-- Data de Expiração -->
-                    <div class="col-md-2 mb-3">
-                        <label for="dataExpiracao" class="form-label">Expira em</label>
+                    <!-- Data de expiração -->
+                    <div class="col-md-1 text-md-end">
+                        <label for="dataExpiracao" class="col-form-label">Expira em</label>
+                    </div>
+                    <div class="col-md-2">
                         <div class="password-container">
                             <input id="dataExpiracao" type="text" asp-for="Usuario.DataExpiracao" class="datetime" required>
                             <i class="fas fa-calendar-alt toggle-datetime"></i>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
                     <!-- Situação -->
-                    <div class="col-md-2 mb-3">
-                        <label for="situacao" class="form-label">Situação</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="situacao" class="col-form-label">Situação</label>
+                    </div>
+                    <div class="col-md-2">
                         <select asp-for="Usuario.Situacao" id="situacao" required>
                             <option value="1">Ativo</option>
                             <option value="0">Inativo</option>
@@ -171,8 +223,10 @@
                     </div>
 
                     <!-- Permissões -->
-                    <div class="col-md-2 mb-3">
-                        <label for="permissaoId" class="form-label">Permissões</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="permissaoId" class="col-form-label">Permissões</label>
+                    </div>
+                    <div class="col-md-2">
                         <select asp-for="Usuario.PermissaoId" id="permissaoId" required>
                             <option value="">Selecione</option>
                             @foreach (var permissao in Model.Permissoes)
@@ -183,31 +237,37 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row mt-2 g-3 align-items-center">
                     <!-- Imagem -->
-                    <div class="col-md-4 mb-3">
-                        <label for="imagem" class="form-label">Imagem</label>
+                    <div class="col-md-1 text-md-end">
+                        <label for="imagem" class="col-form-label">Imagem</label>
+                    </div>
+                    <div class="col-md-5">
                         <input type="file" id="imagem" name="imagemUsuario" accept="image/*" onchange="previewImage(event)" />
+                    </div>
+                    <div class="col-md-6">
                         @if (Model.Usuario.ImagemBlob != null)
                         {
-                            <p class="mt-2">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</p>
+                            <span class="form-text">Imagem cadastrada. Selecione uma nova imagem para substituir a existente.</span>
                         }
                         else
                         {
-                            <span class="text-danger mt-2">Nenhuma imagem cadastrada.</span>
+                            <span class="form-text text-danger">Nenhuma imagem cadastrada.</span>
                         }
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="text-center">
-                            @if (Model.Usuario.ImagemBlob != null)
-                            {
-                                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Usuario.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do usuário" style="max-width: 200px;" />
-                            }
-                            else
-                            {
-                                <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none;" />
-                            }
-                        </div>
+                </div>
+
+                <div class="row mt-2 g-3 align-items-center">
+                    <!-- Imagem -->
+                    <div class="col-md-12 text-center">
+                        @if (Model.Usuario.ImagemBlob != null)
+                        {
+                            <img src="data:image/png;base64,@Convert.ToBase64String(Model.Usuario.ImagemBlob)" id="previewImg" class="img-fluid rounded" alt="Imagem do usuário" style="max-width: 200px; width: 50%;" />
+                        }
+                        else
+                        {
+                            <img src="" id="previewImg" class="img-fluid rounded" alt="Pré-visualização da imagem" style="max-width: 200px; display:none; width: 50%;" />
+                        }
                     </div>
                 </div>
 
@@ -218,7 +278,7 @@
                             <span class="button__icon"><i class="bx bx-undo"></i></span>
                             <span class="button__text2">Voltar</span>
                         </a>
-                        <button type="submit" class="button btn btn-mini btn-success">
+                        <button type="submit" class="button btn btn-success">
                             <span class="button__icon"><i class='bx bx-save'></i></span>
                             <span class="button__text2">Atualizar</span>
                         </button>
@@ -229,7 +289,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+<script src="~/js/jquery.validate.js"></script>
 <script type="text/javascript">
 
     function togglePassword(id) {
@@ -260,6 +320,22 @@
     }
 
     $(document).ready(function () {
+        var valorSelecionado = '@Model.Usuario.Estado';
+        // Carrega os estados do arquivo JSON
+        $.getJSON('@Url.Content("~/json/estados.json")', function (data) {
+            if (data && data.estados && data.estados.length > 0) {
+                for (var i = 0; i < data.estados.length; i++) {
+                    $('#estado').append(new Option(data.estados[i].nome, data.estados[i].sigla));
+                }
+
+                if (valorSelecionado) {
+                    $('#estado').val(valorSelecionado);
+                }
+            } else {
+                console.error('Arquivo JSON não possui as medidas esperadas.');
+            }
+        });
+
         $.validator.addMethod("extension", function (value, element, param) {
             var extension = value.split('.').pop().toLowerCase();
             return this.optional(element) || param.split('|').indexOf(extension) !== -1;
@@ -272,7 +348,7 @@
                 'Usuario.DataExpiracao': { required: true },
                 'Usuario.Cpf': { required: true },
                 'Usuario.Telefone': { required: true },
-                'Usuario.Email': { required: true },
+                'Usuario.Email': { required: true, email: true },
                 'Usuario.Rua': { required: true },
                 'Usuario.NumeroRua': { required: true },
                 'Usuario.Bairro': { required: true },
@@ -283,19 +359,19 @@
                 'Usuario.Imagem': { extension: "jpg|jpeg|png|gif|bmp" }
             },
             messages: {
-                'Usuario.Nome': { required: 'Campo nome é obrigatório.' },
-                'Usuario.RgNumero': { required: 'Campo RG é obrigatório.' },
-                'Usuario.DataExpiracao': { required: 'Campo expira em é obrigatório.' },
-                'Usuario.Cpf': { required: 'Campo CPF é obrigatório.' },
-                'Usuario.Telefone': { required: 'Campo celular é obrigatório.' },
-                'Usuario.Email': { required: 'Campo e-mail é obrigatório.' },
-                'Usuario.Rua': { required: 'Campo rua é obrigatório.' },
-                'Usuario.NumeroRua': { required: 'Campo número é obrigatório.' },
-                'Usuario.Bairro': { required: 'Campo bairro é obrigatório.' },
-                'Usuario.Cidade': { required: 'Campo cidade é obrigatório.' },
-                'Usuario.Estado': { required: 'Campo estado é obrigatório.' },
-                'Usuario.Cep': { required: 'Campo CEP é obrigatório.' },
-                'Usuario.PermissaoId': { required: 'Campo permissão é obrigatório.' },
+                'Usuario.Nome': { required: 'Campo requerido.' },
+                'Usuario.RgNumero': { required: 'Campo requerido.' },
+                'Usuario.DataExpiracao': { required: 'Campo requerido.' },
+                'Usuario.Cpf': { required: 'Campo requerido.' },
+                'Usuario.Telefone': { required: 'Campo requerido.' },
+                'Usuario.Email': { required: 'Campo requerido.', email: 'Informe um e-mail valido.' },
+                'Usuario.Rua': { required: 'Campo requerido.' },
+                'Usuario.NumeroRua': { required: 'Campo requerido.' },
+                'Usuario.Bairro': { required: 'Campo requerido.' },
+                'Usuario.Cidade': { required: 'Campo requerido.' },
+                'Usuario.Estado': { required: 'Campo requerido.' },
+                'Usuario.Cep': { required: 'Campo requerido.' },
+                'Usuario.PermissaoId': { required: 'Campo requerido.' },
                 'Usuario.Imagem': { extension: 'Por favor, insira uma imagem com uma extensão válida (jpg, jpeg, png, gif, bmp).' }
             },
             errorPlacement: function (error, element) {

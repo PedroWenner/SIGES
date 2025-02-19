@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIGES.Attributes;
 using SIGES.Interfaces;
 using SIGES.Models;
+using SIGES.Repositorios;
 using SIGES.ViewModel;
 
 namespace SIGES.Controllers
@@ -42,6 +43,12 @@ namespace SIGES.Controllers
         [HttpPost("adicionar")]
         public async Task<IActionResult> Adicionar(ClienteModel cliente)
         {
+            if (await _clienteRepositorio.DocumentoExiste(cliente.Documento))
+            {
+                TempData["Error"] = "Este CPF/CNPJ já está cadastrado.";
+                return View("ACliente", cliente);
+            }
+
             if (!ModelState.IsValid)
             {
                 return View("ACliente", cliente);

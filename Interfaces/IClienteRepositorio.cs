@@ -9,5 +9,6 @@ namespace SIGES.Interfaces
         Task Adicionar(ClienteModel cliente);
         Task Atualizar(ClienteModel cliente);
         Task Excluir(int id);
+        Task<bool> DocumentoExiste(string documento);
     }
 }
