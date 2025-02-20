@@ -24,7 +24,6 @@
     .custom-counter input[type="text"] {
         border: none;
         outline: none;
-        width: 60px;
         text-align: center;
         font-size: 14px;
         color: #333;
@@ -64,6 +63,18 @@
     #ui-datepicker-div {
         z-index: 999!important;
     }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-datetime {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
 </style>
 
 <div class="container mt-4">
@@ -85,20 +96,20 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="row mb-3 mt-3">
-                            <div class="col-6">
+                            <div class="col-md-6">
                                 <label for="cliente" class="form-label">Cliente</label>
                                 <input id="cliente" type="text" placeholder="Digite o nome do cliente" name="cliente" required />
                                 <input id="cliente-id" type="hidden" asp-for="ClientesId" />
                                 <span asp-validation-for="ClientesId" class="text-danger"></span>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="tecnico" class="form-label">Técnico / Responsável</label>
                                 <input id="tecnico" type="text" placeholder="Técnico / Responsável" required name="tecnico" value="@Context.Session.GetString("UserName")" />
                                 <input id="usuario-id" type="hidden" asp-for="UsuariosId" value="@Context.Session.GetString("UserId")" />
                                 <span asp-validation-for="UsuariosId" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3 mt-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select asp-for="Status" id="status" required>
                                     <option value="Orçamento">Orçamento</option>
@@ -112,19 +123,25 @@
                                 <span asp-validation-for="Status" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3 mt-3">
                                 <label for="data-inicial" class="form-label">Data inicial</label>
-                                <input id="data-inicial" type="text" asp-for="DataInicial" required class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                <div class="password-container">
+                                    <input id="data-inicial" type="text" asp-for="DataInicial" required class="datetime" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                    <i class="fas fa-calendar-alt toggle-datetime"></i>
+                                </div>
                                 <span asp-validation-for="DataInicial" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3 mt-3">
                                 <label for="data-final" class="form-label">Data final</label>
-                                <input id="data-final" type="text" asp-for="DataFinal" class="datetime" required />
+                                <div class="password-container">
+                                    <input id="data-final" type="text" asp-for="DataFinal" class="datetime" required />
+                                    <i class="fas fa-calendar-alt toggle-datetime"></i>
+                                </div>
                                 <span asp-validation-for="DataFinal" class="text-danger"></span>
                             </div>
 
-                            <div class="col-3 mt-3">
+                            <div class="col-md-3 mt-3">
                                 <label for="garantia" class="form-label">Garantia (dias)</label>
                                 <div class="custom-counter">
                                     <input id="garantia" type="text" asp-for="Garantia" onkeypress="return somenteNumeros(this)" />
@@ -136,7 +153,7 @@
                                 <span asp-validation-for="Garantia" class="text-danger"></span>
                             </div>
 
-                            <div class="col-6 mt-3">
+                            <div class="col-md-6 mt-3">
                                 <label for="garantias" class="form-label">Termo de garantia</label>
                                 <input id="garantias" type="text" />
                                 <input id="garantias-id" type="hidden" asp-for="GarantiasId" />
@@ -145,22 +162,22 @@
                         </div>
 
                         <div class="row mb-3 mt-3">
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Descrição produto/serviço</h6>
                                 <textarea asp-for="DescricaoProduto" id="descricao-produto"></textarea>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Defeito</h6>
                                 <textarea asp-for="Defeito" id="defeito"></textarea>
                             </div>
                         </div>
 
                         <div class="row mb-3 mt-3">
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Observações</h6>
                                 <textarea asp-for="Observacoes" id="observacoes"></textarea>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Laudo técnico</h6>
                                 <textarea asp-for="LaudoTecnico" id="laudo-tecnico"></textarea>
                             </div>
@@ -168,7 +185,7 @@
 
                         <!-- Botões -->
                         <div class="d-flex justify-content-center">
-                            <a title="Voltar" class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
+                            <a class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
                                 <span class="button__icon"><i class="bx bx-undo"></i></span>
                                 <span class="button__text2">Voltar</span>
                             </a>

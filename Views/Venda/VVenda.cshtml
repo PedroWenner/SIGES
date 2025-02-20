@@ -155,7 +155,7 @@
                     </tbody>
                 </table>
                 <hr />
-                <h6 style="text-align: right">Total: R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)</h6>
+                <h6 style="text-align: right">Total: R$ @(Model.Itens.Sum(i => i.Preco * i.Quantidade)?.ToString("N2"))</h6>
                 @if (Model.Venda.Desconto != 0 && Model.Venda.Desconto != null)
                 {
                     <h6 style="text-align: right">Desconto: R$ @Model.Venda.Desconto?.ToString("N2")</h6>

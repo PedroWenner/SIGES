@@ -20,13 +20,60 @@
 
     <style>
         input::placeholder {
-            color: white;
+            font-size: 12px;
+        }
+
+        input {
+            font-size: 12px!important;
+            color: #333!important;
         }
 
         input.is-invalid::placeholder {
             color: #dc3545;
             opacity: 0.8;
             font-size: 12px;
+        }
+
+        .password-container {
+            position: relative;
+            width: fit-content;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .form-control.is-valid,
+        .form-control.is-invalid {
+            background-image: none !important;
+            padding-right: 0.75rem;
+        }
+
+        label {
+            color: #343a40!important;
+        }
+
+        .container .card .content button {
+            background: linear-gradient(13deg, #343a40, #686868);
+            transition: all 0.1s ease-in-out;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .container .card .content button:hover {
+            background: linear-gradient(13deg, #343a40, #686868);
+            transition: all 0.1s ease-in-out;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 7px 30px -12px rgba(0, 0, 0, 0.3);
+        }
+
+        .container .card .content button:active {
+            background: linear-gradient(13deg, #343a40, #686868)!important;
+            transition: all 0.1s ease-in-out!important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3)!important;
         }
     </style>
 </head>
@@ -39,20 +86,6 @@
                 <div class="container">
                     <div class="card">
                         <div class="content">
-                            @* <h1 class="h-one text-black">
-                                @if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour < 12)
-                                {
-                                    <text>Olá! Bom dia!</text>
-                                }
-                                else if (DateTime.Now.Hour >= 12 && DateTime.Now.Hour < 18)
-                                {
-                                    <text>Olá! Boa tarde!</text>
-                                }
-                                else
-                                {
-                                    <text>Olá! Boa noite!</text>
-                                }
-                            </h1> *@
                             <div id="mcell">
                                 <img src="~/img/AlcaLogo1.png" />
                                 <p class="text-black">Versão: 1.0</p>
@@ -62,8 +95,11 @@
                                 <input id="email" name="login" type="text" class="form-control form-control-sm" placeholder="E-mail" required />
                             </div>
                             <div class="input-field">
-                                <label class="fas fa-lock" for="senha"></label>
-                                <input id="senha" name="senha" type="password" class="form-control form-control-sm" placeholder="Senha" required />
+                                <div class="password-container">
+                                    <label class="fas fa-lock" for="senha"></label>
+                                    <input id="senha" name="senha" type="password" class="form-control form-control-sm" placeholder="Senha" required />
+                                    <i class="fa fa-eye toggle-password" onclick="togglePassword('senha')"></i>
+                                </div>
                             </div>
                             <div class="center">
                                 <button id="btn-acessar" class="btn btn-primary" type="submit">Acessar</button>
@@ -95,6 +131,20 @@
     <script src="~/js/jquery.validate.js"></script>
 
     <script>
+        function togglePassword(id) {
+            var input = document.getElementById(id);
+            var icon = document.querySelector(".toggle-password");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
         $(document).ready(function () {
             $('#formLogin').validate({
                 rules: {

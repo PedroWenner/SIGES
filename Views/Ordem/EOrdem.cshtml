@@ -18,7 +18,6 @@
         border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #fff;
-        max-width: 180px;
         justify-content: space-between;
         transition: border 0.3s ease;
     }
@@ -30,7 +29,6 @@
     .custom-counter input[type="text"] {
         border: none;
         outline: none;
-        width: 60px;
         text-align: center;
         font-size: 14px;
         color: #333;
@@ -100,6 +98,18 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .password-container {
+        position: relative;
+    }
+
+    .toggle-datetime {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
     }
 </style>
 
@@ -185,20 +195,20 @@
 
             <div class="tab-content mt-3">
                 <div class="tab-pane fade show active" id="os-tab-pane" tabindex="0">
-                    <h4>N° OS: @Model.Os?.Id.ToString("D4")</h4>
+                    <h4>N° OS: #@Model.Os?.Id.ToString("D4")</h4>
 
                     <form id="formOs" method="post" asp-controller="Ordem" asp-action="Editar">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                         <input type="hidden" asp-for="Os.Id" />
 
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="cliente" class="form-label">Cliente</label>
                                 <input id="cliente" type="text" placeholder="Digite o nome do cliente" name="cliente" required value="@Model.Os?.Clientes?.Nome" />
                                 <input id="cliente-id" type="hidden" asp-for="Os.ClientesId" />
                                 <span asp-validation-for="Os.ClientesId" class="text-danger"></span>
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="tecnico" class="form-label">Técnico / Responsável</label>
                                 <input id="tecnico" type="text" placeholder="Técnico / Responsável" required name="tecnico" value="@Model.Os?.Usuarios?.Nome" />
                                 <input id="usuario-id" type="hidden" asp-for="Os.UsuariosId" />
@@ -207,7 +217,7 @@
                         </div>
 
                         <div class="row mt-3">
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-2">
                                 <label for="status" class="form-label">Status</label>
                                 <select asp-for="Os.Status" id="status" required>
                                     <option value="Orçamento">Orçamento</option>
@@ -221,19 +231,25 @@
                                 <span asp-validation-for="Os.Status" class="text-danger"></span>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-2">
                                 <label for="data-inicial" class="form-label">Data inicial</label>
-                                <input id="data-inicial" type="date" asp-for="Os.DataInicial" required class="datetime" />
+                                <div class="password-container">
+                                    <input id="data-inicial" type="text" asp-for="Os.DataInicial" required class="datetime" />
+                                    <i class="fas fa-calendar-alt toggle-datetime"></i>
+                                </div>
                                 <span asp-validation-for="Os.DataInicial" class="text-danger"></span>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-2">
                                 <label for="data-final" class="form-label">Data final</label>
-                                <input id="data-final" type="date" asp-for="Os.DataFinal" class="datetime" required />
+                                <div class="password-container">
+                                    <input id="data-final" type="text" asp-for="Os.DataFinal" class="datetime" required />
+                                    <i class="fas fa-calendar-alt toggle-datetime"></i>
+                                </div>
                                 <span asp-validation-for="Os.DataFinal" class="text-danger"></span>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-2">
                                 <label for="garantia" class="form-label">Garantia (dias)</label>
                                 <div class="custom-counter">
                                     <input id="garantia" type="text" asp-for="Os.Garantia" onkeypress="return somenteNumeros(this)" />
@@ -247,7 +263,7 @@
                         </div>
 
                         <div class="row mt-3">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="garantias" class="form-label">Termo de garantia</label>
                                 <input id="garantias" type="text" value="@Model.Os?.Garantias?.RefGarantia" />
                                 <input id="garantias-id" type="hidden" asp-for="Os.GarantiasId" />
@@ -256,22 +272,22 @@
                         </div>
 
                         <div class="row mt-3">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Descrição produto/serviço</h6>
                                 <textarea asp-for="Os.DescricaoProduto" id="descricao-produto"></textarea>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Defeito</h6>
                                 <textarea asp-for="Os.Defeito" id="defeito"></textarea>
                             </div>
                         </div>
 
                         <div class="row mt-3">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Observações</h6>
                                 <textarea asp-for="Os.Observacoes" id="observacoes"></textarea>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <h6>Laudo técnico</h6>
                                 <textarea asp-for="Os.LaudoTecnico" id="laudo-tecnico"></textarea>
                             </div>
@@ -279,7 +295,7 @@
 
                         <!-- Botões -->
                         <div class="d-flex justify-content-center mt-4">
-                            <a title="Voltar" class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
+                            <a class="button btn btn-warning" asp-controller="Ordem" asp-action="Index">
                                 <span class="button__icon"><i class="bx bx-undo"></i></span>
                                 <span class="button__text2">Voltar</span>
                             </a>
@@ -293,7 +309,7 @@
                 <div class="tab-pane fade show" id="desconto-tab-pane" tabindex="1">
                     <div class="container-fluid mt-3">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
                                     <form id="form-desconto" method="post">
                                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -340,7 +356,7 @@
                 <div class="tab-pane fade show" id="produtos-tab-pane" tabindex="2">
                     <div class="container-fluid mt-3">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
                                     <form id="formProdutos" method="post">
                                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -382,7 +398,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div id="progressBarProdutos" class="progress mt-4 d-none" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
                                 </div>
@@ -442,7 +458,7 @@
                 <div class="tab-pane fade show" id="servicos-tab-pane" tabindex="3">
                     <div class="container-fluid mt-3">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
                                     <form id="formServicos" method="post">
                                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -484,7 +500,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div id="progressBarServicos" class="progress mt-4 d-none" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
                                 </div>
@@ -544,7 +560,7 @@
                 <div class="tab-pane fade show" id="anexos-tab-pane" tabindex="4">
                     <div class="container-fluid mt-3">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
                                     <form id="formAnexos" method="post" enctype="multipart/form-data" accept-charset="utf-8">
                                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -570,7 +586,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div id="progressBarAnexos" class="progress mt-4 d-none" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%;"></div>
                                 </div>
@@ -626,7 +642,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-md-12">
                                 <div class="table-responsive mt-3">
                                     <table class="tblAnotacoes" id="tabela">
                                         <thead>
@@ -711,49 +727,49 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="col-md-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
-                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
+                    <div class="col-md-12 alert alert-info mt-2"> Obrigatório o preenchimento dos campos com asterisco.</div>
+                    <div class="col-md-12 mt-2">
                         <label for="descricao">Descrição</label>
                         <input class="col-md-12" id="descricao" type="text" name="Descricao" value="Fatura de Venda Nº: #@Model?.Os?.Id.ToString("d4")" required />
                     </div>
-                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-md-12" style="margin-left: 0">
+                    <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2" style="margin-left: 0">
                             <label for="cliente">Cliente</label>
                             <input class="col-md-12" id="cliente" type="text" name="Cliente" value="@Model?.Os?.Clientes?.Nome" required />
                             <input type="hidden" name="clienteId" id="ClienteId" value="@Model?.Os?.ClientesId">
                             <input type="hidden" name="OsId" id="osId" value="@Model?.Os?.Id">
                         </div>
                     </div>
-                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-md-5" style="margin-left: 0;">
+                    <div class="col-md-12 mt-2">
+                        <div class="col-md-5 mt-2" style="margin-left: 0;">
                             <label for="valor">Valor</label>
                             <input type="hidden" id="tipo" name="Tipo" value="receita" />
                             <input class="col-md-12 money" id="Valor" type="text" name="Valor" value="@((totalProdutos + totalServicos).ToString("N2"))" required />
                         </div>
-                        <div class="col-md-5" style="margin-left: 2px;">
+                        <div class="col-md-5 mt-2" style="margin-left: 2px;">
                             <label for="faturar-desconto">Valor Com Desconto</label>
                             <input class="col-md-12 money" id="faturar-desconto" type="text" name="FaturarDesconto" value="@valorTotalOs.ToString("N2")" required />
                         </div>
                     </div>
-                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-md-4" style="margin-left: 0">
+                    <div class="col-md-12 mt-2" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-md-4 mt-2" style="margin-left: 0">
                             <label for="dataVencimento">Data entrada</label>
                             <input class="col-md-12 datetime" autocomplete="off" id="dataVencimento" type="text" name="DataVencimento" required />
                         </div>
                     </div>
-                    <div class="col-md-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-md-4" style="margin-left: 0">
+                    <div class="col-md-12 mt-2" style="margin-left: 0; margin-bottom: 10px;">
+                        <div class="col-md-4 mt-2" style="margin-left: 0">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="recebido" name="Recebido">
                                 <label class="form-check-label" for="recebido">Recebido</label>
                             </div>
                         </div>
                         <div id="divRecebimento" class="span8" style=" display: none">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="recebimento">Data Recebimento</label>
                                 <input class="col-md-12 datetime" autocomplete="off" id="recebimento" type="text" name="Recebimento" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="formaPgto">Forma Pgto</label>
                                 <select name="FormaPgto" id="formaPgto" class="col-md-12">
                                     <option value="Dinheiro">Dinheiro</option>
