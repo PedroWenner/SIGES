@@ -3,11 +3,14 @@
 
 @{
     ViewData["Titulo"] = "Editar venda";
+    decimal valorTotalProdutos = Model.Itens.Sum(i => i.Preco * i.Quantidade) ?? 0;
+    decimal desconto = Model.Venda.Desconto ?? 0;
+    decimal valorVendaComDesconto = valorTotalProdutos - desconto;
 }
 
 <style>
     #ui-datepicker-div {
-        z-index: 9999!important;
+        z-index: 100000 !important;
     }
 
     .custom-counter {
@@ -166,26 +169,28 @@
                         </div>
 
                         <!-- Botões -->
-                        <div class ="buttons d-flex flex-wrap gap-2">
-                            <a class="button btn btn-warning" asp-controller="Venda" asp-action="Index">
-                                <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
-                                <span class="button__text2">Voltar</span>
-                            </a>
-                            <button type="submit" class="button btn btn-mini btn-success">
-                                <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
-                                <span class="button__text2">Atualizar</span>
-                            </button>
-                            <a class="button btn btn-primary" asp-controller="Venda" asp-action="Visualizar" asp-route-id="@Model.Venda.Id">
-                                <span class="button__icon"><i class='bx bx-show bx-xs'></i></span>
-                                <span class="button__text2">Visualizar</span>
-                            </a>
-                            @if (Model.Venda.Faturado == 0)
-                            {
-                                <a href="#modal-faturar" role="button" class="button btn btn-mini btn-danger" data-bs-target="#modal-faturar" data-bs-toggle="modal">
-                                    <span class="button__icon"><i class='bx bx-dollar bx-xs'></i></span>
-                                    <span class="button__text2">Faturar</span>
+                        <div class="row">
+                            <div class="d-flex justify-content-center mt-4 flex-wrap gap-2">
+                                <a class="button btn btn-warning" asp-controller="Venda" asp-action="Index">
+                                    <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
+                                    <span class="button__text2">Voltar</span>
                                 </a>
-                            }
+                                <button type="submit" class="button btn btn-mini btn-success">
+                                    <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
+                                    <span class="button__text2">Atualizar</span>
+                                </button>
+                                <a class="button btn btn-primary" asp-controller="Venda" asp-action="Visualizar" asp-route-id="@Model.Venda.Id">
+                                    <span class="button__icon"><i class='bx bx-show bx-xs'></i></span>
+                                    <span class="button__text2">Visualizar</span>
+                                </a>
+                                @if ((Model.Venda.Faturado ?? 0) == 0)
+                                {
+                                    <a href="#modal-faturar" role="button" class="button btn btn-mini btn-danger" data-bs-target="#modal-faturar" data-bs-toggle="modal">
+                                        <span class="button__icon"><i class='bx bx-dollar bx-xs'></i></span>
+                                        <span class="button__text2">Faturar</span>
+                                    </a>
+                                }
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -238,15 +243,17 @@
                                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                                         <input type="hidden" asp-for="Venda.Id" />
 
+                                        <input id="valor-total-produtos" type="hidden" value="@valorTotalProdutos.ToString().Replace(",", ".")" />
+
                                         <div class="row">
                                             <div class="col-md-2 mt-2">
                                                 <label for="desconto" class="form-label">Desconto</label>                                            
                                                 <input id="desconto" type="text" asp-for="Venda.Desconto" class="money" required placeholder="0,00"
-                                                onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;" />
+                                                onchange="calcularTotalComDesconto(); return false;" />
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="tipoDesconto" class="form-label">Tipo desc.</label>
-                                                <select id="tipoDesconto" asp-for="Venda.TipoDesconto" onchange="calcularTotalComDesconto('@Model.Itens.Sum(i => i.Preco * i.Quantidade)'); return false;">
+                                                <select id="tipoDesconto" asp-for="Venda.TipoDesconto" onchange="calcularTotalComDesconto(); return false;">
                                                     <option value="real">R$</option>
                                                     <option value="porcento">%</option>
                                                 </select>
@@ -344,60 +351,62 @@
 </div>
 
 <!-- Modal Faturar-->
-<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="formFaturar" method="post">
+                <input type="hidden" name="ClienteId" value="@Model.Venda.ClienteId">
+                <input type="hidden" name="VendaId" value="@Model.Venda.Id">
+                <input type="hidden" name="Grupo" value="venda">
+
                 <div class="modal-header">
-                    <h5 class="modal-title fs-5">Faturar venda</h5>
+                    <h5 class="modal-title fs-5">Faturar venda Nº: #@Model.Venda.Id.ToString("d4")</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="col-12 alert alert-info" style="margin-left: 0"> Obrigatório o preenchimento dos campos com asterisco.</div>
-                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
+                    <div class="col-md-12 alert alert-info mt-2"> Obrigatório o preenchimento dos campos com asterisco.</div>
+                    <div class="col-md-12 mt-2">
                         <label for="descricao">Descrição</label>
-                        <input class="col-12" id="descricao" type="text" name="descricao" value="Fatura de Venda Nº: @Model.Venda.Id" required />
+                        <input class="col-md-12" id="descricao" type="text" name="Descricao" value="Fatura de Venda Nº: #@Model.Venda.Id.ToString("d4")" required />
                     </div>
-                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-12" style="margin-left: 0">
+                    <div class="col-md-12 mt-2">
+                        <div class="col-md-12 mt-2">
                             <label for="cliente">Cliente</label>
-                            <input class="col-12" id="cliente" type="text" name="cliente" value="@Model.Venda.Cliente.Nome" required />
-                            <input type="hidden" name="clienteId" id="clienteId" value="@Model.Venda.ClienteId">
-                            <input type="hidden" name="vendaId" id="vendaId" value="@Model.Venda.Id">
+                            <input id="cliente" type="text" name="cliente" value="@Model.Venda.Cliente.Nome" required readonly />
                         </div>
                     </div>
-                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-5" style="margin-left: 0;">
+                    <div class="col-md-12 mt-2">
+                        <div class="col-md-5 mt-2" style="margin-left: 0;">
                             <label for="valor">Valor</label>
-                            <input type="hidden" id="tipo" name="tipo" value="receita" />
-                            <input class="col-12 money" id="valor" type="text" name="valor" value="@Model.Itens.Sum(x => x.Quantidade * x.Preco)" required />
+                            <input type="hidden" id="Tipo" name="Tipo" value="receita" />
+                            <input class="money" id="valor" type="text" name="ValorTotal" value="@valorTotalProdutos" required readonly />
                         </div>
-                        <div class="col-5" style="margin-left: 2px;">
-                            <label for="faturar-desconto">Valor Com Desconto</label>
-                            <input class="col-12 money" id="faturar-desconto" type="text" name="faturar-desconto" value="@Model.Venda.ValorDesconto" required />
+                        <div class="col-md-5 mt-2" style="margin-left: 2px;">
+                            <label for="faturar-desconto">Valor com desconto</label>
+                            <input class="money" id="faturar-desconto" type="text" name="ValorDesconto" value="@valorVendaComDesconto" required readonly />
                         </div>
                     </div>
-                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-4" style="margin-left: 0">
+                    <div class="col-md-12 mt-2">
+                        <div class="col-md-4 mt-2">
                             <label for="dataVencimento">Data entrada</label>
-                            <input class="col-12 datetime" autocomplete="off" id="dataVencimento" type="text" name="dataVencimento" required />
+                            <input class="col-md-12 datetime" id="dataVencimento" type="text" name="DataVencimento" required />
                         </div>
                     </div>
-                    <div class="col-12" style="margin-left: 0; margin-bottom: 10px;">
-                        <div class="col-4" style="margin-left: 0">
+                    <div class="col-md-12 mt-2">
+                        <div class="col-md-4 mt-2">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="recebido" name="recebido">
+                                <input class="form-check-input" type="checkbox" role="switch" id="recebido" name="Recebido">
                                 <label class="form-check-label" for="recebido">Recebido</label>
                             </div>
                         </div>
-                        <div id="divRecebimento" class="span8" style=" display: none">
-                            <div class="col-6">
+                        <div id="divRecebimento" class="col-md-12" style=" display: none">
+                            <div class="col-md-6 mt-2">
                                 <label for="recebimento">Data Recebimento</label>
-                                <input class="col-12 datetime" autocomplete="off" id="recebimento" type="text" name="recebimento" />
+                                <input class="datetime" id="recebimento" type="text" name="DataRecebimento" />
                             </div>
-                            <div class="col-6">
+                            <div class="col-md-6 mt-2">
                                 <label for="formaPgto">Forma Pgto</label>
-                                <select name="formaPgto" id="formaPgto" class="col-12">
+                                <select name="FormaPgto" id="formaPgto">
                                     <option value="Dinheiro">Dinheiro</option>
                                     <option value="Cartão de Crédito">Cartão de Crédito</option>
                                     <option value="Débito">Débito</option>
@@ -410,11 +419,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="display:flex">
-                    <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
-                        <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span>
-                    </button>
-                    <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-center mt-4">
+                        <button class="button btn btn-warning" data-bs-dismiss="modal" id="btn-cancelar-faturar">
+                            <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span>
+                        </button>
+                        <button id="btn-faturar" class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                    </div>
+                </div>
+                <!-- Spinner de carregamento -->
+                <div id="loading-spinner" style="display: none; text-align: center; padding: 20px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p>Faturando venda, aguarde...</p>
                 </div>
             </form>
         </div>
@@ -644,10 +662,6 @@
                 "Item.Quantidade": {
                     required: true,
                     digits: true
-                    // , max: function () {
-                    //     var estoque = $("#quantidade").data("estoque");
-                    //     return estoque || 0;
-                    // }
                 }
             },
             messages: {
@@ -658,7 +672,6 @@
                 "Item.Quantidade": {
                     required: "Informe a quantidade.",
                     digits: "Informe apenas números inteiros."
-                    //, max: "A quantidade não pode ser maior que o estoque disponível."
                 }
             },
             submitHandler: function (form) {
@@ -673,7 +686,6 @@
                     });
                 } else {
                     var dados = $(form).serialize();
-                    // Mostra a barra de progresso
                     $("#progressBarProdutos").show();
 
                     $.ajax({
@@ -717,6 +729,8 @@
                                     text: "Produto adicionado com sucesso!"
                                 });
 
+
+                                $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
                                 $("#quantidade").val("");
                                 $("#preco").val("");
                                 $("#produto").val("").focus();
@@ -808,6 +822,7 @@
                                     </tr>
                                 `);
 
+                                $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
                                 Swal.fire("Removido!", "O item foi removido com sucesso.", "success");
                             } else {
                                 Swal.fire("Erro!", response.message || "Não foi possível remover o item.", "error");
@@ -825,33 +840,33 @@
         });
     });
 
-    function calcularTotalComDesconto(input) {
-        const tipoDesconto = $("#tipoDesconto").val();
-        const valor = parseFloat($("#desconto").val().replace('.', '').replace(',', '.')) || 0;
-        let valorComDesconto = parseFloat(input.replace('.', '').replace(',', '.')) || 0;
+    function calcularTotalComDesconto() {
+        let valor = parseFloat($('#valor-total-produtos').val()) || 0;
+        var tipoDesconto = $('#tipoDesconto').val();
+        let desconto = parseFloat($('#desconto').val()) || 0;
 
-        if (tipoDesconto === 'real') {
-            if (valor > valorComDesconto) {
-                Swal.fire("Erro!", "Não é possível aplicar um desconto maior que o valor total da venda.", "error");
-                $("#desconto").val('');
-                return false;
-            }
-                
-            valorComDesconto -= valor;
-        } else {
-            if (valor > 100) {
+        if (valor === 0)
+            return false;
+
+        if (tipoDesconto == 'porcento') {
+            if (desconto > 100) {
                 Swal.fire("Erro!", "Não é possível aplicar desconto maior que 100%.", "error");
                 $("#desconto").val('');
                 return false;
             }
-            
-            console.log(valorComDesconto);
-            console.log(valor);
-            valorComDesconto -= (valorComDesconto * valor) / 100;
-        }
 
-        // Formata para exibição no input e mantém o padrão brasileiro (vírgula como separador decimal)
-        $("#valorDesconto").val(valorComDesconto.toFixed(2).replace('.', ','));
+            valor -= (valor * desconto / 100);
+            $("#valorDesconto").val(valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        } else {
+            if (desconto > valor) {
+                Swal.fire("Erro!", "Não é possível aplicar um desconto maior que o valor total da venda.", "error");
+                $("#desconto").val('');
+                return false;
+            }
+
+            valor -= desconto;
+            $("#valorDesconto").val(valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        }
     }
 
     $(document).ready(function () {
@@ -1001,16 +1016,16 @@
     $(document).ready(function () {
         $('#formFaturar').validate({
             rules: {
-                'descricao': { required: true },
-                'clienteId': { required: true },
-                'valor': { required: true },
-                'dataVencimento': { required: true },
+                'Descricao': { required: true },
+                'ClienteId': { required: true },
+                'ValorTotal': { required: true },
+                'DataVencimento': { required: true },
             },
             messages: {
-                'descricao': { required: 'Campo Requerido.' },
-                'clienteId': { required: 'Campo Requerido.' },
-                'valor': { required: 'Campo Requerido.' },
-                'dataVencimento': { required: 'Campo Requerido.' },
+                'Descricao': { required: 'Campo Requerido.' },
+                'ClienteId': { required: 'Campo Requerido.' },
+                'ValorTotal': { required: 'Campo Requerido.' },
+                'DataVencimento': { required: 'Campo Requerido.' },
             },
             errorPlacement: function (error, element) {
                 element.attr("placeholder", error.text());
@@ -1023,64 +1038,94 @@
                 $(element).attr("placeholder", "");
             },
             submitHandler: function(form) {
-                var dados = $(form).serialize();
-                var qtdProdutos = $('.tblProdutos > tbody > tr').length;
+                var dados = $(form).serializeArray();
+                var jsonData = {};
 
-                $('#btn-cancelar-faturar').trigger('click');
+                $.each(dados, function (index, field) {
+                    if (field.name === 'DataVencimento' || field.name === 'DataRecebimento') {
+                        jsonData[field.name] = formatarDataParaAPI(field.value);
+                    } else if (field.name === 'ValorTotal' || field.name === 'ValorDesconto') {
+                        jsonData[field.name] = formatarDecimalParaAPI(field.value);
+                    } else {
+                        jsonData[field.name] = field.value;
+                    }
+                });
+                
+                $('#loading-spinner').show();
+                $('#btn-faturar').prop('disabled', true);
 
-                if (qtdProdutos <= 0) {
-                    Swal.fire({
-                        type: "error",
-                        title: "Atenção",
-                        text: "Não é possível faturar uma venda sem produtos"
-                    });
-                } else if (qtdProdutos > 0) {
-                    $.ajax({
-                        type: "POST",
-                        url: "/vendas/faturar",
-                        data: dados,
-                        dataType: 'json',
-                        success: function (data) {
-                            if (data.result) {
+                console.log(jsonData);
+
+                //$('#btn-cancelar-faturar').trigger('click');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/api/v1/faturar",
+                    contentType: "application/json",
+                    data: JSON.stringify(jsonData),
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status === "success") {
+                            setTimeout(function () {
+                                $('#loading-spinner').hide();
+                                $('#btn-faturar').prop('disabled', false);
+                                $('#modal-faturar').hide();
+
                                 Swal.fire({
-                                    icon: "success",
-                                    title: "Sucesso",
-                                    text: data.mensagem
+                                    title: 'Sucesso!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK',
+                                    didOpen: () => {
+                                        document.querySelector('#sidebar').style.position = 'static';
+                                    },
+                                    didClose: () => {
+                                        document.querySelector('#sidebar').style.position = 'fixed';
+                                    }
                                 }).then(() => {
-                                    window.location.reload();
+                                    location.reload();
                                 });
-                            } else {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Erro",
-                                    text: data.mensagem
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Erro",
-                                text: "Erro inesperado ao tentar faturar a venda."
+                            }, 1500);
+                        } else {
+                            $('#loading-spinner').hide();
+                            $('#btn-faturar').prop('disabled', false);
+                            $('#modal-faturar').hide();
+
+                            Swal.fire("Erro!", response.message, "error").then(() => {
+                                location.reload();
                             });
                         }
-                    });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Erro na requisição:", xhr.responseText); // Log do erro
+                        Swal.fire({
+                            icon: "error",
+                            title: "Erro",
+                            text: "Erro ao enviar os dados: " + xhr.responseText
+                        });
+                    }
+                });
 
-                    return false;
-                }
+                return false;                
             }
         });
     });
 
-    $('#faturar-desconto, #valor').on('input', function () {
-        let valor = parseFloat($('#valor').val()) || 0;
-        let desconto = parseFloat($('#faturar-desconto').val()) || 0;
+    function formatarDecimalParaAPI(valor) {
+        return valor.replace(/\./g, '').replace(',', '.');
+    }
 
-        if (desconto > valor) {
-            Swal.fire("Atenção", "O desconto não pode ser maior que o valor da venda!", "warning");
-            $('#faturar-desconto').val(valor);
-        }
-    });
+    function formatarDataParaAPI(data) {
+        if (data === '')
+            return null;
+
+        var partes = data.split('/');
+        var dia = partes[0];
+        var mes = partes[1];
+        var ano = partes[2];
+
+        return `${ano}-${mes}-${dia}`;
+    }
 </script>
 
 <script>

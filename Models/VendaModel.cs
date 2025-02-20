@@ -13,19 +13,19 @@ namespace SIGES.Models
         public int Id { get; set; }
 
         public DateTime DataVenda { get; set; } = DateTime.Now;
-        
-        [Column(TypeName = "decimal(15,2)")]
-        public decimal? ValorTotal { get; set; }
 
         [Column(TypeName = "decimal(15,2)")]
-        public decimal? Desconto { get; set; }
+        public decimal? ValorTotal { get; set; } = 0;
 
         [Column(TypeName = "decimal(15,2)")]
-        public decimal? ValorDesconto { get; set; }
+        public decimal? Desconto { get; set; } = 0;
+
+        [Column(TypeName = "decimal(15,2)")]
+        public decimal? ValorDesconto { get; set; } = 0;
 
         public string? TipoDesconto { get; set; }
 
-        public int? Faturado { get; set; }
+        public int? Faturado { get; set; } = 0;
 
         [IgnoreLog]
         public string? Observacao { get; set; }

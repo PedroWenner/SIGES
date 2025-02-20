@@ -49,12 +49,12 @@
                                 <td>
                                     @if (!string.IsNullOrEmpty(cobranca.OsId.ToString()))
                                     {
-                                        <a href="#">Ordem de serviço: #@cobranca.OsId</a>
+                                        <a asp-controller="Ordem" asp-action="Visualizar" asp-route-id="@cobranca.OsId">Ordem de serviço: #@cobranca.OsId</a>
                                     }
 
                                     @if (!string.IsNullOrEmpty(cobranca.VendasId.ToString()))
                                     {
-                                        <a href="#">Venda: #@cobranca.VendasId</a>
+                                        <a asp-controller="Venda" asp-action="Visualizar" asp-route-id="@cobranca.VendasId">Venda: #@cobranca.VendasId</a>
                                     }
                                 </td>
                                 <td>@cobranca.StatusDescricao</td>

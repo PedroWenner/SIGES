@@ -233,5 +233,17 @@ namespace SIGES.Controllers.Api
             return erros;
         }
 
+        [HttpPost("faturar")]
+        [Permissao("eVenda", "Você não tem permissão para adicionar cobrança!")]
+
+        public async Task<IActionResult> Faturar([FromBody] FaturaRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Ok(new { Status = "Erro!", Message = "Erro ao gerar cobrança!", Acao = "error" });
+            }
+
+            return Ok(new { Status = "Erro!", Message = "Erro ao gerar cobrança!", Acao = "error" });
+        }
     }
 }
