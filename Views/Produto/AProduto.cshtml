@@ -69,16 +69,19 @@
                 <!-- Preço de compra -->
                 <div class="row mt-2 g-3 align-items-center">
                     <div class="col-md-2 text-md-end">
-                        <label for="precoCompra" class="col-form-label">Preço de compra | % lucro</label>
+                        <label for="precoCompra" class="col-form-label">Preço de compra</label>
                     </div>
                     <div class="col-md-3">
                         <input id="precoCompra" type="text" asp-for="PrecoCompra" class="money" required />
                         <span asp-validation-for="PrecoCompra" class="text-danger"></span>
                     </div>
+                    <div class="col-md-1 text-md-end">
+                        <label for="margem" class="col-form-label">% lucro</label>
+                    </div>
                     <div class="col-md-1">
                         <input id="margem" type="text" asp-for="MargemLucro" placeholder="%" onblur="return calcular();" />
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <span class="form-text">Informe o preço de compra e a margem que deseja obter sobre.</span>
                     </div>
                 </div>
@@ -156,15 +159,13 @@
                 </div>
 
                 <!-- Botões -->
-                <div class="row mt-2 g-3 align-items-center">
-                    <div class="col-auto">
-                        <a class="button btn btn-warning w-100" asp-controller="Produto" asp-action="Index">
+                <div class="row">
+                    <div class="d-flex justify-content-center mt-4">
+                        <a class="button btn btn-warning" asp-controller="Produto" asp-action="Index">
                             <span class="button__icon"><i class="bx bx-undo"></i></span>
                             <span class="button__text2">Voltar</span>
                         </a>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="button btn btn-mini btn-success w-100">
+                        <button type="submit" class="button btn btn-success">
                             <span class="button__icon"><i class='bx bx-save'></i></span>
                             <span class="button__text2">Adicionar</span>
                         </button>

@@ -34,9 +34,9 @@
         transition: background 0.3s ease;
     }
 
-        .edit-icon:hover {
-            background: rgba(200, 200, 200, 0.9);
-        }
+    .edit-icon:hover {
+        background: rgba(200, 200, 200, 0.9);
+    }
 
     .user-info p {
         margin: 5px 0;
@@ -258,8 +258,10 @@
                                     icon: 'success',
                                     confirmButtonText: 'OK',
                                     didOpen: () => {
-                                        // Ajusta o z-index do SweetAlert2
-                                        Swal.getPopup().style.zIndex = 9999; // Um valor alto para garantir que fique acima de tudo
+                                        document.querySelector('#sidebar').style.position = 'static';
+                                    },
+                                    didClose: () => {
+                                        document.querySelector('#sidebar').style.position = 'fixed';
                                     }
                                 }).then(() => {
                                     location.reload();

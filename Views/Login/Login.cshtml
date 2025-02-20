@@ -32,51 +32,44 @@
 </head>
 
 <body>
-    <div class="main-login">
-        <div class="left-login">
-            <h1 class="h-one text-black">
-                @if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour < 12)
-                {
-                    <text>Olá! Bom dia!</text>
-                }
-                else if (DateTime.Now.Hour >= 12 && DateTime.Now.Hour < 18)
-                {
-                    <text>Olá! Boa tarde!</text>
-                }
-                else
-                {
-                    <text>Olá! Boa noite!</text>
-                }
-            </h1>
-            <br />
-            <h2 class="h-two">Seja bem-vindo ao sistema de controle</h2>
-            <img src="@Url.Content("~/img/dashboard-animate.svg")" class="left-login-image" alt="Sistema de controle">
-        </div>
-
+    <div class="main-login bg-secondary">
+        
         <form class="form-vertical" id="formLogin" method="post" asp-controller="Login" asp-action="Login">
             <div class="d-flex flex-column">
-                <div class="right-login">
-                    <div class="container">
-                        <div class="card">
-                            <div class="content">
-                                <div id="mcell">
-                                    <img src="~/img/AlcaLogo1.png" />
-                                    <p class="text-black">Versão: 1.0</p>
-                                </div>
-                                <div class="input-field mb-2">
-                                    <label class="fas fa-user" for="email"></label>
-                                    <input id="email" name="login" type="text" class="form-control form-control-sm" placeholder="E-mail" required />
-                                </div>
-                                <div class="input-field">
-                                    <label class="fas fa-lock" for="senha"></label>
-                                    <input id="senha" name="senha" type="password" class="form-control form-control-sm" placeholder="Senha" required />
-                                </div>
-                                <div class="center">
-                                    <button id="btn-acessar" class="btn btn-primary" type="submit">Acessar</button>
-                                </div>
-                                <div class="links-uteis">
-                                    <p class="text-black">@DateTime.Now.Year &copy; SIGES</p>
-                                </div>
+                <div class="container">
+                    <div class="card">
+                        <div class="content">
+                            @* <h1 class="h-one text-black">
+                                @if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour < 12)
+                                {
+                                    <text>Olá! Bom dia!</text>
+                                }
+                                else if (DateTime.Now.Hour >= 12 && DateTime.Now.Hour < 18)
+                                {
+                                    <text>Olá! Boa tarde!</text>
+                                }
+                                else
+                                {
+                                    <text>Olá! Boa noite!</text>
+                                }
+                            </h1> *@
+                            <div id="mcell">
+                                <img src="~/img/AlcaLogo1.png" />
+                                <p class="text-black">Versão: 1.0</p>
+                            </div>
+                            <div class="input-field mb-2">
+                                <label class="fas fa-user" for="email"></label>
+                                <input id="email" name="login" type="text" class="form-control form-control-sm" placeholder="E-mail" required />
+                            </div>
+                            <div class="input-field">
+                                <label class="fas fa-lock" for="senha"></label>
+                                <input id="senha" name="senha" type="password" class="form-control form-control-sm" placeholder="Senha" required />
+                            </div>
+                            <div class="center">
+                                <button id="btn-acessar" class="btn btn-primary" type="submit">Acessar</button>
+                            </div>
+                            <div class="links-uteis">
+                                <p class="text-black">@DateTime.Now.Year &copy; SIGES</p>
                             </div>
                         </div>
                     </div>

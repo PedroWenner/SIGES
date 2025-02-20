@@ -25,6 +25,8 @@
     .toggle-password:hover {
         color: #333;
     }
+
+    
 </style>
 
 <div class="container mt-4">
@@ -46,17 +48,19 @@
 
                 <!-- CPF/CNPJ -->
                 <div class="row mt-2 g-3 align-items-center">
-                    <div class="col-md-1 text-md-end">
-                        <label for="documento" class="col-form-label">CPF/CNPJ</label>
-                    </div>
-                    <div class="col-md-3">
-                        <input id="documento" type="text" asp-for="Documento" required>
-                    </div>
-                    <div class="col-md-2">
-                        <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
-                    </div>
                     <div class="col-md-6">
-                        <span class="form-text">Informe um cpf/cnpj válido.</span>
+                        <div class="row">
+                            <div class="col-md-2 text-md-end">
+                                <label for="documento" class="col-form-label">CPF/CNPJ</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="documento" type="text" asp-for="Documento" class="cpfcnpj" required>
+                                <span asp-validation-for="Documento" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <button id="buscar_info_cnpj" class="btn btn-sm btn-secondary" type="button">Buscar(CNPJ)</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -67,9 +71,7 @@
                     </div>
                     <div class="col-md-7">
                         <input id="nomeCliente" type="text" asp-for="Nome" required />
-                    </div>
-                    <div class="col-md-4">
-                        <span class="form-text">Campo para informar o nome do cliente.</span>
+                        <span asp-validation-for="Nome" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -80,6 +82,7 @@
                     </div>
                     <div class="col-md-2">
                         <input id="telefone" type="text" asp-for="Telefone" />
+                        <span asp-validation-for="Telefone" class="text-danger"></span>
                     </div>
 
                     <!-- Celular -->
@@ -88,10 +91,7 @@
                     </div>
                     <div class="col-md-2">
                         <input id="celular" type="text" asp-for="Celular" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <span class="form-text">Campo para informar os contatos do cliente.</span>
+                        <span asp-validation-for="Celular" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -102,10 +102,7 @@
                     </div>
                     <div class="col-md-7">
                         <input id="email" type="email" asp-for="Email" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <span class="form-text">Campo para informar o e-mail do cliente.</span>
+                        <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -116,6 +113,7 @@
                     </div>
                     <div class="col-md-2">
                         <input id="cep" type="text" asp-for="Cep" />
+                        <span asp-validation-for="Cep" class="text-danger"></span>
                     </div>
 
                     <!-- Rua -->
@@ -124,14 +122,16 @@
                     </div>
                     <div class="col-md-4">
                         <input id="rua" type="text" asp-for="Rua" />
+                        <span asp-validation-for="Rua" class="text-danger"></span>
                     </div>
 
                     <!-- Número -->
                     <div class="col-md-1 text-md-end">
                         <label for="numeroRua" class="col-form-label">Número</label>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <input id="numeroRua" type="text" asp-for="NumeroRua" />
+                        <span asp-validation-for="NumeroRua" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -142,6 +142,7 @@
                     </div>
                     <div class="col-md-3">
                         <input id="bairro" type="text" asp-for="Bairro" />
+                        <span asp-validation-for="Bairro" class="text-danger"></span>
                     </div>
 
                     <!-- Cidade -->
@@ -150,6 +151,7 @@
                     </div>
                     <div class="col-md-3">
                         <input id="cidade" type="text" asp-for="Cidade" />
+                        <span asp-validation-for="Cidade" class="text-danger"></span>
                     </div>
 
                     <!-- Estado -->
@@ -160,6 +162,7 @@
                         <select id="estado" asp-for="Estado">
                             <option value="">Selecione...</option>
                         </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -170,9 +173,7 @@
                     </div>
                     <div class="col-md-7">
                         <input id="complemento" type="text" asp-for="Complemento" />
-                    </div>
-                    <div class="col-md-4">
-                        <span class="form-text">Campo para informar todos os dados de endereço do cliente.</span>
+                        <span asp-validation-for="Complemento" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -186,6 +187,7 @@
                             <input id="senha" type="password" asp-for="Senha" />
                             <i class="fa fa-eye toggle-password" onclick="togglePassword('senha')"></i>
                         </div>
+                        <span asp-validation-for="Senha" class="text-danger"></span>
                     </div>
                     <div class="col-md-9">
                         <span class="form-text">Essa senha será a que o cliente utilizará para acessar o painel do cliente.</span>
@@ -207,6 +209,7 @@
                                 Fornecedor
                             </label>
                         </div>
+                        <span asp-validation-for="Fornecedor" class="text-danger"></span>
                     </div>
                     <div class="col-md-9">
                         <span class="form-text">Clientes marcados como fornecedor, será apresentado ao realizar lançamento de despesas.</span>

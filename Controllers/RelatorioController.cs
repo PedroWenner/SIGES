@@ -9,14 +9,15 @@ using SIGES.Models;
 using PdfImage = iText.Layout.Element.Image;
 using Microsoft.AspNetCore.Authorization;
 using SIGES.Attributes;
-using SIGES.Services;
 using Path = System.IO.Path;
-using pix_payload_generator.net.Models.CobrancaModels;
-using pix_payload_generator.net.Models.PayloadModels;
-using QRCoder;
-using Cobranca = pix_payload_generator.net.Models.CobrancaModels.Cobranca;
-using System.Globalization;
 using SIGES.Helpers;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using PuppeteerSharp.Media;
+using PuppeteerSharp;
 
 namespace SIGES.Controllers
 {
@@ -29,15 +30,19 @@ namespace SIGES.Controllers
         private readonly IRepository<EmitenteModel> _repositorioEmitente;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly ICompositeViewEngine _viewEngine;
+        private readonly ITempDataProvider _tempDataProvider;
 
         public RelatorioController(IProdutoRepositorio produtoRepositorio, IOs repositorioOs, IRepository<EmitenteModel> repositorioEmitente,
-            IConfiguration configuration, HttpClient httpClient)
+            IConfiguration configuration, HttpClient httpClient, ICompositeViewEngine viewEngine, ITempDataProvider tempDataProvider)
         {
             _produtoRepositorio = produtoRepositorio;
             _repositorioOs = repositorioOs;
             _repositorioEmitente = repositorioEmitente;
             _configuration = configuration;
             _httpClient = httpClient;
+            _viewEngine = viewEngine;
+            _tempDataProvider = tempDataProvider;
         }
 
         [HttpGet("ProdutosEtiquetas")]
@@ -132,19 +137,6 @@ namespace SIGES.Controllers
                     barcodeUPCA.SetCodeType(BarcodeEAN.UPCA);
                     barcodeUPCA.SetCode(codigo);
                     return new PdfImage(barcodeUPCA.CreateFormXObject(null, null, pdfDocument));
-
-                //case "C93":
-                //    var barcode93Writer = new BarcodeWriter<Bitmap>
-                //    {
-                //        Format = BarcodeFormat.CODE_93,
-                //        Options = new EncodingOptions { Width = 300, Height = 150 }
-                //    };
-                //    var bitmap93 = barcode93Writer.Write(codigo);
-                //    using (var stream = new MemoryStream())
-                //    {
-                //        bitmap93.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                //        return new PdfImage(ImageDataFactory.Create(stream.ToArray()));
-                //    }
 
                 case "C128A":
                     var barcode128A = new Barcode128(pdfDocument);
@@ -276,7 +268,77 @@ namespace SIGES.Controllers
             if (tipo == "termica")
                 view = "Views/Relatorios/Os/papel-termica.cshtml";
 
+            // Renderiza a view em HTML
+            //var htmlContent = await this.RenderViewToStringAsync(view, viewmodel);
+
+            // Gera o PDF a partir do HTML
+            //var pdfBytes = await GerarPdf(htmlContent);
+
+            // Retorna o PDF para o usuário
+            //return File(pdfBytes, "application/pdf", $"OS-{id}.pdf");
             return View(view, viewmodel);
+        }
+
+        private async Task<byte[]> GerarPdf(string htmlContent)
+        {
+            // Baixa o navegador Chromium (somente na primeira execução)
+            var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync();
+
+            // Inicia o navegador
+            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+            using var page = await browser.NewPageAsync();
+
+            // Define o conteúdo HTML da página
+            await page.SetContentAsync(htmlContent);
+
+            // Gera o PDF
+            var pdfBytes = await page.PdfDataAsync(new PdfOptions
+            {
+                Format = PaperFormat.A4,
+                PrintBackground = true,
+                MarginOptions = new MarginOptions
+                {
+                    Top = "20mm",
+                    Right = "20mm",
+                    Bottom = "20mm",
+                    Left = "20mm"
+                }
+            });
+
+            return pdfBytes;
+        }
+
+        private async Task<string> RenderViewToStringAsync(string viewName, object model)
+        {
+            var httpContext = new DefaultHttpContext { RequestServices = this.HttpContext.RequestServices };
+            var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+
+            var viewEngineResult = _viewEngine.FindView(actionContext, viewName, false);
+
+            if (!viewEngineResult.Success)
+            {
+                throw new InvalidOperationException($"View '{viewName}' não encontrada.");
+            }
+
+            var view = viewEngineResult.View;
+            using (var writer = new StringWriter())
+            {
+                var viewContext = new ViewContext(
+                    actionContext,
+                    view,
+                    new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                    {
+                        Model = model
+                    },
+                    new TempDataDictionary(httpContext, _tempDataProvider),
+                    writer,
+                    new HtmlHelperOptions()
+                );
+
+                await view.RenderAsync(viewContext);
+                return writer.ToString();
+            }
         }
 
         private string ObterTipoArquivo(string fileName)

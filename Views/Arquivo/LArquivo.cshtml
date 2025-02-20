@@ -77,19 +77,19 @@
                                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vArquivo"))
                                         {
                                             <a asp-controller="Arquivos" asp-action="Download" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Baixar arquivo">
-                                                <i class="bx bx-download bx-xs"></i>
+                                                <i class="bx bx-download"></i>
                                             </a>
                                         }
                                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eArquivo"))
                                         {
                                             <a asp-controller="Arquivos" asp-action="Editar" asp-route-id="@archive.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar">
-                                                <i class="bx bx-edit bx-xs"></i>
+                                                <i class="bx bx-edit"></i>
                                             </a>
                                         }
                                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "dCategoria"))
                                         {
                                             <a href="#modal-excluir" data-id="@archive.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir arquivo">
-                                                <i class="bx bx-trash-alt bx-xs"></i>
+                                                <i class="bx bx-trash-alt"></i>
                                             </a>
                                         }
                                     </td>

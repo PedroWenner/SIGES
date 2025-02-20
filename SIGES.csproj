@@ -42,6 +42,7 @@
 		<PackageReference Include="pix-payload-generator.net" Version="1.0.21" />
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="PuppeteerSharp" Version="20.1.2" />
 		<PackageReference Include="QRCoder" Version="1.6.0" />
 		<PackageReference Include="ZXing.Net" Version="0.16.9" />
   </ItemGroup>
