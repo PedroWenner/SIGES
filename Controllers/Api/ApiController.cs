@@ -3,6 +3,7 @@ using SIGES.Attributes;
 using SIGES.Interfaces;
 using SIGES.Models;
 using SIGES.Models.Requests;
+using SIGES.Repositorios;
 using System.Diagnostics.Metrics;
 using System.Text.RegularExpressions;
 
@@ -18,9 +19,10 @@ namespace SIGES.Controllers.Api
         private readonly IItensVenda _itensVendasRepository;
         private readonly IOs _osRepository;
         private readonly IClienteRepositorio _clienteRepository;
+        private readonly IRepository<LancamentoModel> _lancamentoRepository;
 
         public ApiController(ICobranca cobrancaRepository, IPaymentGateway paymentGateway, IVenda vendaRepository,
-            IOs osRepository, IItensVenda itensVendasRepository, IClienteRepositorio clienteRepository)
+            IOs osRepository, IItensVenda itensVendasRepository, IClienteRepositorio clienteRepository, IRepository<LancamentoModel> lancamentoRepository)
         {
             _cobrancaRepository = cobrancaRepository;
             _paymentGateway = paymentGateway;
@@ -28,6 +30,7 @@ namespace SIGES.Controllers.Api
             _osRepository = osRepository;
             _itensVendasRepository = itensVendasRepository;
             _clienteRepository = clienteRepository;
+            _lancamentoRepository = lancamentoRepository;
         }
 
         [HttpPost("adicionar")]
@@ -238,12 +241,70 @@ namespace SIGES.Controllers.Api
 
         public async Task<IActionResult> Faturar([FromBody] FaturaRequest request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok(new { Status = "Erro!", Message = "Erro ao gerar cobrança!", Acao = "error" });
-            }
+                if (!ModelState.IsValid)
+                {
+                    return Ok(new { Status = "Erro!", Message = "Erro ao gerar cobrança!", Acao = "error" });
+                }
 
-            return Ok(new { Status = "Erro!", Message = "Erro ao gerar cobrança!", Acao = "error" });
+                if (request.Grupo == "venda")
+                {
+                    var venda = await _vendaRepository.ObterPorId(request.VendaId ?? 0);
+                    if (venda == null)
+                    {
+                        return Ok(new { Status = "Erro!", mensagem = "Venda não encontrada!", Acao = "error" });
+                    }
+
+                    if (request.ValorDesconto < 0)
+                        request.ValorDesconto = 0;
+
+                    if (request.ValorTotal <= 0)
+                    {
+                        return Ok(new { Status = "Erro!", mensagem = "Não é possível faturar venda sem produtos!", Acao = "error" });
+                    }
+
+                    var lancamento = new LancamentoModel
+                    {
+                        VendasId = request.VendaId,
+                        Descricao = request.Descricao,
+                        Valor = request.ValorTotal,
+                        Desconto = request.ValorTotal - request.ValorDesconto,
+                        ValorDesconto = request.ValorDesconto,
+                        ClientesId = request.ClienteId,
+                        DataVencimento = request.DataVencimento,
+                        DataPagamento = request.Recebido == 1 ? request.DataRecebimento : null,
+                        Baixado = request.Recebido,
+                        FormaPgto = request.Recebido == 1 ? request.FormaPgto : null,
+                        Tipo = request.Tipo,
+                        UsuariosId = int.Parse(User.FindFirst("UserId")?.Value ?? "0")
+                    };
+
+                    await _lancamentoRepository.Adicionar(lancamento);
+
+                    venda.Faturado = 1;
+                    venda.ValorTotal = request.ValorTotal;
+                    venda.Desconto = request.ValorTotal - request.ValorDesconto;
+                    venda.ValorDesconto = request.ValorDesconto;
+                    venda.LancamentoId = lancamento.Id;
+                    venda.Status = "Faturado";
+
+                    await _vendaRepository.Atualizar(venda);
+
+                    
+                    return Ok(new { Status = "Sucesso!", mensagem = "Venda faturada com sucesso!!", Acao = "success" });
+                }
+                else
+                {
+
+                }
+
+                return Ok(new { Status = "Erro!", mensagem = "Erro ao faturar!", Acao = "error" });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { Status = "Erro!", Message = ex.Message, Acao = "error" });
+            }
         }
     }
 }

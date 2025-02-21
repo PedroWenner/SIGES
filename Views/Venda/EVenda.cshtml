@@ -6,6 +6,7 @@
     decimal valorTotalProdutos = Model.Itens.Sum(i => i.Preco * i.Quantidade) ?? 0;
     decimal desconto = Model.Venda.Desconto ?? 0;
     decimal valorVendaComDesconto = valorTotalProdutos - desconto;
+    string disabled = Model.Venda.Faturado == 1 ? "disabled" : "";
 }
 
 <style>
@@ -106,6 +107,12 @@
                             <div class="col-md-4">
                                 <h6>Venda: #@Model.Venda.Id.ToString("d4")</h6>
                             </div>
+                            @if (Model.Venda.Faturado == 1)
+                            {
+                                <div class="col-md-8 text-md-end text-danger">
+                                    <h2>Venda faturada</h2>
+                                </div>
+                            }
                         </div>
 
                         <div class="row mb-3 mt-3">
@@ -199,6 +206,12 @@
                     <div class="container-fluid mt-3">
                         <div class="text-secondary-emphasis bg-light-subtle border border-secondary-subtle rounded-3 p-3">
                             <div class="row">
+                                @if (Model.Venda.Faturado == 1)
+                                {
+                                    <div class="col-md-12 text-md-end text-danger">
+                                        <h2>Venda faturada</h2>
+                                    </div>
+                                }
                                 <div class="col-md-12">
                                 
                                     <form id="formProdutos" method="post" asp-controller="Venda" asp-action="AdicionarProduto">
@@ -207,31 +220,34 @@
                                         <div class="row">
                                             <div class="col-md-6 mt-2">
                                                 <label for="produto" class="form-label">Produto</label>
-                                                <input id="produto" type="text" placeholder="Digite o nome do produto" />
+                                                <input id="produto" type="text" placeholder="Digite o nome do produto" @disabled />
                                                 <input id="produto-id" type="hidden" asp-for="Item.ProdutoId" />
                                                 <input id="venda-id" type="hidden" asp-for="Item.VendaId" value="@Model.Venda.Id" />
                                                 <span asp-validation-for="Item.ProdutoId" class="text-danger"></span>
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="preco" class="form-label">Preço</label>
-                                                <input id="preco" type="text" asp-for="Item.Preco" class="money" />
+                                                <input id="preco" type="text" name="Item.Preco" class="money" @disabled />
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="quantidade" class="form-label">Quantidade</label>
                                                 <div class="custom-counter">
-                                                    <input id="quantidade" type="text" asp-for="Item.Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                    <input id="quantidade" type="text" name="Item.Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
                                                         <button id="btn-decrement-quantidade" type="button" onclick="decrement('btn-decrement-quantidade', 'quantidade');">–</button>
                                                         <button id="btn-increment-quantidade" type="button" onclick="increment('btn-decrement-quantidade', 'quantidade');">+</button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
-                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                    <span class="button__text2">Adicionar</span>
-                                                </button>
-                                            </div>
+                                            @if (Model.Venda.Faturado == 0)
+                                            {
+                                                <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                                    <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                        <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                        <span class="button__text2">Adicionar</span>
+                                                    </button>
+                                                </div>
+                                            }
                                         </div>
                                     </form>
                                 </div>
@@ -248,27 +264,29 @@
                                         <div class="row">
                                             <div class="col-md-2 mt-2">
                                                 <label for="desconto" class="form-label">Desconto</label>                                            
-                                                <input id="desconto" type="text" asp-for="Venda.Desconto" class="money" required placeholder="0,00"
-                                                onchange="calcularTotalComDesconto(); return false;" />
+                                                <input id="desconto" type="text" name="Venda.Desconto" class="money" required placeholder="0,00"
+                                                onchange="calcularTotalComDesconto(); return false;" @disabled />
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="tipoDesconto" class="form-label">Tipo desc.</label>
-                                                <select id="tipoDesconto" asp-for="Venda.TipoDesconto" onchange="calcularTotalComDesconto(); return false;">
+                                                <select id="tipoDesconto" name="Venda.TipoDesconto" onchange="calcularTotalComDesconto(); return false;" @disabled>
                                                     <option value="real">R$</option>
                                                     <option value="porcento">%</option>
                                                 </select>
-                                                <span asp-validation-for="Venda.TipoDesconto" class="text-danger"></span>
                                             </div>
                                             <div class="col-md-3 mt-2">
                                                 <label for="valorDesconto" class="form-label">Total com desconto</label>
-                                                <input id="valorDesconto" type="text" asp-for="Venda.ValorDesconto" class="money" readonly placeholder="0,00" />
+                                                <input id="valorDesconto" type="text" name="Venda.ValorDesconto" class="money" readonly placeholder="0,00" @disabled />
                                             </div>
-                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
-                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                    <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
-                                                </button>
-                                            </div>
+                                            @if (Model.Venda.Faturado == 0)
+                                            {
+                                                <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                                    <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                        <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                        <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
+                                                    </button>
+                                                </div>
+                                            }
                                         </div>
                                     </form>
                                 </div>
@@ -303,11 +321,14 @@
                                             <td>
                                                 R$ @((item.Preco * item.Quantidade)?.ToString("N2"))
                                             </td>
-                                            <td>
-                                                <a role="button" data-item-id="@item.Id" data-venda-id="@Model.Venda.Id" class="btn-remover btn-nwe4 text-decoration-none">
-                                                    <i class="bx bx-trash-alt"></i>
-                                                </a>
-                                            </td>
+                                            @if (Model.Venda.Faturado == 0)
+                                            {
+                                                <td>
+                                                    <a role="button" data-item-id="@item.Id" data-venda-id="@Model.Venda.Id" class="btn-remover btn-nwe4 text-decoration-none">
+                                                        <i class="bx bx-trash-alt"></i>
+                                                    </a>
+                                                </td>
+                                            }
                                         </tr>
                                     }
                                 }
@@ -1065,16 +1086,16 @@
                     data: JSON.stringify(jsonData),
                     dataType: 'json',
                     success: function (response) {
-                        if (response.status === "success") {
+                        if (response.acao === "success") {
                             setTimeout(function () {
                                 $('#loading-spinner').hide();
                                 $('#btn-faturar').prop('disabled', false);
                                 $('#modal-faturar').hide();
 
                                 Swal.fire({
-                                    title: 'Sucesso!',
+                                    title: response.status,
                                     text: response.message,
-                                    icon: 'success',
+                                    icon: response.acao,
                                     confirmButtonText: 'OK',
                                     didOpen: () => {
                                         document.querySelector('#sidebar').style.position = 'static';
@@ -1091,7 +1112,7 @@
                             $('#btn-faturar').prop('disabled', false);
                             $('#modal-faturar').hide();
 
-                            Swal.fire("Erro!", response.message, "error").then(() => {
+                            Swal.fire(response.status, response.message, response.acao).then(() => {
                                 location.reload();
                             });
                         }

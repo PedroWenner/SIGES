@@ -1032,7 +1032,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$QwUVqIvTXqVHqPBuY0bYMeVTgyaJT0Ekc1GpnwFB4ZN3z58llE0ka",
+                            Senha = "$2a$11$cPLl04pENZw4GKZAZcbPJuZM6KFBYSAa4dI9nx/TZUne3.zricFWO",
                             Situacao = 1
                         });
                 });
@@ -1167,18 +1167,15 @@ namespace SIGES.Migrations
                 {
                     b.HasOne("SIGES.Models.CategoriaModel", "Categorias")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("CategoriasId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("CategoriasId");
 
                     b.HasOne("SIGES.Models.ClienteModel", "Clientes")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("ClientesId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ClientesId");
 
                     b.HasOne("SIGES.Models.ContasModel", "Contas")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("ContasId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ContasId");
 
                     b.HasOne("SIGES.Models.OsModel", "Os")
                         .WithMany("Lancamentos")
@@ -1187,13 +1184,11 @@ namespace SIGES.Migrations
 
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuarios")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("UsuariosId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("UsuariosId");
 
                     b.HasOne("SIGES.Models.VendaModel", "Venda")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("VendasId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("VendasId");
 
                     b.Navigation("Categorias");
 
