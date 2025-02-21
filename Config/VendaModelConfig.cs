@@ -24,16 +24,7 @@ namespace SIGES.Config
             builder.HasOne(o => o.Lancamento)
                    .WithMany(l => l.Vendas)
                    .HasForeignKey(o => o.LancamentoId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Property(e => e.ValorDesconto)
-                .HasPrecision(15, 2);
-
-            builder.Property(e => e.ValorTotal)
-                .HasPrecision(15, 2);
-
-            builder.Property(e => e.Desconto)
-                .HasPrecision(15, 2);
+                   .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

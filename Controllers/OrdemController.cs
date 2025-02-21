@@ -78,7 +78,7 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "Favor validar todos os campos obrigatórios." });
             }
 
-            os.faturado = 0;
+            os.Faturado = 0;
 
             try
             {
@@ -301,7 +301,7 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "OS não encontrada." });
             }
 
-            if (os.faturado == 1)
+            if (os.Faturado == 1)
             {
                 return Json(new { status = "error", message = "Não é possivel adicionar produtos. OS já faturada!" });
             }
@@ -379,8 +379,8 @@ namespace SIGES.Controllers
             {
                 return Json(new { status = "error", message = "OS não encontrada." });
             }
-
-            if (os.faturado == 1)
+            
+            if (os.Faturado == 1)
             {
                 return Json(new { status = "error", message = "Não é possivel excluir produtos. OS já faturada!" });
             }
@@ -439,7 +439,7 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "OS não encontrada." });
             }
 
-            if (os.faturado == 1)
+            if (os.Faturado == 1)
             {
                 return Json(new { status = "error", message = "Não é possivel adicionar produtos. OS já faturada!" });
             }
@@ -503,7 +503,7 @@ namespace SIGES.Controllers
                 return Json(new { status = "error", message = "OS não encontrada." });
             }
 
-            if (os.faturado == 1)
+            if (os.Faturado == 1)
             {
                 return Json(new { status = "error", message = "Não é possivel excluir produtos. OS já faturada!" });
             }
@@ -785,7 +785,7 @@ namespace SIGES.Controllers
             }
 
             string status = osExistente?.Status ?? "";
-            if (osExistente?.faturado == 1 || status == "Cancelado" || status == "Faturado")
+            if (osExistente?.Faturado == 1 || status == "Cancelado" || status == "Faturado")
             {
                 return Json(new { status = "error", message = "Não é possivel aplicar desconto. OS já faturada/cancelada!" });
             }
@@ -844,64 +844,6 @@ namespace SIGES.Controllers
             }
 
             return valorTotal - descontoDef;
-        }
-
-        [HttpPost("faturar")]
-        [Permissao("eOs", "Você não tem permissão para editar os!")]
-        public async Task<IActionResult> Faturar([FromForm] FaturarOsRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Json(new { result = false, mensagem = "Dados inválidos!" });
-            }
-
-            var os = await _osRepositorio.ObterPorId(request.OsId);
-            if (os == null)
-            {
-                return Json(new { result = false, mensagem = "OS não encontrada!" });
-            }
-
-            decimal valorTotal = request.Valor;
-            decimal valorComDesconto = request.FaturarDesconto;
-
-            if (valorComDesconto < 0)
-                valorComDesconto = 0;
-
-            var lancamento = new LancamentoModel
-            {
-                OsId = request.OsId,
-                Descricao = request.Descricao,
-                Valor = valorTotal,
-                Desconto = os.Desconto,
-                ValorDesconto = valorComDesconto,
-                ClientesId = request.ClienteId,
-                DataVencimento = request.DataVencimento,
-                DataPagamento = request.Recebido == 1 ? request.Recebimento : null,
-                Baixado = request.Recebido,
-                FormaPgto = request.FormaPgto,
-                Tipo = request.Tipo,
-                UsuariosId = int.Parse(User.FindFirst("UserId")?.Value ?? "0")
-            };
-
-            try
-            {
-                await _repositorioLancamento.Adicionar(lancamento);
-
-                os.faturado = 1;
-                os.ValorTotal = valorTotal;
-                os.Desconto = os.Desconto;
-                os.ValorDesconto = valorComDesconto;
-                os.Status = "Faturado";
-                os.LancamentoId = lancamento.Id;
-
-                await _osRepositorio.Atualizar(os);
-
-                return Json(new { result = true, mensagem = "OS faturada com sucesso!" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { result = false, mensagem = "Erro ao faturar OS: " + ex.Message });
-            }
         }
     }
 }

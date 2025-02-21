@@ -1,7 +1,19 @@
-﻿@model OsModel
+﻿@using System.Text.Json
+@using SIGES.Helpers
+@model OsModel
 
 @{
     ViewData["Titulo"] = "Adicionar OS";
+    var opcoesStatus = JsonSerializer.Deserialize<List<string>>(ConfiguracaoHelper.ObterValor("os_status_list")) ?? new List<string>();
+
+    if (!opcoesStatus.Any())
+    {
+        opcoesStatus = new List<string>
+        {
+            "Aberto", "Faturado", "Negociação", "Em Andamento", "Orçamento",
+            "Finalizado", "Cancelado", "Aguardando Peças", "Aprovado"
+        };
+    }
 }
 
 <link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
@@ -112,13 +124,10 @@
                             <div class="col-md-3 mt-3">
                                 <label for="status" class="form-label">Status</label>
                                 <select asp-for="Status" id="status" required>
-                                    <option value="Orçamento">Orçamento</option>
-                                    <option value="Aberto">Aberto</option>
-                                    <option value="Em Andamento">Em Andamento</option>
-                                    <option value="Finalizado">Finalizado</option>
-                                    <option value="Cancelado">Cancelado</option>
-                                    <option value="Aguardando Peças">Aguardando Peças</option>
-                                    <option value="Aprovado">Aprovado</option>
+                                    @foreach (var opcao in opcoesStatus)
+                                    {
+                                        <option value="@opcao">@opcao</option>
+                                    }
                                 </select>
                                 <span asp-validation-for="Status" class="text-danger"></span>
                             </div>

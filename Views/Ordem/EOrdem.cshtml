@@ -1,115 +1,127 @@
 ﻿@using SIGES.Helpers
 @using SIGES.Interfaces
+@using System.Text.Json
 @model OsEmailViewModel
 
 @{
     ViewData["Titulo"] = "Editar OS";
     decimal totalProdutos = Model.Produtos.Sum(i => i.SubTotal);
     decimal totalServicos = Model.Servicos.Sum(i => i.SubTotal ?? 0);
-    decimal valorTotalOs = Model.Os.ValorDesconto > 0 ? Model.Os.ValorDesconto : totalProdutos + totalServicos;
+    decimal valorTotalOs = Model.Os?.ValorDesconto > 0 ? Model.Os.ValorDesconto : totalProdutos + totalServicos;
+    string disabled = Model.Os?.Faturado == 1 ? "disabled" : "";
+    var opcoesStatus = JsonSerializer.Deserialize<List<string>>(ConfiguracaoHelper.ObterValor("os_status_list")) ?? new List<string>();
+
+    if (!opcoesStatus.Any())
+    {
+        opcoesStatus = new List<string>
+        {
+            "Aberto", "Faturado", "Negociação", "Em Andamento", "Orçamento",
+            "Finalizado", "Cancelado", "Aguardando Peças", "Aprovado"
+        };
+    }
 }
 
 <link rel="stylesheet" href="~/trumbowyg/dist/ui/trumbowyg.css">
 
 <style>
     .custom-counter {
-        display: flex;
-        align-items: center;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #fff;
-        justify-content: space-between;
-        transition: border 0.3s ease;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    justify-content: space-between;
+    transition: border 0.3s ease;
     }
 
     .custom-counter:focus-within {
-        border: 1px solid #aaa;
+    border: 1px solid #aaa;
     }
 
     .custom-counter input[type="text"] {
-        border: none;
-        outline: none;
-        text-align: center;
-        font-size: 14px;
-        color: #333;
-        background: transparent;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    background: transparent;
     }
 
     .custom-counter input::placeholder {
-        color: #bbb;
-        font-style: italic;
+    color: #bbb;
+    font-style: italic;
     }
 
     .counter-buttons {
-        display: flex;
-        gap: 8px;
-        padding-right: 10px;
+    display: flex;
+    gap: 8px;
+    padding-right: 10px;
     }
 
     .counter-buttons button {
-        background: none;
-        border: none;
-        color: #aaa;
-        font-size: 18px;
-        cursor: pointer;
-        transition: color 0.3s ease;
-        padding: 0;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 0;
     }
 
     .counter-buttons button:hover {
-        color: #333;
+    color: #333;
     }
 
     .counter-buttons button:disabled {
-        color: #ddd;
-        cursor: default;
+    color: #ddd;
+    cursor: default;
     }
 
     #ui-datepicker-div {
-        z-index: 100000 !important;
+    z-index: 100000 !important;
     }
 
     .card-custom {
-        height: 250px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     }
 
     .card-custom:hover {
-        transform: scale(1.05);
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease-in-out;
+    transform: scale(1.05);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
     }
 
     .card-body-custom {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     }
 
     .card-custom img {
-        width: 100%;
-        height: 120px;
-        object-fit: cover;
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
     }
 
     .text-truncate-custom {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     }
 
     .password-container {
-        position: relative;
+    position: relative;
     }
 
     .toggle-datetime {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #888;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
     }
 </style>
 
@@ -121,7 +133,7 @@
         <div class="card-body">
 
             <div class="buttons d-flex flex-wrap gap-2">
-                @if (Model.Os?.faturado == 0)
+                @if (Model.Os?.Faturado == 0)
                 {
                     <a href="#modal-faturar" id="btn-faturar" role="button" class="button btn btn-mini btn-danger" data-bs-target="#modal-faturar" data-bs-toggle="modal">
                         <span class="button__icon"><i class='bx bx-dollar'></i></span>
@@ -220,13 +232,10 @@
                             <div class="col-md-3 mt-2">
                                 <label for="status" class="form-label">Status</label>
                                 <select asp-for="Os.Status" id="status" required>
-                                    <option value="Orçamento">Orçamento</option>
-                                    <option value="Aberto">Aberto</option>
-                                    <option value="Em Andamento">Em Andamento</option>
-                                    <option value="Finalizado">Finalizado</option>
-                                    <option value="Cancelado">Cancelado</option>
-                                    <option value="Aguardando Peças">Aguardando Peças</option>
-                                    <option value="Aprovado">Aprovado</option>
+                                    @foreach (var opcao in opcoesStatus)
+                                    {
+                                        <option value="@opcao">@opcao</option>
+                                    }
                                 </select>
                                 <span asp-validation-for="Os.Status" class="text-danger"></span>
                             </div>
@@ -324,7 +333,7 @@
 
                                             <div class="col-lg-2 col-md-1">
                                                 <label for="tipo-desconto" class="form-label">Preço</label>
-                                                <select id="tipo-desconto" name="TipoDesconto" onchange="calcularDesconto(); return false;">
+                                                <select id="tipo-desconto" name="TipoDesconto" onchange="calcularDesconto(); return false;" @disabled>
                                                     <option value="real">R$</option>
                                                     <option value="porcento">%</option>
                                                 </select>
@@ -332,16 +341,16 @@
 
                                             <div class="col-lg-2 col-md-2">
                                                 <label for="desconto" class="form-label">Desconto</label>
-                                                <input id="desconto" type="text" name="Desconto" placeholder="0,00" class="money" onchange="calcularDesconto(); return false;" required />
+                                                <input id="desconto" type="text" name="Desconto" placeholder="0,00" class="money" onchange="calcularDesconto(); return false;" required @disabled />
                                             </div>
 
                                             <div class="col-lg-2 col-md-2">
                                                 <label for="valor-desconto" class="form-label">Total com desconto</label>
-                                                <input id="valor-desconto" type="text" name="ValorDesconto" placeholder="0,00" class="money" required />
+                                                <input id="valor-desconto" type="text" name="ValorDesconto" placeholder="0,00" class="money" required @disabled />
                                             </div>
 
                                             <div class="col-lg-3 col-md-12 d-flex align-items-end">
-                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Aplicar</span>
                                                 </button>
@@ -366,28 +375,28 @@
                                         <div class="row g-3">
                                             <div class="col-lg-5 col-md-6">
                                                 <label for="produto" class="form-label">Produto</label>
-                                                <input id="produto" type="text" placeholder="Digite o nome do produto" />
+                                                <input id="produto" type="text" placeholder="Digite o nome do produto" @disabled />
                                                 <input id="produto-id" type="hidden" name="ProdutosId" />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="produto-preco" class="form-label">Preço</label>
-                                                <input id="produto-preco" type="text" name="Preco" class="money" placeholder="Preço" />
+                                                <input id="produto-preco" type="text" name="Preco" class="money" placeholder="Preço" @disabled />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="produto-quantidade" class="form-label">Quantidade</label>
                                                 <div class="custom-counter">
-                                                    <input id="produto-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                    <input id="produto-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
-                                                        <button id="btn-decrement-produto" type="button" onclick="decrement('btn-decrement-produto', 'produto-quantidade');">–</button>
-                                                        <button id="btn-increment-produto" type="button" onclick="increment('btn-decrement-produto', 'produto-quantidade');">+</button>
+                                                        <button id="btn-decrement-produto" type="button" onclick="decrement('btn-decrement-produto', 'produto-quantidade');" @disabled>–</button>
+                                                        <button id="btn-increment-produto" type="button" onclick="increment('btn-decrement-produto', 'produto-quantidade');" @disabled>+</button>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-3 col-md-12 d-flex align-items-end">
-                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Adicionar</span>
                                                 </button>
@@ -425,7 +434,7 @@
                                                     <td class="text-right">
                                                         @if (Model.Os?.Status != "cancelado")
                                                         {
-                                                            <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
+                                                            <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto" @disabled>
                                                                 <i class="bx bx-trash-alt bx-xs"></i>
                                                             </a>
                                                         }
@@ -468,28 +477,28 @@
                                         <div class="row g-3">
                                             <div class="col-lg-5 col-md-6">
                                                 <label for="servico" class="form-label">Serviço</label>
-                                                <input id="servico" type="text" placeholder="Digite o nome do serviço" />
+                                                <input id="servico" type="text" placeholder="Digite o nome do serviço" @disabled />
                                                 <input id="servico-id" type="hidden" name="ServicosId" />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="servico-preco" class="form-label">Preço</label>
-                                                <input id="servico-preco" type="text" name="Preco" class="money" placeholder="Preço" />
+                                                <input id="servico-preco" type="text" name="Preco" class="money" placeholder="Preço" @disabled />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="servico-quantidade" class="form-label">Quantidade</label>
                                                 <div class="custom-counter">
-                                                    <input id="servico-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" />
+                                                    <input id="servico-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
-                                                        <button id="btn-decrement-servico" type="button" onclick="decrement('btn-decrement-servico', 'servico-quantidade');">–</button>
-                                                        <button id="btn-increment-servico" type="button" onclick="increment('btn-decrement-servico', 'servico-quantidade');">+</button>
+                                                        <button id="btn-decrement-servico" type="button" onclick="decrement('btn-decrement-servico', 'servico-quantidade');" @disabled>–</button>
+                                                        <button id="btn-increment-servico" type="button" onclick="increment('btn-decrement-servico', 'servico-quantidade');" @disabled>+</button>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-3 col-md-12 d-flex align-items-end">
-                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Adicionar</span>
                                                 </button>
@@ -527,7 +536,7 @@
                                                     <td class="text-right">
                                                         @if (Model.Os?.Status != "cancelado")
                                                         {
-                                                            <a data-id="@s.Id" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
+                                                            <a data-id="@s.Id" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço" @disabled>
                                                                 <i class="bx bx-trash-alt bx-xs"></i>
                                                             </a>
                                                         }
@@ -718,10 +727,14 @@
 </div>
 
 <!-- Modal Faturar-->
-<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="modal-faturar" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="formFaturar" method="post">
+                <input type="hidden" name="ClienteId" value="@Model?.Os?.ClientesId">
+                <input type="hidden" name="OsId" id="osId" value="@Model?.Os?.Id">
+                <input type="hidden" name="Grupo" value="os">
+
                 <div class="modal-header">
                     <h5 class="modal-title fs-5">Faturar venda</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -735,20 +748,18 @@
                     <div class="col-md-12 mt-2">
                         <div class="col-md-12 mt-2" style="margin-left: 0">
                             <label for="cliente">Cliente</label>
-                            <input class="col-md-12" id="cliente" type="text" name="Cliente" value="@Model?.Os?.Clientes?.Nome" required />
-                            <input type="hidden" name="clienteId" id="ClienteId" value="@Model?.Os?.ClientesId">
-                            <input type="hidden" name="OsId" id="osId" value="@Model?.Os?.Id">
+                            <input class="col-md-12" id="cliente" type="text" name="Cliente" value="@Model?.Os?.Clientes?.Nome" required readonly />
                         </div>
                     </div>
                     <div class="col-md-12 mt-2">
                         <div class="col-md-5 mt-2" style="margin-left: 0;">
                             <label for="valor">Valor</label>
-                            <input type="hidden" id="tipo" name="Tipo" value="receita" />
-                            <input class="col-md-12 money" id="Valor" type="text" name="Valor" value="@((totalProdutos + totalServicos).ToString("N2"))" required />
+                            <input type="hidden" id="Tipo" name="Tipo" value="receita" />
+                            <input class="col-md-12 money" id="Valor" type="text" name="ValorTotal" value="@((totalProdutos + totalServicos).ToString("N2"))" required readonly />
                         </div>
                         <div class="col-md-5 mt-2" style="margin-left: 2px;">
-                            <label for="faturar-desconto">Valor Com Desconto</label>
-                            <input class="col-md-12 money" id="faturar-desconto" type="text" name="FaturarDesconto" value="@valorTotalOs.ToString("N2")" required />
+                            <label for="faturar-desconto">Valor com desconto</label>
+                            <input class="col-md-12 money" id="faturar-desconto" type="text" name="ValorDesconto" value="@valorTotalOs.ToString("N2")" required readonly />
                         </div>
                     </div>
                     <div class="col-md-12 mt-2" style="margin-left: 0; margin-bottom: 10px;">
@@ -764,10 +775,10 @@
                                 <label class="form-check-label" for="recebido">Recebido</label>
                             </div>
                         </div>
-                        <div id="divRecebimento" class="span8" style=" display: none">
+                        <div id="divRecebimento" class="col-md-12" style=" display: none">
                             <div class="col-md-6 mt-2">
                                 <label for="recebimento">Data Recebimento</label>
-                                <input class="col-md-12 datetime" autocomplete="off" id="recebimento" type="text" name="Recebimento" />
+                                <input class="col-md-12 datetime" id="recebimento" type="text" name="DataRecebimento" />
                             </div>
                             <div class="col-md-6 mt-2">
                                 <label for="formaPgto">Forma Pgto</label>
@@ -785,10 +796,17 @@
                     </div>
                 </div>
                 <div class="modal-footer" style="display:flex">
-                    <button class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true" id="btn-cancelar-faturar">
+                    <button class="button btn btn-warning" data-bs-dismiss="modal" id="btn-cancelar-faturar">
                         <span class="button__icon"><i class="bx bx-x"></i></span><span class="button__text2">Cancelar</span>
                     </button>
-                    <button class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                    <button id="btn-faturar" class="button btn btn-danger"><span class="button__icon"><i class='bx bx-dollar'></i></span> <span class="button__text2">Faturar</span></button>
+                </div>
+                <!-- Spinner de carregamento -->
+                <div id="loading-spinner" style="display: none; text-align: center; padding: 20px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p>Faturando ordem de serviço, aguarde...</p>
                 </div>
             </form>
         </div>
@@ -889,46 +907,89 @@
             }
         },
         submitHandler: function (form) {
-            var dados = $(form).serialize();
-            var qtdProdutos = $('.tblProdutos > tbody > tr').length;
-            var qtdServicos = $('.tblServicos > tbody > tr').length;
-            var qtdTotalProdutosServicos = qtdProdutos + qtdServicos;
+            var dados = $(form).serializeArray();
+            var jsonData = {};
 
-            $('#btn-cancelar-faturar').trigger('click');
+            $.each(dados, function (index, field) {
+                if (field.name === 'DataVencimento' || field.name === 'DataRecebimento') {
+                    jsonData[field.name] = formatarDataParaAPI(field.value);
+                } else if (field.name === 'ValorTotal' || field.name === 'ValorDesconto') {
+                    jsonData[field.name] = formatarDecimalParaAPI(field.value);
+                } else {
+                    jsonData[field.name] = field.value;
+                }
+            });
 
-            if (qtdTotalProdutosServicos <= 0) {
-                Swal.fire({
-                    type: "error",
-                    title: "Atenção",
-                    text: "Não é possível faturar uma OS sem serviços e/ou produtos"
-                });
-            } else if (qtdTotalProdutosServicos > 0) {
-                $.ajax({
-                    type: "POST",
-                    url: "/os/faturar/",
-                    data: dados,
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.result == true) {
+            $('#loading-spinner').show();
+            $('#btn-faturar').prop('disabled', true);
+
+            console.log(jsonData);
+           
+            $.ajax({
+                type: "POST",
+                url: "/api/v1/faturar",
+                contentType: "application/json",
+                data: JSON.stringify(jsonData),
+                dataType: 'json',
+                success: function (response) {
+                    if (response.acao === "success") {
+                        setTimeout(function () {
+                            $('#loading-spinner').hide();
+                            $('#btn-faturar').prop('disabled', false);
+                            $('#modal-faturar').hide();
+
                             Swal.fire({
-                                    icon: "success",
-                                    title: "Sucesso",
-                                    text: data.mensagem
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                        } else {
-                            Swal.fire({
-                                type: "error",
-                                title: "Atenção",
-                                text: "Ocorreu um erro ao tentar faturar OS."
+                                title: response.status,
+                                text: response.message,
+                                icon: response.acao,
+                                confirmButtonText: 'OK',
+                                didOpen: () => {
+                                    document.querySelector('#sidebar').style.position = 'static';
+                                },
+                                didClose: () => {
+                                    document.querySelector('#sidebar').style.position = 'fixed';
+                                }
+                            }).then(() => {
+                                location.reload();
                             });
-                        }
-                    }
-                });
+                        }, 1500);
+                    } else {
+                        $('#loading-spinner').hide();
+                        $('#btn-faturar').prop('disabled', false);
+                        $('#modal-faturar').hide();
 
-                return false;
-            }
+                        Swal.fire(response.status, response.message, response.acao).then(() => {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Erro na requisição:", xhr.responseText);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro",
+                        text: "Erro ao enviar os dados: " + xhr.responseText
+                    });
+                }
+            });
+
+            return false;
         }
     });
+
+    function formatarDecimalParaAPI(valor) {
+        return valor.replace(/\./g, '').replace(',', '.');
+    }
+
+    function formatarDataParaAPI(data) {
+        if (data === '')
+            return null;
+
+        var partes = data.split('/');
+        var dia = partes[0];
+        var mes = partes[1];
+        var ano = partes[2];
+
+        return `${ano}-${mes}-${dia}`;
+    }
 </script>

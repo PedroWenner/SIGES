@@ -104,10 +104,13 @@ namespace SIGES.Controllers.Api
             }
 
             // Obter produtos e serviços
-            var produtos = (tipo == "venda"
-                ? _itensVendasRepository.ObterPorVendaId(id)
-                : _itensVendasRepository.ObterPorVendaId(id)
-            ).ToList();
+            var produtos = _itensVendasRepository.ObterPorVendaId(id).ToList();
+            
+            if (tipo == "os")
+            {
+                produtos = null;
+                //produtos = _osRepository.GetProdutos(id).ToList() ?? new List<ProdutosOs>();
+            }
 
             var servicos = (tipo == "venda"
                 ? new List<ServicosOs>()
@@ -237,8 +240,6 @@ namespace SIGES.Controllers.Api
         }
 
         [HttpPost("faturar")]
-        [Permissao("eVenda", "Você não tem permissão para adicionar cobrança!")]
-
         public async Task<IActionResult> Faturar([FromBody] FaturaRequest request)
         {
             try
@@ -253,7 +254,7 @@ namespace SIGES.Controllers.Api
                     var venda = await _vendaRepository.ObterPorId(request.VendaId ?? 0);
                     if (venda == null)
                     {
-                        return Ok(new { Status = "Erro!", mensagem = "Venda não encontrada!", Acao = "error" });
+                        return Ok(new { Status = "Erro!", Message = "Venda não encontrada!", Acao = "error" });
                     }
 
                     if (request.ValorDesconto < 0)
@@ -261,7 +262,7 @@ namespace SIGES.Controllers.Api
 
                     if (request.ValorTotal <= 0)
                     {
-                        return Ok(new { Status = "Erro!", mensagem = "Não é possível faturar venda sem produtos!", Acao = "error" });
+                        return Ok(new { Status = "Erro!", Message = "Não é possível faturar venda sem produtos!", Acao = "error" });
                     }
 
                     var lancamento = new LancamentoModel
@@ -292,14 +293,54 @@ namespace SIGES.Controllers.Api
                     await _vendaRepository.Atualizar(venda);
 
                     
-                    return Ok(new { Status = "Sucesso!", mensagem = "Venda faturada com sucesso!!", Acao = "success" });
+                    return Ok(new { Status = "Sucesso!", Message = "Venda faturada com sucesso!", Acao = "success" });
                 }
                 else
                 {
+                    var os = await _osRepository.ObterPorId(request.OsId ?? 0);
+                    if (os == null)
+                    {
+                        return Ok(new { Status = "Erro!", Message = "Ordem de serviço não encontrada!", Acao = "error" });
+                    }
 
+                    if (request.ValorDesconto < 0)
+                        request.ValorDesconto = 0;
+
+                    if (request.ValorTotal <= 0)
+                    {
+                        return Ok(new { Status = "Erro!", Message = "Não é possível faturar ordem de serviço sem produtos/serviços!", Acao = "error" });
+                    }
+
+                    var lancamento = new LancamentoModel
+                    {
+                        VendasId = request.VendaId,
+                        Descricao = request.Descricao,
+                        Valor = request.ValorTotal,
+                        Desconto = request.ValorTotal - request.ValorDesconto,
+                        ValorDesconto = request.ValorDesconto,
+                        ClientesId = request.ClienteId,
+                        DataVencimento = request.DataVencimento,
+                        DataPagamento = request.Recebido == 1 ? request.DataRecebimento : null,
+                        Baixado = request.Recebido,
+                        FormaPgto = request.Recebido == 1 ? request.FormaPgto : null,
+                        Tipo = request.Tipo,
+                        UsuariosId = int.Parse(User.FindFirst("UserId")?.Value ?? "0")
+                    };
+
+                    await _lancamentoRepository.Adicionar(lancamento);
+
+                    os.Faturado = 1;
+                    os.ValorTotal = request.ValorTotal;
+                    os.Desconto = request.ValorTotal - request.ValorDesconto;
+                    os.ValorDesconto = request.ValorDesconto;
+                    os.LancamentoId = lancamento.Id;
+                    os.Status = "Faturado";
+
+                    await _osRepository.Atualizar(os);
+
+
+                    return Ok(new { Status = "Sucesso!", Message = "Ordem de serviço faturada com sucesso!", Acao = "success" });
                 }
-
-                return Ok(new { Status = "Erro!", mensagem = "Erro ao faturar!", Acao = "error" });
             }
             catch (Exception ex)
             {

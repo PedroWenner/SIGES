@@ -58,7 +58,7 @@ namespace SIGES.Models
         public int? LancamentoId { get; set; }
 
         [Column("faturado")]
-        public int? faturado { get; set; } = 0;
+        public int? Faturado { get; set; } = 0;
 
         [Column("garantias_id")]
         public int? GarantiasId { get; set; }

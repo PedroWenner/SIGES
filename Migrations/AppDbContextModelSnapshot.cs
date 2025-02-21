@@ -1032,7 +1032,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$cPLl04pENZw4GKZAZcbPJuZM6KFBYSAa4dI9nx/TZUne3.zricFWO",
+                            Senha = "$2a$11$E1PN1zRTAY4hpTiFxNECWO4UnWBkuskqQbrhUioVUfRpBUDSEKbYO",
                             Situacao = 1
                         });
                 });
@@ -1052,7 +1052,6 @@ namespace SIGES.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<decimal?>("Desconto")
-                        .HasPrecision(15, 2)
                         .HasColumnType("decimal(15,2)");
 
                     b.Property<int?>("Faturado")
@@ -1081,11 +1080,9 @@ namespace SIGES.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("ValorDesconto")
-                        .HasPrecision(15, 2)
                         .HasColumnType("decimal(15,2)");
 
                     b.Property<decimal?>("ValorTotal")
-                        .HasPrecision(15, 2)
                         .HasColumnType("decimal(15,2)");
 
                     b.HasKey("Id");
@@ -1167,15 +1164,18 @@ namespace SIGES.Migrations
                 {
                     b.HasOne("SIGES.Models.CategoriaModel", "Categorias")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("CategoriasId");
+                        .HasForeignKey("CategoriasId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SIGES.Models.ClienteModel", "Clientes")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("ClientesId");
+                        .HasForeignKey("ClientesId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SIGES.Models.ContasModel", "Contas")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("ContasId");
+                        .HasForeignKey("ContasId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SIGES.Models.OsModel", "Os")
                         .WithMany("Lancamentos")
@@ -1184,11 +1184,13 @@ namespace SIGES.Migrations
 
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuarios")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("UsuariosId");
+                        .HasForeignKey("UsuariosId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SIGES.Models.VendaModel", "Venda")
                         .WithMany("Lancamentos")
-                        .HasForeignKey("VendasId");
+                        .HasForeignKey("VendasId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Categorias");
 
@@ -1295,7 +1297,7 @@ namespace SIGES.Migrations
                     b.HasOne("SIGES.Models.LancamentoModel", "Lancamento")
                         .WithMany("Vendas")
                         .HasForeignKey("LancamentoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("SIGES.Models.UsuarioModel", "Usuario")
                         .WithMany("Vendas")

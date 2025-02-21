@@ -11,32 +11,38 @@ namespace SIGES.Config
             // Relacionamento Lançamento -> Cliente
             builder.HasOne(o => o.Clientes)
                    .WithMany(c => c.Lancamentos)
-                   .HasForeignKey(o => o.ClientesId);
+                   .HasForeignKey(o => o.ClientesId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Categorias
             builder.HasOne(o => o.Categorias)
                    .WithMany(u => u.Lancamentos)
-                   .HasForeignKey(o => o.CategoriasId);
+                   .HasForeignKey(o => o.CategoriasId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Vendas
             builder.HasOne(o => o.Venda)
                    .WithMany(l => l.Lancamentos)
-                   .HasForeignKey(o => o.VendasId);
+                   .HasForeignKey(o => o.VendasId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Vendas
             builder.HasOne(o => o.Contas)
                    .WithMany(l => l.Lancamentos)
-                   .HasForeignKey(o => o.ContasId);
+                   .HasForeignKey(o => o.ContasId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Vendas
             builder.HasOne(o => o.Usuarios)
                    .WithMany(l => l.Lancamentos)
-                   .HasForeignKey(o => o.UsuariosId);
+                   .HasForeignKey(o => o.UsuariosId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             // Relacionamento Lançamento -> Os
             builder.HasOne(o => o.Os)
                    .WithMany(l => l.Lancamentos)
-                   .HasForeignKey(o => o.OsId);
+                   .HasForeignKey(o => o.OsId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
