@@ -112,8 +112,8 @@
                                 @foreach (var item in Model.ItensVenda)
                                 {
                                     
-                                    int qtd = item.Quantidade ?? 0;
-                                    decimal preco = item.Preco ?? 0;
+                                    int qtd = item.Quantidade;
+                                    decimal preco = item.Preco;
                                     totalProdutos += (qtd * preco);
 
                                     <tr>

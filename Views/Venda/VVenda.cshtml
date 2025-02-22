@@ -144,22 +144,22 @@
                                 <td>@item.Produto.CodigoBarras</td>
                                 <td>@item.Produto.Descricao</td>
                                 <td>@item.Quantidade</td>
-                                <td>@Convert.ToDecimal(@item.Preco).ToString("C")</td>
-                                <td>@Convert.ToDecimal(@item.SubTotal).ToString("C")</td>
+                                <td>R$ @item.Preco.ToString("N2")</td>
+                                <td>R$ @item.SubTotal?.ToString("N2")</td>
                             </tr>
                         }
                         <tr>
                             <td colspan="4" style="text-align: right"><strong>Total:</strong></td>
-                            <td><strong>R$ @Model.Itens.Sum(i => i.Preco * i.Quantidade)?.ToString("n2")</strong></td>
+                            <td><strong>R$ @Model.Itens.Sum(i => i.SubTotal)?.ToString("n2")</strong></td>
                         </tr>
                     </tbody>
                 </table>
                 <hr />
-                <h6 style="text-align: right">Total: R$ @(Model.Itens.Sum(i => i.Preco * i.Quantidade)?.ToString("N2"))</h6>
+                <h6 style="text-align: right">Total: R$ @(Model.Itens.Sum(i => i.SubTotal)?.ToString("N2"))</h6>
                 @if (Model.Venda.Desconto != 0 && Model.Venda.Desconto != null)
                 {
                     <h6 style="text-align: right">Desconto: R$ @Model.Venda.Desconto?.ToString("N2")</h6>
-                    <h6 style="text-align: right">Total Com Desconto: R$ @((Model.Itens.Sum(i => i.Preco * i.Quantidade) - Model.Venda.Desconto)?.ToString("N2"))</h6>
+                    <h6 style="text-align: right">Total Com Desconto: R$ @((Model.Itens.Sum(i => i.SubTotal) - Model.Venda.Desconto)?.ToString("N2"))</h6>
                 }
             </div>
 

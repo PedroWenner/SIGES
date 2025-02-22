@@ -11,13 +11,14 @@ namespace SIGES.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        
+        [Column(TypeName = "decimal(15,2)")]
+        public decimal? SubTotal { get; set; } = 0;
 
-        public string? SubTotal { get; set; }
-
-        public int? Quantidade { get; set; }
+        public int Quantidade { get; set; }
 
         [Column(TypeName = "decimal(15,2)")]
-        public decimal? Preco {  get; set; }
+        public decimal Preco {  get; set; }
 
         [IgnoreLog]
         public int VendaId { get; set; }

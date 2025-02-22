@@ -49,7 +49,7 @@ namespace SIGES.Repositorios
             if (item != null)
             {
                 // Repor a quantidade no estoque do produto
-                item.Produto.Estoque += item.Quantidade ?? 0;
+                item.Produto.Estoque += item.Quantidade;
 
                 _context.ItensVenda.Remove(item);
                 await _context.SaveChangesAsync();

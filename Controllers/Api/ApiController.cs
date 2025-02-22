@@ -140,8 +140,8 @@ namespace SIGES.Controllers.Api
                 tipoDesconto = os?.TipoDesconto ?? "real";
             }
 
-            decimal qtd = produtos.Sum(x => x.Quantidade) ?? 0;
-            decimal valor = produtos.Sum(x => x.Preco) ?? 0;
+            decimal qtd = produtos.Sum(x => x.Quantidade);
+            decimal valor = produtos.Sum(x => x.Preco);
 
             decimal totalProdutos = valor * qtd;
             decimal totalServicos = servicos.Sum(x => x.Preco * Convert.ToDecimal(x.Quantidade) ?? 0);

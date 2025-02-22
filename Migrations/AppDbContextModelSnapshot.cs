@@ -505,18 +505,18 @@ namespace SIGES.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("Preco")
+                    b.Property<decimal>("Preco")
                         .HasPrecision(15, 2)
                         .HasColumnType("decimal(15,2)");
 
                     b.Property<int>("ProdutoId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Quantidade")
+                    b.Property<int>("Quantidade")
                         .HasColumnType("int");
 
-                    b.Property<string>("SubTotal")
-                        .HasColumnType("longtext");
+                    b.Property<decimal?>("SubTotal")
+                        .HasColumnType("decimal(15,2)");
 
                     b.Property<int>("VendaId")
                         .HasColumnType("int");
@@ -700,6 +700,10 @@ namespace SIGES.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("descricao_produto");
 
+                    b.Property<int?>("Faturado")
+                        .HasColumnType("int")
+                        .HasColumnName("faturado");
+
                     b.Property<string>("Garantia")
                         .HasColumnType("longtext")
                         .HasColumnName("garantia");
@@ -739,10 +743,6 @@ namespace SIGES.Migrations
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(15,2)")
                         .HasColumnName("valor_total");
-
-                    b.Property<int?>("faturado")
-                        .HasColumnType("int")
-                        .HasColumnName("faturado");
 
                     b.HasKey("Id");
 
@@ -1032,7 +1032,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$E1PN1zRTAY4hpTiFxNECWO4UnWBkuskqQbrhUioVUfRpBUDSEKbYO",
+                            Senha = "$2a$11$hQQH6xJApptoZhbqUUzH7u8eFNjz3ta7NEFLxQMVvOrtvQBSKekNS",
                             Situacao = 1
                         });
                 });

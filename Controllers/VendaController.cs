@@ -158,6 +158,11 @@ namespace SIGES.Controllers
         [HttpPost("adicionarProduto")]
         public async Task<IActionResult> AdicionarProduto(ItensVendaModel item)
         {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { result = false, messages = "Validar todos os campos antes de adicionar produto." });
+            }
+
             var venda = await _vendaRepositorio.ObterPorId(item.VendaId);
             if (venda == null)
             {
@@ -175,42 +180,41 @@ namespace SIGES.Controllers
                 return Json(new { result = false, messages = "Produto não encontrado." });
             }
 
-            if (item.Quantidade > produto.Estoque)
+            if (ConfiguracaoHelper.ObterValor("control_estoque") == "1")
             {
-                return Json(new { result = false, messages = "A quantidade não pode ser maior que o estoque disponível." });
+                if (item.Quantidade > produto.Estoque)
+                {
+                    return Json(new { result = false, messages = "A quantidade não pode ser maior que o estoque disponível." });
+                }
             }
 
             try
             {
-                string precoString = item.Preco.ToString();
-                string precoDecimal = precoString.Replace(".", "").Replace(",", ".");
-
-                item.SubTotal = ((decimal.Parse(precoDecimal) * item.Quantidade) / 100).ToString();
-                item.Preco = decimal.Parse(precoDecimal) / 100;
-
+                item.SubTotal = item.Preco * item.Quantidade;
                 await _itensVendaRepositorio.Adicionar(item);
 
-                produto.Estoque -= int.Parse(item.Quantidade.ToString());
+                produto.Estoque -= item.Quantidade;
                 await _produtoRepositorio.Atualizar(produto);
 
-                // Carregar itens atualizados
-                var itensAtualizados = _itensVendaRepositorio.Listar()
-                    .Where(i => i.VendaId == item.VendaId)
-                    .ToList();
+                var produtos = _vendaRepositorio.GetProdutos(venda.Id);
 
+                venda.Desconto = 0;
+                venda.ValorDesconto = 0;
+                venda.ValorTotal = produtos.Sum(x => x.Preco * x.Quantidade);
+                await _vendaRepositorio.Atualizar(venda);
 
                 return Json(new
                 {
                     result = true,
-                    items = itensAtualizados.Select(i => new
+                    items = produtos.Select(i => new
                     {
                         i.Id,
                         ProdutoNome = i.Produto.Descricao,
                         i.Quantidade,
-                        Preco = Convert.ToDecimal(i.Preco.ToString()).ToString("C"),
-                        SubTotal = Convert.ToDecimal((i.Preco * i.Quantidade).ToString()).ToString("C")
+                        Preco = i.Preco.ToString("N2"),
+                        SubTotal = i.SubTotal?.ToString("N2")
                     }),
-                    total = Convert.ToDecimal(itensAtualizados.Sum(i => i.Preco * i.Quantidade).ToString()).ToString("C")
+                    total = produtos.Sum(x => x.SubTotal)?.ToString("N2")
                 });
             }
             catch (Exception ex)
@@ -245,23 +249,25 @@ namespace SIGES.Controllers
                 // Repor o estoque e remover o item
                 await _itensVendaRepositorio.Excluir(itemId);
 
-                // Carregar itens atualizados
-                var itensAtualizados = _itensVendaRepositorio.Listar()
-                    .Where(i => i.VendaId == item.VendaId)
-                    .ToList();
+                var produtos = _vendaRepositorio.GetProdutos(venda.Id);
+
+                venda.Desconto = 0;
+                venda.ValorDesconto = 0;
+                venda.ValorTotal = produtos.Sum(x => x.Preco * x.Quantidade);
+                await _vendaRepositorio.Atualizar(venda);
 
                 return Json(new
                 {
                     result = true,
-                    items = itensAtualizados.Select(i => new
+                    items = produtos.Select(i => new
                     {
                         i.Id,
                         ProdutoNome = i.Produto.Descricao,
                         i.Quantidade,
-                        Preco = Convert.ToDecimal(i.Preco.ToString()).ToString("C"),
-                        SubTotal = Convert.ToDecimal((i.Preco * i.Quantidade).ToString()).ToString("C")
+                        Preco = i.Preco.ToString("N2"),
+                        SubTotal = i.SubTotal?.ToString("N2")
                     }),
-                    total = Convert.ToDecimal(itensAtualizados.Sum(i => i.Preco * i.Quantidade).ToString()).ToString("C")
+                    total = produtos.Sum(x => x.SubTotal)?.ToString("N2")
                 });
             }
             catch (Exception ex)
@@ -402,30 +408,36 @@ namespace SIGES.Controllers
                 return Json(new { result = false, message = "Venda não encontrada." });
             }
 
-            var itens = _itensVendaRepositorio.Listar().Where(i => i.VendaId == vendaId).ToList();
+            var produtos = _vendaRepositorio.GetProdutos(venda.Id).ToList();
 
-            decimal total = Convert.ToDecimal(itens.Sum(i => i.Preco * i.Quantidade));
-            decimal desconto = venda.Desconto ?? 0;
+            string total = produtos.Sum(i => i.SubTotal ?? 0).ToString("n2");
+            string desconto = (venda.Desconto ?? 0).ToString("n2");
             string tipoDesconto = venda.TipoDesconto ?? "real";
-            decimal totalDesconto = ValorComDesconto(total, desconto, tipoDesconto);
+            string totalDesconto = (venda.ValorDesconto ?? 0).ToString("n2"); //ValorComDesconto(total, desconto, tipoDesconto);
 
-            string descontoValor = tipoDesconto == "real" ? "R$ " + desconto.ToString("N2") : desconto.ToString("N2") + "%";
+            if (tipoDesconto == "real")
+            {
+                desconto = "R$ " + desconto;
+            }
+            else
+            {
+                desconto = desconto + "%";
+            }
 
             return Json(new
             {
                 result = true,
-                items = itens.Select(i => new
+                produtos = produtos.Select(i => new
                 {
                     i.Id,
                     ProdutoNome = i.Produto.Descricao,
                     i.Quantidade,
-                    Preco = Convert.ToDecimal(i.Preco.ToString()).ToString(),
-                    SubTotal = Convert.ToDecimal((i.Preco * i.Quantidade).ToString()).ToString()
+                    Preco = i.Preco.ToString("n2"),
+                    SubTotal = i.SubTotal?.ToString("n2")
                 }),
-                total = Convert.ToDecimal(itens.Sum(i => i.Preco * i.Quantidade).ToString()).ToString(),
-                desconto = descontoValor,
-                descontoValor = desconto,
-                totalComDesconto = totalDesconto.ToString("N2")
+                total,
+                desconto,
+                totalDesconto
             });
         }
 

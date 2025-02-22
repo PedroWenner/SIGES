@@ -3,10 +3,23 @@
 
 @{
     ViewData["Titulo"] = "Editar venda";
-    decimal valorTotalProdutos = Model.Itens.Sum(i => i.Preco * i.Quantidade) ?? 0;
+    decimal valorTotalProdutos = Model.Itens.Sum(i => i.SubTotal) ?? 0;
     decimal desconto = Model.Venda.Desconto ?? 0;
     decimal valorVendaComDesconto = valorTotalProdutos - desconto;
     string disabled = Model.Venda.Faturado == 1 ? "disabled" : "";
+
+    string def = "";
+    if (Model.Venda.Desconto > 0)
+    {
+        if (Model.Venda.TipoDesconto == "real")
+        {
+            def = "R$ " + desconto.ToString("n2");
+        }
+        else
+        {
+            def = desconto.ToString("n2") + "%";
+        }
+    }
 }
 
 <style>
@@ -182,7 +195,7 @@
                                     <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
                                     <span class="button__text2">Voltar</span>
                                 </a>
-                                <button type="submit" class="button btn btn-mini btn-success">
+                                <button type="submit" class="button btn btn-mini btn-success" @disabled>
                                     <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
                                     <span class="button__text2">Atualizar</span>
                                 </button>
@@ -227,27 +240,24 @@
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="preco" class="form-label">Preço</label>
-                                                <input id="preco" type="text" name="Item.Preco" class="money" @disabled />
+                                                <input id="preco" type="text" name="Item.Preco" class="money" readonly @disabled />
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="quantidade" class="form-label">Quantidade</label>
                                                 <div class="custom-counter">
                                                     <input id="quantidade" type="text" name="Item.Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
-                                                        <button id="btn-decrement-quantidade" type="button" onclick="decrement('btn-decrement-quantidade', 'quantidade');">–</button>
-                                                        <button id="btn-increment-quantidade" type="button" onclick="increment('btn-decrement-quantidade', 'quantidade');">+</button>
+                                                        <button id="btn-decrement-quantidade" type="button" onclick="decrement('btn-decrement-quantidade', 'quantidade');" @disabled>–</button>
+                                                        <button id="btn-increment-quantidade" type="button" onclick="increment('btn-decrement-quantidade', 'quantidade');" @disabled>+</button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if (Model.Venda.Faturado == 0)
-                                            {
-                                                <div class="col-md-2 mt-2 align-content-end flex-wrap">
-                                                    <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                        <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                        <span class="button__text2">Adicionar</span>
-                                                    </button>
-                                                </div>
-                                            }
+                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span class="button__text2">Adicionar</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
@@ -278,15 +288,12 @@
                                                 <label for="valorDesconto" class="form-label">Total com desconto</label>
                                                 <input id="valorDesconto" type="text" name="Venda.ValorDesconto" class="money" readonly placeholder="0,00" @disabled />
                                             </div>
-                                            @if (Model.Venda.Faturado == 0)
-                                            {
-                                                <div class="col-md-2 mt-2 align-content-end flex-wrap">
-                                                    <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;">
-                                                        <span class="button__icon"><i class='bx bx-plus'></i></span>
-                                                        <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
-                                                    </button>
-                                                </div>
-                                            }
+                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                                <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
+                                                    <span class="button__icon"><i class='bx bx-plus'></i></span>
+                                                    <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
@@ -302,11 +309,11 @@
                         <table id="tabela" class="tblProdutos">
                             <thead>
                                 <tr>
-                                    <th>Produto</th>
-                                    <th>Quantidade</th>
-                                    <th>Preço Unitário</th>
-                                    <th>Sub-total</th>
-                                    <th>Ações</th>
+                                    <th style="width: 60%" class="text-end">Produto</th>
+                                    <th style="width: 10%" class="text-center">Quantidade</th>
+                                    <th style="width: 10%" class="text-center">Preço unitário</th>
+                                    <th style="width: 10%" class="text-center">Sub-total</th>
+                                    <th style="width: 10%" class="text-center">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -315,20 +322,20 @@
                                     foreach (var item in Model.Itens)
                                     {
                                         <tr>
-                                            <td>@item.Produto.Descricao</td>
-                                            <td>@item.Quantidade</td>
-                                            <td>R$ @item.Preco?.ToString("N2")</td>
-                                            <td>
-                                                R$ @((item.Preco * item.Quantidade)?.ToString("N2"))
+                                            <td style="width: 60%" class="text-end">@item.Produto.Descricao</td>
+                                            <td style="width: 10%" class="text-center">@item.Quantidade</td>
+                                            <td style="width: 10%" class="text-center">R$ @item.Preco.ToString("N2")</td>
+                                            <td style="width: 10%" class="text-center">
+                                                R$ @((item.SubTotal)?.ToString("N2"))
                                             </td>
-                                            @if (Model.Venda.Faturado == 0)
-                                            {
-                                                <td>
+                                            <td style="width: 10%" class="text-center">
+                                                @if (string.IsNullOrEmpty(disabled))
+                                                {
                                                     <a role="button" data-item-id="@item.Id" data-venda-id="@Model.Venda.Id" class="btn-remover btn-nwe4 text-decoration-none">
                                                         <i class="bx bx-trash-alt"></i>
                                                     </a>
-                                                </td>
-                                            }
+                                                }
+                                            </td>
                                         </tr>
                                     }
                                 }
@@ -343,21 +350,21 @@
                                 <tr>
                                     <td colspan="3" class="text-end"><strong>Total:</strong></td>
                                     <td colspan="2" class="text-start">
-                                        R$ @(Model.Itens.Sum(i => i.Preco * i.Quantidade)?.ToString("N2"))
+                                        R$ @(Model.Itens.Sum(i => i.SubTotal)?.ToString("N2"))
                                     </td>
                                 </tr>
-                                @if (Model.Venda.Desconto != null || Model.Venda.Desconto > 0)
+                                @if (Model.Venda.Desconto != null && Model.Venda.Desconto > 0)
                                 {
                                     <tr>
                                         <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
                                         <td colspan="2" class="text-start">
-                                            @Model.Venda.Desconto @Model.Venda.TipoDesconto
+                                            @def
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-end"><strong>Total com desconto:</strong></td>
                                         <td colspan="2" class="text-start">
-                                            R$ @((Model.Venda.ValorDesconto ?? Model.Itens.Sum(i => i.Preco * i.Quantidade))?.ToString("N2"))
+                                            R$ @valorVendaComDesconto.ToString("n2")
                                         </td>
                                     </tr>
                                 }
@@ -696,87 +703,76 @@
                 }
             },
             submitHandler: function (form) {
-                var quantidade = parseInt($("#quantidade").val());
-                var estoque = parseInt($("#quantidade").data("estoque"));
+                var dados = $(form).serialize();
+                $("#progressBarProdutos").show();
 
-                if (estoque < quantidade) {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Atenção",
-                        text: "Você não possui estoque suficiente."
-                    });
-                } else {
-                    var dados = $(form).serialize();
-                    $("#progressBarProdutos").show();
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: dados,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.result) {
+                            let tbody = $("#tabela tbody");
+                            tbody.empty();
 
-                    $.ajax({
-                        type: "POST",
-                        url: form.action,
-                        data: dados,
-                        dataType: "json",
-                        success: function (response) {
-                            if (response.result) {
-                                let tbody = $("#tabela tbody");
-                                tbody.empty();
-
-                                if (response.items && Array.isArray(response.items)) {
-                                    response.items.forEach(item => {
-                                        tbody.append(`
-                                            <tr>
-                                                <td>${item.produtoNome}</td>
-                                                <td>${item.quantidade}</td>
-                                                <td>${item.preco}</td>
-                                                <td>${item.subTotal}</td>
-                                                <td>
-                                                    <a href="#" data-item-id="${item.id}" data-venda-id="${@Model.Venda.Id}" class="btn-remover btn-nwe4 text-decoration-none">
-                                                        <i class="bx bx-trash-alt"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        `);
-                                    });
-                                }
-
-                                $("#tabela tfoot").html(`
-                                    <tr>
-                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                        <td colspan="2" class="text-start">${response.total || "R$ 0,00"}</td>
-                                    </tr>
-                                `);
-
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Sucesso",
-                                    text: "Produto adicionado com sucesso!"
-                                });
-
-
-                                $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
-                                $("#quantidade").val("");
-                                $("#preco").val("");
-                                $("#produto").val("").focus();
-                            } else {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Erro",
-                                    text: response.messages
+                            if (response.items && Array.isArray(response.items)) {
+                                response.items.forEach(item => {
+                                    tbody.append(`
+                                        <tr>
+                                            <td style="width: 60%" class="text-end">${item.produtoNome}</td>
+                                            <td style="width: 10%" class="text-center">${item.quantidade}</td>
+                                            <td style="width: 10%" class="text-center">R$ ${item.preco}</td>
+                                            <td style="width: 10%" class="text-center">R$ ${item.subTotal}</td>
+                                            <td style="width: 10%" class="text-center">
+                                                <a href="#" data-item-id="${item.id}" data-venda-id="${@Model.Venda.Id}" class="btn-remover btn-nwe4 text-decoration-none">
+                                                    <i class="bx bx-trash-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    `);
                                 });
                             }
-                        },
-                        error: function () {
+
+                            $("#tabela tfoot").html(`
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td colspan="2" class="text-start">R$ ${response.total || "R$ 0,00"}</td>
+                                </tr>
+                            `);
+
+                            Swal.fire({
+                                icon: "success",
+                                title: "Sucesso",
+                                text: "Produto adicionado com sucesso!"
+                            });
+
+
+                            $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
+                            $("#quantidade").val("");
+                            $("#preco").val("");
+                            $("#produto").val("").focus();
+                        } else {
                             Swal.fire({
                                 icon: "error",
                                 title: "Erro",
-                                text: "Não foi possível adicionar o produto. Tente novamente."
+                                text: response.messages
                             });
-                        },
-                        complete: function () {
-                            $("#progressBarProdutos").hide();
                         }
-                    });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Erro",
+                            text: "Não foi possível adicionar o produto. Tente novamente."
+                        });
+                    },
+                    complete: function () {
+                        $("#progressBarProdutos").hide();
+                    }
+                });
 
-                    return false;
-                }
+                return false;
             }
         });
     });
@@ -815,11 +811,11 @@
                                     response.items.forEach(item => {
                                         tbody.append(`
                                             <tr>
-                                                <td>${item.produtoNome}</td>
-                                                <td>${item.quantidade}</td>
-                                                <td>${item.preco}</td>
-                                                <td>${item.subTotal}</td>
-                                                <td>
+                                                <td style="width: 60%" class="text-end">${item.produtoNome}</td>
+                                                <td style="width: 10%" class="text-center">${item.quantidade}</td>
+                                                <td style="width: 10%" class="text-center">R$ ${item.preco}</td>
+                                                <td style="width: 10%" class="text-center">R$ ${item.subTotal}</td>
+                                                <td style="width: 10%" class="text-center">
                                                     <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
                                                         <i class="bx bx-trash-alt bx-xs"></i>
                                                     </a>
@@ -839,7 +835,7 @@
                                 $("#tabela tfoot").html(`
                                     <tr>
                                         <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                        <td colspan="2" class="text-start">${response.total}</td>
+                                        <td colspan="2" class="text-start">R$ ${response.total}</td>
                                     </tr>
                                 `);
 
@@ -973,15 +969,15 @@
                 let tbody = $("#tabela tbody");
                 tbody.empty();
 
-                if (response.items && Array.isArray(response.items)) {
-                    response.items.forEach(item => {
+                if (response.produtos && Array.isArray(response.produtos)) {
+                    response.produtos.forEach(item => {
                         tbody.append(`
                             <tr>
-                                <td>${item.produtoNome}</td>
-                                <td>${item.quantidade}</td>
-                                <td>${item.preco}</td>
-                                <td>${item.subTotal}</td>
-                                <td>
+                                <td style="width: 60%" class="text-end">${item.produtoNome}</td>
+                                <td style="width: 10%" class="text-center">${item.quantidade}</td>
+                                <td style="width: 10%" class="text-center">R$ ${item.preco}</td>
+                                <td style="width: 10%" class="text-center">R$ ${item.subTotal}</td>
+                                <td style="width: 10%" class="text-center">
                                     <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
                                         <i class="bx bx-trash-alt bx-xs"></i>
                                     </a>
@@ -997,21 +993,20 @@
                     `);
                 }
 
-                let valorDesconto = response.descontoValor.replace('.','').replace(',','.');
                 // Atualiza os totais na tabela
                 $("#tabela tfoot").html(`
                     <tr>
                         <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                        <td colspan="2" class="text-start">${response.total || "R$ 0,00"}</td>
+                        <td colspan="2" class="text-start">R$ ${response.total || "0,00"}</td>
                     </tr>
-                    ${valorDesconto > 0 ? `
+                    ${parseFloat(response.desconto.replace('.','').replace(',','.')) > 0 ? `
                     <tr>
                         <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
                         <td colspan="2" class="text-start">${response.desconto}</td>
                     </tr>
                     <tr>
                         <td colspan="3" class="text-end"><strong>Total com desconto:</strong></td>
-                        <td colspan="2" class="text-start">R$ ${response.totalComDesconto}</td>
+                        <td colspan="2" class="text-start">R$ ${response.totalDesconto}</td>
                     </tr>` : ""}
                 `);
             },
