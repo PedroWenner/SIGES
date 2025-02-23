@@ -414,13 +414,13 @@
 
                                 <div class="table-responsive mt-3">
                                     <table class="tblProdutos" id="tabela">
-                                        <thead>
+                                        <thead class="table-secondary">
                                             <tr>
-                                                <th class="text-left" style="width: 70%">Produto</th>
-                                                <th style="width: 5%" class="text-center">Quantidade</th>
-                                                <th class="text-right" style="width: 10%">Preço unit.</th>
-                                                <th class="text-right" style="width: 5%">Ações</th>
-                                                <th class="text-right" style="width: 10%">Sub-total</th>
+                                                <th style="width: 60%" class="text-end">Produto</th>
+                                                <th style="width: 10%" class="text-center">Quantidade</th>
+                                                <th style="width: 10%" class="text-center">Preço unit.</th>
+                                                <th style="width: 10%" class="text-center">Sub-total</th>
+                                                <th style="width: 10%" class="text-center">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -428,10 +428,11 @@
                                             @foreach (var p in Model.Produtos)
                                             {
                                                 <tr>
-                                                    <td class="text-left">@p.Produtos?.Descricao</td>
-                                                    <td class="text-center">@p.Quantidade</td>
-                                                    <td class="text-right">R$ @(p.Preco?.ToString("N2") ?? p.Produtos?.PrecoVenda.ToString("N2"))</td>
-                                                    <td class="text-right">
+                                                    <td style="width: 60%" class="text-end">@p.Produtos?.Descricao</td>
+                                                    <td style="width: 10%" class="text-center">@p.Quantidade</td>
+                                                    <td style="width: 10%" class="text-center">R$ @(p.Preco?.ToString("N2") ?? p.Produtos?.PrecoVenda.ToString("N2"))</td>
+                                                    <td style="width: 10%" class="text-center">R$ @p.SubTotal.ToString("N2")</td>
+                                                    <td style="width: 10%" class="text-center">
                                                         @if (Model.Os?.Status != "cancelado")
                                                         {
                                                             <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto" @disabled>
@@ -439,7 +440,6 @@
                                                             </a>
                                                         }
                                                     </td>
-                                                    <td class="text-right">R$ @p.SubTotal.ToString("N2")</td>
                                                 </tr>
                                             }
                                         </tbody>
@@ -516,13 +516,13 @@
 
                                 <div class="table-responsive mt-3">
                                     <table class="tblServicos" id="tabela">
-                                        <thead>
+                                        <thead class="table-secondary">
                                             <tr>
-                                                <th class="text-left" style="width: 70%">Serviço</th>
-                                                <th style="width: 5%" class="text-center">Quantidade</th>
-                                                <th class="text-right" style="width: 10%">Preço unit.</th>
-                                                <th class="text-right" style="width: 5%">Ações</th>
-                                                <th class="text-right" style="width: 10%">Sub-total</th>
+                                                <th style="width: 60%" class="text-end">Serviço</th>
+                                                <th style="width: 10%" class="text-center">Quantidade</th>
+                                                <th style="width: 10%" class="text-center">Preço unit.</th>
+                                                <th style="width: 10%" class="text-center">Sub-total</th>
+                                                <th style="width: 10%" class="text-center">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -530,10 +530,11 @@
                                             @foreach (var s in Model.Servicos)
                                             {
                                                 <tr>
-                                                    <td class="text-left">@s.Servicos?.Nome</td>
-                                                    <td class="text-center">@s.Quantidade</td>
-                                                    <td class="text-right">R$ @(s.Preco?.ToString("N2") ?? s.Servicos?.Valor.ToString("N2"))</td>
-                                                    <td class="text-right">
+                                                    <td style="width: 60%" class="text-end">@s.Servicos?.Nome</td>
+                                                    <td style="width: 10%" class="text-center">@s.Quantidade</td>
+                                                    <td style="width: 10%" class="text-center">R$ @(s.Preco?.ToString("N2") ?? s.Servicos?.Valor.ToString("N2"))</td>
+                                                    <td style="width: 10%" class="text-center">R$ @s.SubTotal?.ToString("N2")</td>
+                                                    <td style="width: 10%" class="text-center">
                                                         @if (Model.Os?.Status != "cancelado")
                                                         {
                                                             <a data-id="@s.Id" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço" @disabled>
@@ -541,7 +542,6 @@
                                                             </a>
                                                         }
                                                     </td>
-                                                    <td class="text-right">R$ @s.SubTotal?.ToString("N2")</td>
                                                 </tr>
                                             }
                                         </tbody>
@@ -654,7 +654,7 @@
                             <div class="col-md-12">
                                 <div class="table-responsive mt-3">
                                     <table class="tblAnotacoes" id="tabela">
-                                        <thead>
+                                        <thead class="table-secondary">
                                             <tr>
                                                 <th class="text-left" style="width: 15%">Data/Hora</th>
                                                 <th class="text-left" style="width: 80%">Anotação</th>
@@ -812,6 +812,8 @@
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("_ModalSpinner")
 
 <script src="~/js/jquery.validate.js"></script>
 <script src="~/trumbowyg/dist/trumbowyg.min.js"></script>

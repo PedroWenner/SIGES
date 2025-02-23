@@ -19,20 +19,18 @@ namespace SIGES.Controllers
         private readonly ILogService _logServiceRepositorio;
         private readonly IItensVenda _itensVendaRepositorio;
         private readonly IProdutoRepositorio _produtoRepositorio;
-        private readonly ILancamento _lancamentoRepository;
         private readonly PaymentGatewaysService _paymentGatewaysService;
         private readonly IPaymentGateway _paymentGateway;
 
         public VendaController(IVenda vendaRepositorio, ILogService logServiceRepositorio,
             IItensVenda itensVendaRepositorio, IProdutoRepositorio produtoRepositorio,
-            ILancamento lancamentoRepository, PaymentGatewaysService paymentGatewaysService,
+            PaymentGatewaysService paymentGatewaysService,
             IPaymentGateway paymentGateway)
         {
             _vendaRepositorio = vendaRepositorio;
             _logServiceRepositorio = logServiceRepositorio;
             _itensVendaRepositorio = itensVendaRepositorio;
             _produtoRepositorio = produtoRepositorio;
-            _lancamentoRepository = lancamentoRepository;
             _paymentGatewaysService = paymentGatewaysService;
             _paymentGateway = paymentGateway;
         }
@@ -93,19 +91,12 @@ namespace SIGES.Controllers
             }
 
             // Carregar os itens da venda
-            var itensVenda = _itensVendaRepositorio.Listar()
-                .Where(i => i.VendaId == id)
-                .ToList();
-
-            ViewData["VendaId"] = venda.Id;
-            ViewData["ClienteNome"] = venda.Cliente?.Nome ?? "Cliente não encontrado";
-            ViewData["VendedorNome"] = venda.Usuario?.Nome ?? "Usuário não encontrado";
-
+            var produtos = _vendaRepositorio.GetProdutos(id);
             var viewModel = new VendaViewModel
             {
                 Venda = venda,
                 Item = new ItensVendaModel(),
-                Itens = itensVenda
+                Itens = produtos.ToList()
             };
 
             return View("EVenda", viewModel);
@@ -116,19 +107,13 @@ namespace SIGES.Controllers
         public async Task<IActionResult> Editar(int id, VendaModel venda)
         {
             // Carregar os itens da venda
-            var itensVenda = _itensVendaRepositorio.Listar()
-                .Where(i => i.VendaId == id)
-                .ToList();
-
-            ViewData["VendaId"] = venda.Id;
-            ViewData["ClienteNome"] = venda.Cliente?.Nome ?? "Cliente não encontrado";
-            ViewData["VendedorNome"] = venda.Usuario?.Nome ?? "Usuário não encontrado";
+            var produtos = _vendaRepositorio.GetProdutos(id);
 
             var viewModel = new VendaViewModel
             {
                 Venda = venda,
                 Item = new ItensVendaModel(),
-                Itens = itensVenda
+                Itens = produtos.ToList()
             };
 
             if (!ModelState.IsValid)
@@ -356,7 +341,7 @@ namespace SIGES.Controllers
                 Vendas = _vendaRepositorio.Listar().Where((x => x.Id == id)).ToList(),
                 Venda = venda,
                 Item = new ItensVendaModel(),
-                Itens = _itensVendaRepositorio.Listar().Where(i => i.VendaId == id).ToList()
+                Itens = _vendaRepositorio.GetProdutos(id).ToList()
             };
 
             return View("VVenda", viewModel);
@@ -462,6 +447,41 @@ namespace SIGES.Controllers
             }
             
             return (valor) - defDesconto;
+        }
+
+        [Permissao("dVenda", "Você não possui permissão para excluir vendas.")]
+        [HttpPost("excluir/{id}")]
+        public async Task<IActionResult> Excluir(int id)
+        {
+            try
+            {
+                var venda = await _vendaRepositorio.ObterPorId(id);
+                if (venda == null)
+                {
+                    return Json(new { result = false, message = "Venda não encontrada." });
+                }
+
+                var cobrancas = _vendaRepositorio.GetCobrancas(id).Where(c => c.Status == "approved");
+                if (cobrancas.Any())
+                {
+                    return Json(new { result = false, message = "Não é possível excluir essa venda. Já existe pagamento confirmado." });
+                }
+
+                // aqui é onde ele exclui os produtos vinculados a venda
+                await _vendaRepositorio.ExcluirProdutos(venda.Id);
+                // aqui é onde ele exclui o lançamento vinculado a venda
+                await _vendaRepositorio.ExcluirLancamento(venda.Id);
+                // aqui é onde ele exclui as cobranças vinculados a venda
+                await _vendaRepositorio.ExcluirCobrancas(venda.Id);
+                // aqui é onde ele exclui a venda
+                await _vendaRepositorio.Excluir(venda.Id);
+
+                return Json(new { result = true, message = "Venda removida com sucesso!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = ex.Message });
+            }
         }
     }
 }

@@ -260,42 +260,6 @@ $(function () {
     };
 });
 
-$(document).on('click', '#enviarWhatsApp', function () {
-    var id = $(this).data('id');
-    var tipo = $(this).data('tipo');
-
-    if (tipo === 'pix') {
-        var mensagem = $("#pixCodeText").val();
-    } else {
-        var mensagem = '';
-    }
-
-    $.ajax({
-        url: `/api/mensagem/enviar-whatsapp/${id}`,
-        type: 'POST',
-        contentType: "application/json",
-        data: JSON.stringify({ mensagem: mensagem }),
-        success: function (response) {
-            if (response.status === "success") {
-                window.open(response.link, '_blank');
-            } else {
-                Swal.fire({
-                    icon: response.status,
-                    title: response.title,
-                    text: response.message
-                });
-            }
-        },
-        error: function () {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: 'Ocorreu um erro ao enviar a mensagem.'
-            });
-        }
-    });
-});
-
 $(function () {
     $("#produto").autocomplete({
         source: function (request, response) {
@@ -341,6 +305,42 @@ $(function () {
     };
 });
 
+$(document).on('click', '#enviarWhatsApp', function () {
+    var id = $(this).data('id');
+    var tipo = $(this).data('tipo');
+
+    if (tipo === 'pix') {
+        var mensagem = $("#pixCodeText").val();
+    } else {
+        var mensagem = '';
+    }
+
+    $.ajax({
+        url: `/api/mensagem/enviar-whatsapp/${id}`,
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify({ mensagem: mensagem }),
+        success: function (response) {
+            if (response.status === "success") {
+                window.open(response.link, '_blank');
+            } else {
+                Swal.fire({
+                    icon: response.status,
+                    title: response.title,
+                    text: response.message
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Ocorreu um erro ao enviar a mensagem.'
+            });
+        }
+    });
+});
+
 $("#formProdutos").validate({
     rules: {
         Preco: {
@@ -370,7 +370,8 @@ $("#formProdutos").validate({
     },
     submitHandler: function (form) {
         var dados = $(form).serialize();
-        $("#progressBarProdutos").show();
+        $("#modal-spinner").modal('show');
+
         $.ajax({
             type: "POST",
             url: "/os/adicionar-produto",
@@ -378,69 +379,36 @@ $("#formProdutos").validate({
             dataType: "json",
             success: function (response) {
                 if (response.status == "success") {
-                    let tbody = $(".tblProdutos tbody");
-                    tbody.empty();
+                    setTimeout(function () {
+                        atualizarTabelaProdutos(response.os_id);
+                        $("#modal-spinner").modal('hide');
 
-                    if (response.produtos && Array.isArray(response.produtos)) {
-                        response.produtos.forEach(produto => {
-                            tbody.append(`
-                                    <tr>
-                                        <td class="text-left">${produto.produtoNome}</td>
-                                        <td class="text-center">${produto.quantidade}</td>
-                                        <td class="text-right">${produto.preco}</td>
-                                        <td class="text-right">
-                                            <a data-id="${produto.id}" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
-                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                            </a>
-                                        </td>
-                                        <td class="text-right">${produto.subTotal}</td>
-                                    </tr>
-                                `);
+                        Swal.fire({
+                            icon: "success",
+                            title: "Sucesso",
+                            text: "Produto adicionado com sucesso!"
                         });
-                    }
-
-                    $(".tblProdutos tfoot").html(`
-                            <tr>
-                                <td colspan="4" class="text-end">
-                                    <strong>Total:</strong>
-                                </td>
-                                <td>
-                                    <div class="text-center">
-                                        <strong>
-                                            ${response.total || "R$ 0,00"}
-                                            <input type="hidden" id="total-produto" value="${response.total || "R$ 0,00"}">
-                                        </strong>
-                                    </div>
-                                </td>
-                            </tr>
-                        `);
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Sucesso",
-                        text: "Produto adicionado com sucesso!"
-                    });
-
-                    $("#produto-quantidade").val("");
-                    $("#produto-preco").val("");
-                    $("#produto").val("").focus();
+                    }, 1500);
                 } else {
+                    $("#modal-spinner").modal('hide');
                     Swal.fire({
                         icon: "error",
                         title: "Erro",
                         text: response.message
                     });
                 }
+
+                $("#produto-quantidade").val("");
+                $("#produto-preco").val("");
+                $("#produto").val("").focus();
             },
             error: function () {
+                $("#modal-spinner").modal('hide');
                 Swal.fire({
                     icon: "error",
                     title: "Erro",
                     text: "Não foi possível adicionar o produto. Tente novamente."
                 });
-            },
-            complete: function () {
-                $("#progressBarProdutos").hide();
             }
         });
 
@@ -465,7 +433,7 @@ $(document).ready(function () {
             confirmButtonText: "Sim, remover!"
         }).then((result) => {
             if (result.isConfirmed) {
-                $("#progressBarProdutos").show();
+                $("#modal-spinner").modal('show');
 
                 $.ajax({
                     type: "POST",
@@ -474,69 +442,36 @@ $(document).ready(function () {
                     dataType: "json",
                     success: function (response) {
                         if (response.status == "success") {
-                            let tbody = $(".tblProdutos tbody");
-                            tbody.empty();
+                            setTimeout(function () {
+                                atualizarTabelaProdutos(response.os_id);
+                                $("#modal-spinner").modal('hide');
 
-                            if (response.produtos && Array.isArray(response.produtos)) {
-                                response.produtos.forEach(produto => {
-                                    tbody.append(`
-                                            <tr>
-                                                <td class="text-left">${produto.produtoNome}</td>
-                                                <td class="text-center">${produto.quantidade}</td>
-                                                <td class="text-right">${produto.preco}</td>
-                                                <td class="text-right">
-                                                    <a data-id="${produto.id}" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
-                                                        <i class="bx bx-trash-alt bx-xs"></i>
-                                                    </a>
-                                                </td>
-                                                <td class="text-right">${produto.subTotal}</td>
-                                            </tr>
-                                        `);
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: "Produto excluido com sucesso!"
                                 });
-                            }
-
-                            $(".tblProdutos tfoot").html(`
-                                    <tr>
-                                        <td colspan="4" class="text-end">
-                                            <strong>Total:</strong>
-                                        </td>
-                                        <td>
-                                            <div class="text-center">
-                                                <strong>
-                                                    ${response.total || "R$ 0,00"}
-                                                    <input type="hidden" id="total-produto" value="${response.total || "R$ 0,00"}">
-                                                </strong>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `);
-
-                            Swal.fire({
-                                icon: "success",
-                                title: "Sucesso",
-                                text: "Produto excluido com sucesso!"
-                            });
-
-                            $("#produto-quantidade").val("");
-                            $("#produto-preco").val("");
-                            $("#produto").val("").focus();
+                            }, 1500);
                         } else {
+                            $("#modal-spinner").modal('hide');
                             Swal.fire({
                                 icon: "error",
                                 title: "Erro",
                                 text: response.message
                             });
                         }
+
+                        $("#produto-quantidade").val("");
+                        $("#produto-preco").val("");
+                        $("#produto").val("").focus();
                     },
                     error: function () {
+                        $("#modal-spinner").modal('hide');
                         Swal.fire({
                             icon: "error",
                             title: "Erro",
                             text: "Não foi possível remover o produto. Tente novamente."
                         });
-                    },
-                    complete: function () {
-                        $("#progressBarProdutos").hide();
                     }
                 });
             }
@@ -573,7 +508,7 @@ $("#formServicos").validate({
     },
     submitHandler: function (form) {
         var dados = $(form).serialize();
-        $("#progressBarServicos").show();
+        $("#modal-spinner").modal('show');
         $.ajax({
             type: "POST",
             url: "/os/adicionar-servico",
@@ -581,53 +516,21 @@ $("#formServicos").validate({
             dataType: "json",
             success: function (response) {
                 if (response.status == "success") {
-                    let tbody = $(".tblServicos tbody");
-                    tbody.empty();
-
-                    if (response.servicos && Array.isArray(response.servicos)) {
-                        response.servicos.forEach(servico => {
-                            tbody.append(`
-                                    <tr>
-                                        <td class="text-left">${servico.servicoNome}</td>
-                                        <td class="text-center">${servico.quantidade}</td>
-                                        <td class="text-right">${servico.preco}</td>
-                                        <td class="text-right">
-                                            <a data-id="${servico.id}" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
-                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                            </a>
-                                        </td>
-                                        <td class="text-right">${servico.subTotal}</td>
-                                    </tr>
-                                `);
+                    setTimeout(function () {
+                        atualizarTabelaServicos(response.os_id);
+                        $("#modal-spinner").modal('hide');
+                        Swal.fire({
+                            icon: "success",
+                            title: "Sucesso",
+                            text: "Serviço adicionado com sucesso!"
                         });
-                    }
 
-                    $(".tblServicos tfoot").html(`
-                            <tr>
-                                <td colspan="4" class="text-end">
-                                    <strong>Total:</strong>
-                                </td>
-                                <td>
-                                    <div class="text-center">
-                                        <strong>
-                                            ${response.total || "R$ 0,00"}
-                                            <input type="hidden" id="total-servico" value="${response.total || "R$ 0,00"}">
-                                        </strong>
-                                    </div>
-                                </td>
-                            </tr>
-                        `);
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Sucesso",
-                        text: "Serviço adicionado com sucesso!"
-                    });
-
-                    $("#servico-quantidade").val("");
-                    $("#servico-preco").val("");
-                    $("#servico").val("").focus();
+                        $("#servico-quantidade").val("");
+                        $("#servico-preco").val("");
+                        $("#servico").val("").focus();
+                    }, 1500);
                 } else {
+                    $("#modal-spinner").modal('hide');
                     Swal.fire({
                         icon: "error",
                         title: "Erro",
@@ -636,14 +539,12 @@ $("#formServicos").validate({
                 }
             },
             error: function () {
+                $("#modal-spinner").modal('hide');
                 Swal.fire({
                     icon: "error",
                     title: "Erro",
                     text: "Não foi possível adicionar o serviço. Tente novamente."
                 });
-            },
-            complete: function () {
-                $("#progressBarServicos").hide();
             }
         });
 
@@ -668,7 +569,7 @@ $(document).ready(function () {
             confirmButtonText: "Sim, remover!"
         }).then((result) => {
             if (result.isConfirmed) {
-                $("#progressBarServicos").show();
+                $("#modal-spinner").modal('show');
 
                 $.ajax({
                     type: "POST",
@@ -677,53 +578,23 @@ $(document).ready(function () {
                     dataType: "json",
                     success: function (response) {
                         if (response.status == "success") {
-                            let tbody = $(".tblServicos tbody");
-                            tbody.empty();
+                            setTimeout(function () {
+                                atualizarTabelaServicos(response.os_id);
+                                $("#modal-spinner").modal('hide');
 
-                            if (response.servicos && Array.isArray(response.servicos)) {
-                                response.servicos.forEach(servico => {
-                                    tbody.append(`
-                                            <tr>
-                                                <td class="text-left">${servico.servicoNome}</td>
-                                                <td class="text-center">${servico.quantidade}</td>
-                                                <td class="text-right">${servico.preco}</td>
-                                                <td class="text-right">
-                                                    <a data-id="${servico.id}" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
-                                                        <i class="bx bx-trash-alt bx-xs"></i>
-                                                    </a>
-                                                </td>
-                                                <td class="text-right">${servico.subTotal}</td>
-                                            </tr>
-                                        `);
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: "Serviço excluido com sucesso!"
                                 });
-                            }
 
-                            $(".tblServicos tfoot").html(`
-                                    <tr>
-                                        <td colspan="4" class="text-end">
-                                            <strong>Total:</strong>
-                                        </td>
-                                        <td>
-                                            <div class="text-center">
-                                                <strong>
-                                                    ${response.total || "R$ 0,00"}
-                                                    <input type="hidden" id="total-servico" value="${response.total || "R$ 0,00"}">
-                                                </strong>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `);
-
-                            Swal.fire({
-                                icon: "success",
-                                title: "Sucesso",
-                                text: "Serviço excluido com sucesso!"
-                            });
-
-                            $("#servico-quantidade").val("");
-                            $("#servico-preco").val("");
-                            $("#servico").val("").focus();
+                                $("#servico-quantidade").val("");
+                                $("#servico-preco").val("");
+                                $("#servico").val("").focus();
+                            }, 1500);
                         } else {
+                            $("#modal-spinner").modal('hide');
+
                             Swal.fire({
                                 icon: "error",
                                 title: "Erro",
@@ -732,14 +603,13 @@ $(document).ready(function () {
                         }
                     },
                     error: function () {
+                        $("#modal-spinner").modal('hide');
+
                         Swal.fire({
                             icon: "error",
                             title: "Erro",
                             text: "Não foi possível remover o serviço. Tente novamente."
                         });
-                    },
-                    complete: function () {
-                        $("#progressBarServicos").hide();
                     }
                 });
             }
@@ -1124,3 +994,106 @@ $(document).on('click', '#enviar-email', function () {
         }
     });
 });
+
+function atualizarTabelaProdutos(id) {
+    $.ajax({
+        type: "GET",
+        url: "/os/obter-produtos/" + id,
+        dataType: "json",
+        success: function (response) {
+            let tbody = $(".tblProdutos tbody");
+            tbody.empty();
+
+            if (response.produtos && Array.isArray(response.produtos)) {
+                response.produtos.forEach(p => {
+                    tbody.append(`
+                        <tr>
+                            <td style="width: 60%" class="text-end">${p.nome}</td>
+                            <td style="width: 10%" class="text-center">${p.quantidade}</td>
+                            <td style="width: 10%" class="text-center">R$ ${p.preco}</td>
+                            <td style="width: 10%" class="text-center">R$ ${p.subtotal}</td>
+                            <td style="width: 10%" class="text-center">
+                                <a data-id="${p.id}" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto">
+                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                    `);
+                });
+            } else {
+                tbody.append(`
+                    <tr>
+                        <td colspan="5" class="text-center">Nenhum produto adicionado.</td>
+                    </tr>
+                `);
+            }
+
+            // Atualiza os totais na tabela
+            $(".tblProdutos tfoot").html(`
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td colspan="2" class="text-start">R$ ${response.total || "0,00"}</td>
+                </tr>
+            `);
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Não foi possível atualizar a tabela. Tente novamente."
+            });
+        }
+    });
+}
+function atualizarTabelaServicos(id) {
+    $.ajax({
+        type: "GET",
+        url: "/os/obter-servicos/" + id,
+        dataType: "json",
+        success: function (response) {
+            let tbody = $(".tblServicos tbody");
+            tbody.empty();
+
+            if (response.servicos && Array.isArray(response.servicos)) {
+                response.servicos.forEach(s => {
+                    tbody.append(`
+                        <tr>
+                            <td style="width: 60%" class="text-end">${s.nome}</td>
+                            <td style="width: 10%" class="text-center">${s.quantidade}</td>
+                            <td style="width: 10%" class="text-center">R$ ${s.preco}</td>
+                            <td style="width: 10%" class="text-center">R$ ${s.subtotal}</td>
+                            <td style="width: 10%" class="text-center">
+                                <a data-id="${s.id}" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço">
+                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                    `);
+                });
+            } else {
+                tbody.append(`
+                    <tr>
+                        <td colspan="5" class="text-center">Nenhum serviço adicionado.</td>
+                    </tr>
+                `);
+            }
+
+            // Atualiza os totais na tabela
+            $(".tblServicos tfoot").html(`
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td colspan="2" class="text-start">R$ ${response.total || "0,00"}</td>
+                </tr>
+            `);
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Não foi possível atualizar a tabela. Tente novamente."
+            });
+        }
+    });
+}

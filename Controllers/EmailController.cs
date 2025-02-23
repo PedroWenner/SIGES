@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SIGES.Attributes;
-using SIGES.Helpers;
 using SIGES.Interfaces;
 using SIGES.Models;
-using SIGES.Repositorios;
-using SIGES.Services;
-using SIGES.ViewModel;
 
 namespace SIGES.Controllers
 {
@@ -14,17 +10,10 @@ namespace SIGES.Controllers
     [Route("emails")]
     public class EmailController : Controller
     {
-        private readonly IEmailQueueRepository _emailQueueRepository;
-        private readonly IOs _osRepositorio;
-        private readonly IRepository<EmitenteModel> _repositorioEmitente;
-        private readonly IViewRenderService _viewRenderService;
-        public EmailController(IEmailQueueRepository emailQueueRepository, IOs osRepositorio, IRepository<EmitenteModel> repositorioEmitente,
-            IViewRenderService viewRenderService)
+        private readonly IRepository<EmailQueue> _emailQueueRepository;
+        public EmailController(IRepository<EmailQueue> emailQueueRepository)
         {
             _emailQueueRepository = emailQueueRepository;
-            _osRepositorio = osRepositorio;
-            _repositorioEmitente = repositorioEmitente;
-            _viewRenderService = viewRenderService;
         }
 
         [HttpGet("")]
@@ -33,10 +22,33 @@ namespace SIGES.Controllers
             var emails = await _emailQueueRepository.Listar();
             var viewModel = new EmailViewModel
             {
-                Emails = emails
+                Emails = emails.ToList()
             };
 
             return View("Emails", viewModel);
+        }
+
+        [Permissao("dEmail", "Você não possui permissão para excluir e-mails.")]
+        [HttpPost("excluir/{id}")]
+        public async Task<IActionResult> Excluir(int id)
+        {
+            try
+            {
+                var email = await _emailQueueRepository.ObterPorId(id);
+                if (email == null)
+                {
+                    return Json(new { result = false, message = "E-mail não encontrado." });
+                }
+
+                // aqui é onde ele exclui o e-mail
+                await _emailQueueRepository.Deletar(email);
+
+                return Json(new { result = true, message = "E-mail removido com sucesso!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { result = false, message = ex.Message });
+            }
         }
     }
 }

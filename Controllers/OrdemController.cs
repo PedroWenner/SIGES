@@ -340,6 +340,8 @@ namespace SIGES.Controllers
 
                 os.Desconto = 0;
                 os.ValorDesconto = 0;
+                os.ValorTotal += produtoOs.SubTotal;
+                os.ValorTotal = os.ValorTotal <= 0 ? 0 : os.ValorTotal;
                 await _osRepositorio.Atualizar(os);
 
                 var produtosAdicionados = _osRepositorio.GetProdutos(os.Id);
@@ -347,15 +349,7 @@ namespace SIGES.Controllers
                 return Json(new 
                 {
                     status = "success",
-                    produtos = produtosAdicionados.Select(i => new
-                    {
-                        i.Id,
-                        ProdutoNome = i.Produtos?.Descricao,
-                        i.Quantidade,
-                        Preco = i.Preco?.ToString("C"),
-                        SubTotal = i.SubTotal.ToString("C")
-                    }),
-                    total = produtosAdicionados.Sum(i => i.SubTotal).ToString("C")
+                    os_id = os.Id
                 });
             }
             catch (Exception ex)
@@ -405,6 +399,8 @@ namespace SIGES.Controllers
 
                 os.Desconto = 0;
                 os.ValorDesconto = 0;
+                os.ValorTotal -= produtoOs.SubTotal;
+                os.ValorTotal = os.ValorTotal <= 0 ? 0 : os.ValorTotal;
                 await _osRepositorio.Atualizar(os);
 
                 var produtosAdicionados = _osRepositorio.GetProdutos(os.Id);
@@ -412,15 +408,7 @@ namespace SIGES.Controllers
                 return Json(new 
                 {
                     status = "success",
-                    produtos = produtosAdicionados.Select(i => new
-                    {
-                        i.Id,
-                        ProdutoNome = i.Produtos?.Descricao,
-                        i.Quantidade,
-                        Preco = i.Preco?.ToString("C"),
-                        SubTotal = i.SubTotal.ToString("C")
-                    }),
-                    total = produtosAdicionados.Sum(i => i.SubTotal).ToString("C")
+                    os_id = os.Id
                 });
             }
             catch (Exception ex)
@@ -463,6 +451,8 @@ namespace SIGES.Controllers
 
                 os.Desconto = 0;
                 os.ValorDesconto = 0;
+                os.ValorTotal += servicosOs.SubTotal ?? 0;
+                os.ValorTotal = os.ValorTotal <= 0 ? 0 : os.ValorTotal;
                 await _osRepositorio.Atualizar(os);
 
                 var servicosAdicionados = _osRepositorio.GetServicos(os.Id);
@@ -470,15 +460,7 @@ namespace SIGES.Controllers
                 return Json(new 
                 {
                     status = "success",
-                    servicos = servicosAdicionados.Select(i => new
-                    {
-                        i.Id,
-                        ServicoNome = i.Servicos?.Nome,
-                        i.Quantidade,
-                        Preco = i.Preco?.ToString("C"),
-                        SubTotal = i.SubTotal?.ToString("C")
-                    }),
-                    total = servicosAdicionados.Sum(i => i.SubTotal ?? 0).ToString("C")
+                    os_id = os.Id
                 });
             }
             catch (Exception ex)
@@ -520,6 +502,8 @@ namespace SIGES.Controllers
 
                 os.Desconto = 0;
                 os.ValorDesconto = 0;
+                os.ValorTotal -= servicosOs.SubTotal ?? 0;
+                os.ValorTotal = os.ValorTotal <= 0 ? 0 : os.ValorTotal;
                 await _osRepositorio.Atualizar(os);
 
                 var servicosAdicionados = _osRepositorio.GetServicos(os.Id);
@@ -527,15 +511,7 @@ namespace SIGES.Controllers
                 return Json(new
                 {
                     status = "success",
-                    servicos = servicosAdicionados.Select(i => new
-                    {
-                        i.Id,
-                        ServicoNome = i.Servicos?.Nome,
-                        i.Quantidade,
-                        Preco = i.Preco?.ToString("C"),
-                        SubTotal = i.SubTotal?.ToString("C")
-                    }),
-                    total = servicosAdicionados.Sum(i => i.SubTotal ?? 0).ToString("C")
+                    os_id = os.Id
                 });
             }
             catch (Exception ex)
@@ -844,6 +820,62 @@ namespace SIGES.Controllers
             }
 
             return valorTotal - descontoDef;
+        }
+
+        [HttpGet("obter-produtos/{id}")]
+        public async Task<IActionResult> ObterProdutos(int id)
+        {
+            var os = await _osRepositorio.ObterPorId(id);
+            if (os == null)
+            {
+                return Json(new { result = false, message = "Ordem de serviço não encontrado." });
+            }
+
+            var produtos = _osRepositorio.GetProdutos(id).ToList();
+
+            string total = produtos.Sum(i => i.SubTotal).ToString("n2");
+            
+            return Json(new
+            {
+                result = true,
+                produtos = produtos.Select(i => new
+                {
+                    i.Id,
+                    nome = i.Produtos.Descricao,
+                    i.Quantidade,
+                    preco = i.Preco?.ToString("n2"),
+                    subtotal = i.SubTotal.ToString("n2")
+                }),
+                total
+            });
+        }
+
+        [HttpGet("obter-servicos/{id}")]
+        public async Task<IActionResult> ObterServicos(int id)
+        {
+            var os = await _osRepositorio.ObterPorId(id);
+            if (os == null)
+            {
+                return Json(new { result = false, message = "Ordem de serviço não encontrado." });
+            }
+
+            var servicos = _osRepositorio.GetServicos(id).ToList();
+
+            string total = servicos.Sum(i => i.SubTotal ?? 0).ToString("n2");
+            
+            return Json(new
+            {
+                result = true,
+                servicos = servicos.Select(i => new
+                {
+                    i.Id,
+                    nome = i.Servicos.Descricao,
+                    i.Quantidade,
+                    preco = i.Preco?.ToString("n2"),
+                    subtotal = i.SubTotal?.ToString("n2")
+                }),
+                total
+            });
         }
     }
 }

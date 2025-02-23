@@ -4,6 +4,9 @@
 @{
     ViewData["Titulo"] = "Editar venda";
     List<string> status = new List<string> { "Finalizado", "Faturado", "Orçamento", "Aberto", "Em Andamento", "Aguardando Peças" };
+    decimal valorTotalProdutos = Model.Itens.Sum(i => i.SubTotal) ?? 0;
+    decimal desconto = Model.Venda.Desconto ?? 0;
+    decimal valorVendaComDesconto = valorTotalProdutos - desconto;
 }
 
 <style>
@@ -128,38 +131,38 @@
 
             <div class="col-lg-12 mt-3 p-3 table-responsive">
                 <table class="table table-condensed" id="tblProdutos">
-                    <thead>
+                    <thead class="table-secondary">
                         <tr>
-                            <th>Cód. de barra</th>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Preço unit.</th>
-                            <th>Sub-total</th>
+                            <th class="text-start">Cód. de barra</th>
+                            <th class="text-start">Produto</th>
+                            <th class="text-start">Quantidade</th>
+                            <th class="text-start">Preço unit.</th>
+                            <th class="text-start">Sub-total</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model.Itens)
                         {
                             <tr>
-                                <td>@item.Produto.CodigoBarras</td>
-                                <td>@item.Produto.Descricao</td>
-                                <td>@item.Quantidade</td>
-                                <td>R$ @item.Preco.ToString("N2")</td>
-                                <td>R$ @item.SubTotal?.ToString("N2")</td>
+                                <td class="text-start">@item.Produto.CodigoBarras</td>
+                                <td class="text-start">@item.Produto.Descricao</td>
+                                <td class="text-start">@item.Quantidade</td>
+                                <td class="text-start">R$ @item.Preco.ToString("N2")</td>
+                                <td class="text-start">R$ @item.SubTotal?.ToString("N2")</td>
                             </tr>
                         }
                         <tr>
                             <td colspan="4" style="text-align: right"><strong>Total:</strong></td>
-                            <td><strong>R$ @Model.Itens.Sum(i => i.SubTotal)?.ToString("n2")</strong></td>
+                            <td><strong>R$ @valorTotalProdutos.ToString("n2")</strong></td>
                         </tr>
                     </tbody>
                 </table>
                 <hr />
-                <h6 style="text-align: right">Total: R$ @(Model.Itens.Sum(i => i.SubTotal)?.ToString("N2"))</h6>
-                @if (Model.Venda.Desconto != 0 && Model.Venda.Desconto != null)
+                <h6 style="text-align: right">Total: R$ @valorTotalProdutos.ToString("n2")</h6>
+                @if (desconto > 0)
                 {
-                    <h6 style="text-align: right">Desconto: R$ @Model.Venda.Desconto?.ToString("N2")</h6>
-                    <h6 style="text-align: right">Total Com Desconto: R$ @((Model.Itens.Sum(i => i.SubTotal) - Model.Venda.Desconto)?.ToString("N2"))</h6>
+                    <h6 style="text-align: right">Desconto: R$ @desconto.ToString("N2")</h6>
+                    <h6 style="text-align: right">Total Com Desconto: R$ @valorVendaComDesconto.ToString("N2")</h6>
                 }
             </div>
 

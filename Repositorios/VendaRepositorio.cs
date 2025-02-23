@@ -58,5 +58,74 @@ namespace SIGES.Repositorios
                 .Where(c => c.VendaId == id)
                 .ToList();
         }
+        /// <summary>
+        /// Retorna todas as cobranças não aprovadas vinculadas a uma venda
+        /// </summary>
+        /// <param name="id">ID da venda (venda_id).</param>
+        /// <returns></returns>
+        public IEnumerable<Cobranca?> GetCobrancas(int id)
+        {
+            return _context.Cobrancas
+                .Where(c => c.VendasId == id)
+                .ToList();
+        }
+        /// <summary>
+        /// Exclui todos os produtos vinculados a uma venda.
+        /// </summary>
+        /// <param name="id">ID da venda (venda_id).</param>
+        /// <returns></returns>
+        public async Task ExcluirProdutos(int id)
+        {
+            var produtos = await _context.ItensVenda
+                .Include(i => i.Produto)
+                .Where(c => c.VendaId == id)
+                .ToListAsync();
+
+            if (produtos.Any())
+            {
+                // Atualiza o estoque de cada produto
+                foreach (var p in produtos)
+                {
+                    p.Produto.Estoque += p.Quantidade;
+                }
+
+                _context.ItensVenda.RemoveRange(produtos);
+                await _context.SaveChangesAsync();
+            }
+        }
+        /// <summary>
+        /// Exclui o lancamento vinculados a uma venda.
+        /// </summary>
+        /// <param name="id">ID da venda (venda_id).</param>
+        /// <returns></returns>
+        public async Task ExcluirLancamento(int id)
+        {
+            var lancamento = await _context.Lancamentos
+                .Where(c => c.VendasId == id)
+                .ToListAsync();
+
+            if (lancamento.Any())
+            {
+                _context.Lancamentos.RemoveRange(lancamento);
+                await _context.SaveChangesAsync();
+            }
+        }
+        /// <summary>
+        /// Exclui as cobranças vinculadas a uma venda.
+        /// </summary>
+        /// <param name="id">ID da venda (venda_id).</param>
+        /// <returns></returns>
+        public async Task ExcluirCobrancas(int id)
+        {
+            var cobrancas = await _context.Cobrancas
+                .Where(c => c.VendasId == id)
+                .ToListAsync();
+
+            if (cobrancas.Any())
+            {
+                _context.Cobrancas.RemoveRange(cobrancas);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

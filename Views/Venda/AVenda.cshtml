@@ -112,8 +112,8 @@
                             </div>
                             <div class="col-md-3 mt-2">
                                 <label for="vendedor" class="form-label">Vendedor</label>
-                                <input id="vendedor" type="text" placeholder="Digite o nome do vendedor" required />
-                                <input id="vendedor-id" type="hidden" asp-for="UsuarioId" />
+                                <input id="vendedor" type="text" placeholder="Digite o nome do vendedor" required value="@Context.Session.GetString("UserName")" />
+                                <input id="vendedor-id" type="hidden" asp-for="UsuarioId" value="@Context.Session.GetString("UserId")" />
                                 <span asp-validation-for="UsuarioId" class="text-danger"></span>
                             </div>
                             <div class="col-md-2 mt-2">

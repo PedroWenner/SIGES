@@ -7,6 +7,12 @@
     decimal desconto = Model.Venda.Desconto ?? 0;
     decimal valorVendaComDesconto = valorTotalProdutos - desconto;
     string disabled = Model.Venda.Faturado == 1 ? "disabled" : "";
+    string tooltipDisabled = string.Empty;
+
+    if (!string.IsNullOrEmpty(disabled))
+    {
+        tooltipDisabled = "data-bs-toggle=\"tooltip\" data-bs-placement=\"top\" data-bs-title=\"Item desabilitado. Venda faturada.\"";
+    }
 
     string def = "";
     if (Model.Venda.Desconto > 0)
@@ -195,10 +201,12 @@
                                     <span class="button__icon"><i class="bx bx-undo bx-xs"></i></span>
                                     <span class="button__text2">Voltar</span>
                                 </a>
-                                <button type="submit" class="button btn btn-mini btn-success" @disabled>
-                                    <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
-                                    <span class="button__text2">Atualizar</span>
-                                </button>
+                                <span @Html.Raw(tooltipDisabled)>
+                                    <button type="submit" class="button btn btn-mini btn-success" @disabled>
+                                        <span class="button__icon"><i class='bx bx-sync bx-xs'></i></span>
+                                        <span class="button__text2">Atualizar</span>
+                                    </button>
+                                </span>
                                 <a class="button btn btn-primary" asp-controller="Venda" asp-action="Visualizar" asp-route-id="@Model.Venda.Id">
                                     <span class="button__icon"><i class='bx bx-show bx-xs'></i></span>
                                     <span class="button__text2">Visualizar</span>
@@ -231,20 +239,20 @@
                                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                                         <div class="row">
-                                            <div class="col-md-6 mt-2">
+                                            <div class="col-md-6 mt-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="produto" class="form-label">Produto</label>
                                                 <input id="produto" type="text" placeholder="Digite o nome do produto" @disabled />
                                                 <input id="produto-id" type="hidden" asp-for="Item.ProdutoId" />
                                                 <input id="venda-id" type="hidden" asp-for="Item.VendaId" value="@Model.Venda.Id" />
                                                 <span asp-validation-for="Item.ProdutoId" class="text-danger"></span>
                                             </div>
-                                            <div class="col-md-2 mt-2">
+                                            <div class="col-md-2 mt-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="preco" class="form-label">Preço</label>
                                                 <input id="preco" type="text" name="Item.Preco" class="money" readonly @disabled />
                                             </div>
                                             <div class="col-md-2 mt-2">
                                                 <label for="quantidade" class="form-label">Quantidade</label>
-                                                <div class="custom-counter">
+                                                <div class="custom-counter" @Html.Raw(tooltipDisabled)>
                                                     <input id="quantidade" type="text" name="Item.Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
                                                         <button id="btn-decrement-quantidade" type="button" onclick="decrement('btn-decrement-quantidade', 'quantidade');" @disabled>–</button>
@@ -252,7 +260,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                            <div class="col-md-2 mt-2 align-content-end flex-wrap" @Html.Raw(tooltipDisabled)>
                                                 <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Adicionar</span>
@@ -272,23 +280,23 @@
                                         <input id="valor-total-produtos" type="hidden" value="@valorTotalProdutos.ToString().Replace(",", ".")" />
 
                                         <div class="row">
-                                            <div class="col-md-2 mt-2">
+                                            <div class="col-md-2 mt-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="desconto" class="form-label">Desconto</label>                                            
                                                 <input id="desconto" type="text" name="Venda.Desconto" class="money" required placeholder="0,00"
                                                 onchange="calcularTotalComDesconto(); return false;" @disabled />
                                             </div>
-                                            <div class="col-md-2 mt-2">
+                                            <div class="col-md-2 mt-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="tipoDesconto" class="form-label">Tipo desc.</label>
                                                 <select id="tipoDesconto" name="Venda.TipoDesconto" onchange="calcularTotalComDesconto(); return false;" @disabled>
                                                     <option value="real">R$</option>
                                                     <option value="porcento">%</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 mt-2">
+                                            <div class="col-md-3 mt-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="valorDesconto" class="form-label">Total com desconto</label>
                                                 <input id="valorDesconto" type="text" name="Venda.ValorDesconto" class="money" readonly placeholder="0,00" @disabled />
                                             </div>
-                                            <div class="col-md-2 mt-2 align-content-end flex-wrap">
+                                            <div class="col-md-2 mt-2 align-content-end flex-wrap" @Html.Raw(tooltipDisabled)>
                                                 <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span id="btn-adicionar-desconto" class="button__text2">Aplicar</span>
@@ -307,7 +315,7 @@
                         </div>
 
                         <table id="tabela" class="tblProdutos">
-                            <thead>
+                            <thead class="table-secondary">
                                 <tr>
                                     <th style="width: 60%" class="text-end">Produto</th>
                                     <th style="width: 10%" class="text-center">Quantidade</th>
@@ -702,6 +710,16 @@
                     digits: "Informe apenas números inteiros."
                 }
             },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            },
             submitHandler: function (form) {
                 var dados = $(form).serialize();
                 $("#progressBarProdutos").show();
@@ -713,42 +731,13 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.result) {
-                            let tbody = $("#tabela tbody");
-                            tbody.empty();
-
-                            if (response.items && Array.isArray(response.items)) {
-                                response.items.forEach(item => {
-                                    tbody.append(`
-                                        <tr>
-                                            <td style="width: 60%" class="text-end">${item.produtoNome}</td>
-                                            <td style="width: 10%" class="text-center">${item.quantidade}</td>
-                                            <td style="width: 10%" class="text-center">R$ ${item.preco}</td>
-                                            <td style="width: 10%" class="text-center">R$ ${item.subTotal}</td>
-                                            <td style="width: 10%" class="text-center">
-                                                <a href="#" data-item-id="${item.id}" data-venda-id="${@Model.Venda.Id}" class="btn-remover btn-nwe4 text-decoration-none">
-                                                    <i class="bx bx-trash-alt"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    `);
-                                });
-                            }
-
-                            $("#tabela tfoot").html(`
-                                <tr>
-                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                    <td colspan="2" class="text-start">R$ ${response.total || "R$ 0,00"}</td>
-                                </tr>
-                            `);
-
+                            atualizarTabelaProdutos();
                             Swal.fire({
                                 icon: "success",
                                 title: "Sucesso",
                                 text: "Produto adicionado com sucesso!"
                             });
 
-
-                            $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
                             $("#quantidade").val("");
                             $("#preco").val("");
                             $("#produto").val("").focus();
@@ -804,42 +793,7 @@
                         dataType: "json",
                         success: function (response) {
                             if (response.result) {
-                                let tbody = $("#tabela tbody");
-                                tbody.empty();
-
-                                if (response.items && Array.isArray(response.items)) {
-                                    response.items.forEach(item => {
-                                        tbody.append(`
-                                            <tr>
-                                                <td style="width: 60%" class="text-end">${item.produtoNome}</td>
-                                                <td style="width: 10%" class="text-center">${item.quantidade}</td>
-                                                <td style="width: 10%" class="text-center">R$ ${item.preco}</td>
-                                                <td style="width: 10%" class="text-center">R$ ${item.subTotal}</td>
-                                                <td style="width: 10%" class="text-center">
-                                                    <a href="#" data-item-id="${item.id}" data-venda-id="${vendaId}" class="btn-remover btn-nwe4 text-decoration-none">
-                                                        <i class="bx bx-trash-alt bx-xs"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        `);
-                                    });
-                                } else {
-                                    tbody.append(`
-                                        <tr>
-                                            <td colspan="5" class="text-center">Nenhum produto adicionado à venda.</td>
-                                        </tr>
-                                    `);
-                                }
-
-                                // Atualizar o total
-                                $("#tabela tfoot").html(`
-                                    <tr>
-                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                        <td colspan="2" class="text-start">R$ ${response.total}</td>
-                                    </tr>
-                                `);
-
-                                $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
+                                atualizarTabelaProdutos();
                                 Swal.fire("Removido!", "O item foi removido com sucesso.", "success");
                             } else {
                                 Swal.fire("Erro!", response.message || "Não foi possível remover o item.", "error");
@@ -999,7 +953,7 @@
                         <td colspan="3" class="text-end"><strong>Total:</strong></td>
                         <td colspan="2" class="text-start">R$ ${response.total || "0,00"}</td>
                     </tr>
-                    ${parseFloat(response.desconto.replace('.','').replace(',','.')) > 0 ? `
+                    ${parseFloat(response.desconto.replace('.','').replace(',','.').replace('R$ ','').replace('%','')) > 0 ? `
                     <tr>
                         <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
                         <td colspan="2" class="text-start">${response.desconto}</td>
@@ -1009,6 +963,8 @@
                         <td colspan="2" class="text-start">R$ ${response.totalDesconto}</td>
                     </tr>` : ""}
                 `);
+
+                $("#valor-total-produtos").val(response.total.replace('R$ ', '').replace('.', '').replace(',', '.'));
             },
             error: function () {
                 Swal.fire({
@@ -1163,3 +1119,4 @@
         btnDecrement.disabled = id.value <= 0;
     }
 </script>
+

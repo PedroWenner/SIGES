@@ -20,11 +20,11 @@
             <table id="tabela">
                 <thead>
                     <tr>
-                        <th>Código</th>
-                        <th>Para</th>
-                        <th>Status</th>
-                        <th>Data</th>
-                        <th>Ações</th>
+                        <th class="text-start">Código</th>
+                        <th class="text-start">Para</th>
+                        <th class="text-start">Status</th>
+                        <th class="text-start">Data</th>
+                        <th class="text-start">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,13 +46,12 @@
                                 { "failed", "<span class='badge rounded-pill text-bg-warning'>Falhou</span>" }
                             };
                             <tr>
-                                <td>@email.Id</td>
-                                <td>@email.To</td>
-                                <td>@Html.Raw(status[email.Status])</td>
-                                <td>@email.Date.ToString("dd/MM/yyyy")</td>
-                                <td>
-                                    <a href="#modal-excluir" data-id="@email.Id" role="button" data-bs-target="#modal-excluir" data-bs-toggle="modal"
-                                        style="margin-right: 1%" class="btn-nwe4 text-decoration-none" title="Excluir item  ">
+                                <td class="text-start">@email.Id</td>
+                                <td class="text-start">@email.To</td>
+                                <td class="text-start">@Html.Raw(status[email.Status])</td>
+                                <td class="text-start">@email.Date.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                <td class="text-start">
+                                    <a data-id="@email.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir item">
                                         <i class="bx bx-trash-alt bx-xs"></i>
                                     </a>
                                 </td>
@@ -61,46 +60,76 @@
                     }
                 </tbody>
             </table>
-
         </div>
     </div>
 </div>
 
-<!-- Modal excluir -->
-<div id="modal-excluir" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post" asp-controller="Email" asp-action="Excluir">
-                <div class="modal-header">
-                    <h5 class="modal-title fs-5">Excluir e-mail da lista</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="idEmail" name="id" />
-                    <h6 style="text-align: center">
-                        Deseja realmente excluir este email da lista de envio?
-                    </h6>
-                </div>
-                <div class="modal-footer" style="display:flex;justify-content: center">
-                    <button type="button" class="button btn btn-warning" data-bs-dismiss="modal" aria-hidden="true">
-                        <span class="button__icon"><i class="bx bx-x"></i></span>
-                        <span class="button__text2">Cancelar</span>
-                    </button>
-                    <button type="submit" class="button btn btn-danger">
-                        <span class="button__icon"><i class='bx bx-trash'></i></span>
-                        <span class="button__text2">Excluir</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+@await Html.PartialAsync("_ModalSpinner")
+
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $(document).on('click', 'a', function(event) {
-            var email = $(this).attr('email');
-            $('#idEmail').val(email);
+    $(document).ready(function () {
+        $(document).on("click", ".btn-remover", function (event) {
+            event.preventDefault();
+
+            var email_id = $(this).data("id");
+            var texto = 'Você deseja remover este e-mail da fila?';
+
+            Swal.fire({
+                title: "Tem certeza?",
+                text: texto,
+                icon: "warning",
+                showCancelButton: true,
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, remover!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#modal-spinner").modal('show');
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/emails/excluir/" + email_id,
+                        data: { id: email_id },
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.result) {
+                                setTimeout(function () {
+                                    $("#modal-spinner").modal('hide');
+                                    Swal.fire({
+                                        title: "Removido!",
+                                        text: response.message,
+                                        icon: "success",
+                                        didOpen: () => {
+                                            document.querySelector('#sidebar').style.position = 'static';
+                                        },
+                                        didClose: () => {
+                                            document.querySelector('#sidebar').style.position = 'fixed';
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                }, 1500);
+                            } else {
+                                setTimeout(function () {
+                                    $("#modal-spinner").modal('hide');
+                                    Swal.fire("Erro!", response.message, "error");
+                                }, 1500);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            $("#modal-spinner").modal('hide');
+                            console.error("Erro na requisição:", xhr.responseText); // Log do erro
+                            Swal.fire({
+                                icon: "error",
+                                title: "Erro",
+                                text: "Erro ao enviar os dados: " + xhr.responseText
+                            });
+                        }
+                    });
+                }
+            });
         });
     });
 </script>

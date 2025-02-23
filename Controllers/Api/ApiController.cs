@@ -105,21 +105,23 @@ namespace SIGES.Controllers.Api
 
             // Obter produtos e serviços
             var produtos = _itensVendasRepository.ObterPorVendaId(id).ToList();
-            
-            if (tipo == "os")
+            var produtosOs = _osRepository.GetProdutos(id).ToList();
+
+            var servicosOs = _osRepository.GetServicos(id).ToList();
+
+            if (tipo == "venda")
             {
-                produtos = null;
-                //produtos = _osRepository.GetProdutos(id).ToList() ?? new List<ProdutosOs>();
+                if (!produtos.Any())
+                {
+                    throw new Exception("Não existem produtos incluídos para a venda!");
+                }
             }
-
-            var servicos = (tipo == "venda"
-                ? new List<ServicosOs>()
-                : _osRepository.GetServicos(id)
-            )?.ToList() ?? new List<ServicosOs>();
-
-            if (!produtos.Any())
+            else
             {
-                throw new Exception("Não existem produtos incluídos para a venda ou OS!");
+                if (!produtosOs.Any() && !servicosOs.Any())
+                {
+                    throw new Exception("Não existem produtos/serviços incluídos para a ordem de serviço!");
+                }
             }
 
             decimal desconto = 0;
@@ -140,13 +142,15 @@ namespace SIGES.Controllers.Api
                 tipoDesconto = os?.TipoDesconto ?? "real";
             }
 
-            decimal qtd = produtos.Sum(x => x.Quantidade);
-            decimal valor = produtos.Sum(x => x.Preco);
-
+            decimal qtd = tipo == "venda" ? produtos.Sum(x => x.Quantidade) : produtosOs.Sum(x => x.Quantidade);
+            decimal valor = tipo == "venda" ? produtos.Sum(x => x.Preco) : produtosOs.Sum(x => x.Preco ?? 0);
             decimal totalProdutos = valor * qtd;
-            decimal totalServicos = servicos.Sum(x => x.Preco * Convert.ToDecimal(x.Quantidade) ?? 0);
 
-            if (totalProdutos <= 0)
+            qtd = tipo == "venda" ? 0 : servicosOs.Sum(x => x.Quantidade ?? 0);
+            valor = tipo == "venda" ? 0 : servicosOs.Sum(x => x.Preco ?? 0);
+            decimal totalServicos = valor * qtd;
+
+            if ((totalProdutos + totalServicos) <= 0)
             {
                 throw new Exception("OS ou venda com valor negativo ou zero!");
             }

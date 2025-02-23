@@ -11,5 +11,9 @@ namespace SIGES.Interfaces
         Task Excluir(int id);
         Task<EmitenteModel> ObterEmitente();
         IEnumerable<ItensVendaModel?> GetProdutos(int id);
+        IEnumerable<Cobranca?> GetCobrancas(int id);
+        Task ExcluirProdutos(int id);
+        Task ExcluirLancamento(int id);
+        Task ExcluirCobrancas(int id);
     }
 }
