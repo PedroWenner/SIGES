@@ -326,22 +326,22 @@
                                         <input type="hidden" name="Id" value="@Model.Os?.Id" />
 
                                         <div class="row g-3">
-                                            <div class="col-lg-2 col-md-3">
+                                            <div class="col-lg-2 col-md-3 d-none">
                                                 <label for="valor-total-os" class="form-label">Valor total da OS:</label>
-                                                <input id="valor-total-os" type="text" placeholder="0,00" readonly value="@valorTotalOs.ToString("N2")" />
-                                            </div>
-
-                                            <div class="col-lg-2 col-md-1">
-                                                <label for="tipo-desconto" class="form-label">Preço</label>
-                                                <select id="tipo-desconto" name="TipoDesconto" onchange="calcularDesconto(); return false;" @disabled>
-                                                    <option value="real">R$</option>
-                                                    <option value="porcento">%</option>
-                                                </select>
+                                                <input id="valor-total-os" type="text" placeholder="0,00" readonly value="@((totalProdutos + totalServicos).ToString("N2"))" />
                                             </div>
 
                                             <div class="col-lg-2 col-md-2">
                                                 <label for="desconto" class="form-label">Desconto</label>
                                                 <input id="desconto" type="text" name="Desconto" placeholder="0,00" class="money" onchange="calcularDesconto(); return false;" required @disabled />
+                                            </div>
+
+                                            <div class="col-lg-2 col-md-1">
+                                                <label for="tipo-desconto" class="form-label">Tipo desc.</label>
+                                                <select id="tipo-desconto" name="TipoDesconto" onchange="calcularDesconto(); return false;" @disabled>
+                                                    <option value="real">R$</option>
+                                                    <option value="porcento">%</option>
+                                                </select>
                                             </div>
 
                                             <div class="col-lg-2 col-md-2">
@@ -483,7 +483,7 @@
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="servico-preco" class="form-label">Preço</label>
-                                                <input id="servico-preco" type="text" name="Preco" class="money" placeholder="Preço" @disabled />
+                                                <input id="servico-preco" type="text" name="Preco" class="money" placeholder="Preço" readonly @disabled />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
@@ -656,28 +656,38 @@
                                     <table class="tblAnotacoes" id="tabela">
                                         <thead class="table-secondary">
                                             <tr>
-                                                <th class="text-left" style="width: 15%">Data/Hora</th>
-                                                <th class="text-left" style="width: 80%">Anotação</th>
-                                                <th class="text-left" style="width: 5%">Ações</th>
+                                                <th style="width: 20%" class="text-end">Data/Hora</th>
+                                                <th style="width: 70%" class="text-left">Anotação</th>
+                                                <th style="width: 10%" class="text-center">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody>
 
-                                            @foreach (var a in Model.Anotacoes)
+                                            @if (Model.Anotacoes.Any())
+                                            {
+                                                @foreach (var a in Model.Anotacoes)
+                                                {
+                                                    <tr>
+                                                        <td style="width: 20%" class="text-end">@a.DataHora.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                                        <td style="width: 70%" class="text-left">@a.Anotacao</td>
+                                                        <td style="width: 10%" class="text-center">
+                                                            @if (Model.Os?.Status != "cancelado")
+                                                            {
+                                                                <a data-id="@a.Id" role="button" style="margin-right: 1%" class="btn-remover-anotacao btn-nwe4 text-decoration-none" title="Excluir anotação">
+                                                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                                                </a>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
                                             {
                                                 <tr>
-                                                    <td class="text-left">@a.DataHora.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                                                    <td class="text-left">@a.Anotacao</td>
-                                                    <td class="text-left">
-                                                        @if (Model.Os?.Status != "cancelado")
-                                                        {
-                                                            <a data-id="@a.Id" role="button" style="margin-right: 1%" class="btn-remover-anotacao btn-nwe4 text-decoration-none" title="Excluir anotação">
-                                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                                            </a>
-                                                        }
-                                                    </td>
+                                                    <td colspan="3" class="text-center">Nenhuma anotação adicionada.</td>
                                                 </tr>
                                             }
+                                            
                                         </tbody>
                                     </table>
                                 </div>

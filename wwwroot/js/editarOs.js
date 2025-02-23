@@ -327,7 +327,9 @@ $(document).on('click', '#enviarWhatsApp', function () {
                 Swal.fire({
                     icon: response.status,
                     title: response.title,
-                    text: response.message
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         },
@@ -335,7 +337,9 @@ $(document).on('click', '#enviarWhatsApp', function () {
             Swal.fire({
                 icon: 'error',
                 title: 'Erro',
-                text: 'Ocorreu um erro ao enviar a mensagem.'
+                text: 'Ocorreu um erro ao enviar a mensagem.',
+                timer: 2000,
+                showConfirmButton: false
             });
         }
     });
@@ -386,7 +390,9 @@ $("#formProdutos").validate({
                         Swal.fire({
                             icon: "success",
                             title: "Sucesso",
-                            text: "Produto adicionado com sucesso!"
+                            text: "Produto adicionado com sucesso!",
+                            timer: 2000,
+                            showConfirmButton: false
                         });
                     }, 1500);
                 } else {
@@ -394,7 +400,9 @@ $("#formProdutos").validate({
                     Swal.fire({
                         icon: "error",
                         title: "Erro",
-                        text: response.message
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
                     });
                 }
 
@@ -407,7 +415,9 @@ $("#formProdutos").validate({
                 Swal.fire({
                     icon: "error",
                     title: "Erro",
-                    text: "Não foi possível adicionar o produto. Tente novamente."
+                    text: "Não foi possível adicionar o produto. Tente novamente.",
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         });
@@ -449,7 +459,9 @@ $(document).ready(function () {
                                 Swal.fire({
                                     icon: "success",
                                     title: "Sucesso",
-                                    text: "Produto excluido com sucesso!"
+                                    text: "Produto excluido com sucesso!",
+                                    timer: 2000,
+                                    showConfirmButton: false
                                 });
                             }, 1500);
                         } else {
@@ -457,7 +469,9 @@ $(document).ready(function () {
                             Swal.fire({
                                 icon: "error",
                                 title: "Erro",
-                                text: response.message
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
                             });
                         }
 
@@ -470,7 +484,9 @@ $(document).ready(function () {
                         Swal.fire({
                             icon: "error",
                             title: "Erro",
-                            text: "Não foi possível remover o produto. Tente novamente."
+                            text: "Não foi possível remover o produto. Tente novamente.",
+                            timer: 2000,
+                            showConfirmButton: false
                         });
                     }
                 });
@@ -522,7 +538,9 @@ $("#formServicos").validate({
                         Swal.fire({
                             icon: "success",
                             title: "Sucesso",
-                            text: "Serviço adicionado com sucesso!"
+                            text: "Serviço adicionado com sucesso!",
+                            timer: 2000,
+                            showConfirmButton: false
                         });
 
                         $("#servico-quantidade").val("");
@@ -534,7 +552,9 @@ $("#formServicos").validate({
                     Swal.fire({
                         icon: "error",
                         title: "Erro",
-                        text: response.message
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
                     });
                 }
             },
@@ -543,7 +563,9 @@ $("#formServicos").validate({
                 Swal.fire({
                     icon: "error",
                     title: "Erro",
-                    text: "Não foi possível adicionar o serviço. Tente novamente."
+                    text: "Não foi possível adicionar o serviço. Tente novamente.",
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         });
@@ -585,7 +607,9 @@ $(document).ready(function () {
                                 Swal.fire({
                                     icon: "success",
                                     title: "Sucesso",
-                                    text: "Serviço excluido com sucesso!"
+                                    text: "Serviço excluido com sucesso!",
+                                    timer: 2000,
+                                    showConfirmButton: false
                                 });
 
                                 $("#servico-quantidade").val("");
@@ -598,7 +622,9 @@ $(document).ready(function () {
                             Swal.fire({
                                 icon: "error",
                                 title: "Erro",
-                                text: response.message
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
                             });
                         }
                     },
@@ -608,7 +634,9 @@ $(document).ready(function () {
                         Swal.fire({
                             icon: "error",
                             title: "Erro",
-                            text: "Não foi possível remover o serviço. Tente novamente."
+                            text: "Não foi possível remover o serviço. Tente novamente.",
+                            timer: 2000,
+                            showConfirmButton: false
                         });
                     }
                 });
@@ -639,15 +667,33 @@ $(document).ready(function () {
                 $("#progressBarAnexos").addClass("d-none");
 
                 if (response.status == "success") {
-                    Swal.fire("Sucesso", response.message, "success");
+                    Swal.fire({
+                        icon: "success",
+                        title: "Sucesso!",
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                     carregarAnexos(osId);
                 } else {
-                    Swal.fire("Erro", response.message, "error");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro!",
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
             },
             error: function () {
                 $("#progressBarAnexos").addClass("d-none");
-                Swal.fire("Erro", "Erro ao enviar arquivos.", "error");
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro!",
+                    text: "Erro ao enviar arquivos.",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             }
         });
     });
@@ -724,7 +770,8 @@ $("#form-adicionar-anotacao").validate({
     },
     submitHandler: function (form) {
         var dados = $(form).serialize();
-        $("#progressBarAnotacao").removeClass("d-none");
+        $("#modal-adicionar-anotacao").modal("hide");
+        $("#modal-spinner").modal('show');
         $.ajax({
             type: "POST",
             url: "/os/adicionar-anotacao",
@@ -732,54 +779,38 @@ $("#form-adicionar-anotacao").validate({
             dataType: "json",
             success: function (response) {
                 if (response.status == "success") {
-                    let tbody = $(".tblAnotacoes tbody");
-                    tbody.empty();
+                    setTimeout(function () {
+                        atualizarTabelaAnotacoes(response.os_id);
+                        $("#modal-spinner").modal('hide');
 
-                    if (response.anotacoes && Array.isArray(response.anotacoes)) {
-                        response.anotacoes.forEach(anotacao => {
-                            tbody.append(`
-                                    <tr>
-                                        <td class="text-left">${anotacao.dataHora}</td>
-                                        <td class="text-left">${anotacao.anotacao}</td>
-                                        <td class="text-left">
-                                            <a data-id="${anotacao.id}" role="button" style="margin-right: 1%" class="btn-remover-anotacao btn-nwe4 text-decoration-none" title="Excluir anotação">
-                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                `);
+                        Swal.fire({
+                            icon: "success",
+                            title: "Sucesso",
+                            text: "Anotação adicionada com sucesso!",
+                            timer: 2000,
+                            showConfirmButton: false
                         });
-                    }
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Sucesso",
-                        text: "Anotação adicionada com sucesso!",
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                    // setTimeout(function () {
-                    //     $("#modal-adicionar-anotacao").modal("hide");
-                    // }, 2000);
+                    }, 1500);
                 } else {
+                    $("#modal-spinner").modal('hide');
                     Swal.fire({
                         icon: "error",
                         title: "Erro",
-                        text: response.message
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
                     });
                 }
             },
             error: function () {
+                $("#modal-spinner").modal('hide');
                 Swal.fire({
                     icon: "error",
                     title: "Erro",
-                    text: "Não foi possível adicionar a anotação. Tente novamente."
+                    text: "Não foi possível adicionar a anotação. Tente novamente.",
+                    timer: 2000,
+                    showConfirmButton: false
                 });
-            },
-            complete: function () {
-                $("#progressBarAnotacao").addClass("d-none");
-                $("#modal-adicionar-anotacao").modal("hide");
             }
         });
 
@@ -793,52 +824,53 @@ $(document).on("click", ".btn-remover-anotacao", function (e) {
 
     Swal.fire({
         title: "Tem certeza?",
-        text: "Essa ação não poderá ser desfeita!",
+        text: "Você deseja remover esta anotação?",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Sim, excluir!",
-        cancelButtonText: "Cancelar"
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sim, remover!"
     }).then((result) => {
         if (result.isConfirmed) {
+            $("#modal-spinner").modal('show');
             $.ajax({
                 type: "POST",
                 url: `/os/excluir-anotacao/${id}`,
                 success: function (response) {
                     if (response.status === "success") {
-                        let tbody = $(".tblAnotacoes tbody");
-                        tbody.empty();
+                        setTimeout(function () {
+                            atualizarTabelaAnotacoes(response.os_id);
+                            $("#modal-spinner").modal('hide');
 
-                        if (response.anotacoes && Array.isArray(response.anotacoes)) {
-                            response.anotacoes.forEach(anotacao => {
-                                tbody.append(`
-                                    <tr>
-                                        <td class="text-left">${anotacao.dataHora}</td>
-                                        <td class="text-left">${anotacao.anotacao}</td>
-                                        <td class="text-left">
-                                            <a data-id="${anotacao.id}" role="button" style="margin-right: 1%" class="btn-remover-anotacao btn-nwe4 text-decoration-none" title="Excluir anotação">
-                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                `);
+                            Swal.fire({
+                                icon: "success",
+                                title: "Excluído",
+                                text: "Anotação excluída com sucesso!",
+                                timer: 2000,
+                                showConfirmButton: false
                             });
-                        }
-
+                        }, 1500);
+                    } else {
+                        $("#modal-spinner").modal('hide');
                         Swal.fire({
-                            icon: "success",
-                            title: "Excluído",
-                            text: "Anotação excluída com sucesso!",
+                            icon: "error",
+                            title: "Erro!",
+                            text: response.message,
                             timer: 2000,
                             showConfirmButton: false
                         });
-                    } else {
-                        Swal.fire("Erro!", response.message, "error");
                     }
                 },
                 error: function () {
-                    Swal.fire("Erro!", "Erro ao excluir anotação.", "error");
+                    $("#modal-spinner").modal('hide');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Erro!",
+                        text: "Erro ao excluir anotação.",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
             });
         }
@@ -925,7 +957,7 @@ $("#form-desconto").validate({
             beforeSend: function () {
                 Swal.fire({
                     title: 'Processando',
-                    text: 'Registrando desconto...',
+                    text: 'Aplicando desconto...',
                     icon: 'info',
                     showCloseButton: false,
                     showConfirmButton: false,
@@ -935,18 +967,22 @@ $("#form-desconto").validate({
             },
             success: function (response) {
                 if (response.status == "success") {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Sucesso",
-                        text: "Desconto aplicado com sucesso!",
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    setTimeout(function () {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Sucesso",
+                            text: "Desconto aplicado com sucesso!",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }, 1500);
                 } else {
                     Swal.fire({
                         icon: "error",
                         title: "Erro",
-                        text: response.message
+                        text: response.message,
+                        timer: 2000,
+                        showConfirmButton: false
                     });
                 }
             },
@@ -954,7 +990,9 @@ $("#form-desconto").validate({
                 Swal.fire({
                     icon: "error",
                     title: "Erro",
-                    text: "Não foi possível adicionar o desconto. Tente novamente."
+                    text: "Não foi possível adicionar o desconto. Tente novamente.",
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         });
@@ -975,13 +1013,17 @@ $(document).on('click', '#enviar-email', function () {
                 Swal.fire({
                     icon: response.status,
                     title: response.title,
-                    text: response.message
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             } else {
                 Swal.fire({
                     icon: response.status,
                     title: response.title,
-                    text: response.message
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         },
@@ -989,7 +1031,9 @@ $(document).on('click', '#enviar-email', function () {
             Swal.fire({
                 icon: 'error',
                 title: 'Erro',
-                text: 'Ocorreu um erro ao enviar a mensagem.'
+                text: 'Ocorreu um erro ao enviar a mensagem.',
+                timer: 2000,
+                showConfirmButton: false
             });
         }
     });
@@ -1036,6 +1080,8 @@ function atualizarTabelaProdutos(id) {
                     <td colspan="2" class="text-start">R$ ${response.total || "0,00"}</td>
                 </tr>
             `);
+
+            $('#valor-total-os').val(response.totalos);
         },
         error: function () {
             Swal.fire({
@@ -1087,6 +1133,49 @@ function atualizarTabelaServicos(id) {
                     <td colspan="2" class="text-start">R$ ${response.total || "0,00"}</td>
                 </tr>
             `);
+
+            $('#valor-total-os').val(response.totalos);
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Não foi possível atualizar a tabela. Tente novamente."
+            });
+        }
+    });
+}
+function atualizarTabelaAnotacoes(id) {
+    $.ajax({
+        type: "GET",
+        url: "/os/obter-anotacoes/" + id,
+        dataType: "json",
+        success: function (response) {
+            let tbody = $(".tblAnotacoes tbody");
+            tbody.empty();
+
+            if (response.anotacoes && Array.isArray(response.anotacoes)) {
+                response.anotacoes.forEach(a => {
+                    tbody.append(`
+                        <tr>
+                            <td style="width: 20%" class="text-end">${a.datahora}</td>
+                            <td style="width: 70%" class="text-left">${a.anotacao}</td>
+                            <td style="width: 10%" class="text-center">
+                                <a data-id="${a.id}" role="button" style="margin-right: 1%" class="btn-remover-anotacao btn-nwe4 text-decoration-none" title="Excluir anotação">
+                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                    `);
+                });
+            } else {
+                tbody.append(`
+                    <tr>
+                        <td colspan="3" class="text-center">Nenhuma anotação adicionada.</td>
+                    </tr>
+                `);
+            }
         },
         error: function () {
             Swal.fire({

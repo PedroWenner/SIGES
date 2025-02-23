@@ -698,12 +698,7 @@ namespace SIGES.Controllers
                 return Json(new
                 {
                     status = "success",
-                    anotacoes = anotacoesAdicionados.Select(i => new
-                    {
-                        i.Id,
-                        i.Anotacao,
-                        DataHora = i.DataHora.ToString("dd/MM/yyyy HH:mm:ss")
-                    })
+                    os_id = os.Id
                 });
             }
             catch (Exception ex)
@@ -736,12 +731,7 @@ namespace SIGES.Controllers
                 return Json(new
                 {
                     status = "success",
-                    anotacoes = anotacoesAdicionados.Select(i => new
-                    {
-                        i.Id,
-                        i.Anotacao,
-                        DataHora = i.DataHora.ToString("dd/MM/yyyy HH:mm:ss")
-                    })
+                    os_id = os.Id
                 });
             }
             catch (Exception ex)
@@ -832,8 +822,10 @@ namespace SIGES.Controllers
             }
 
             var produtos = _osRepositorio.GetProdutos(id).ToList();
+            var servicos = _osRepositorio.GetServicos(id).ToList();
 
             string total = produtos.Sum(i => i.SubTotal).ToString("n2");
+            string totalProdutosServicos = (produtos.Sum(i => i.SubTotal) + servicos.Sum(i => i.SubTotal ?? 0)).ToString("n2");
             
             return Json(new
             {
@@ -846,7 +838,8 @@ namespace SIGES.Controllers
                     preco = i.Preco?.ToString("n2"),
                     subtotal = i.SubTotal.ToString("n2")
                 }),
-                total
+                total,
+                totalos = totalProdutosServicos
             });
         }
 
@@ -860,9 +853,11 @@ namespace SIGES.Controllers
             }
 
             var servicos = _osRepositorio.GetServicos(id).ToList();
+            var produtos = _osRepositorio.GetProdutos(id).ToList();
 
             string total = servicos.Sum(i => i.SubTotal ?? 0).ToString("n2");
-            
+            string totalProdutosServicos = (produtos.Sum(i => i.SubTotal) + servicos.Sum(i => i.SubTotal ?? 0)).ToString("n2");
+
             return Json(new
             {
                 result = true,
@@ -874,7 +869,30 @@ namespace SIGES.Controllers
                     preco = i.Preco?.ToString("n2"),
                     subtotal = i.SubTotal?.ToString("n2")
                 }),
-                total
+                total,
+                totalos = totalProdutosServicos
+            });
+        }
+
+        [HttpGet("obter-anotacoes/{id}")]
+        public async Task<IActionResult> ObterAnotacoes(int id)
+        {
+            var os = await _osRepositorio.ObterPorId(id);
+            if (os == null)
+            {
+                return Json(new { result = false, message = "Ordem de serviço não encontrado." });
+            }
+
+            var anotacoes = _osRepositorio.GetAnotacaoes(id).ToList();
+            return Json(new
+            {
+                result = true,
+                anotacoes = anotacoes.Select(i => new
+                {
+                    i.Id,
+                    i.Anotacao,
+                    datahora = i.DataHora.ToString("dd/MM/yyyy HH:mm:ss")
+                })
             });
         }
     }
