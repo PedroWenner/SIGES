@@ -107,7 +107,7 @@
                                         @venda.Status
                                     </span>
                                 </td>
-                                <td>@(venda.Faturado == 0 ? "Não" : "Sim")</td>
+                                <td>@((venda.Faturado ?? 0) == 0 ? "Não" : "Sim")</td>
                                 <td>
                                     <a href="#" data-entidade="VendaModel" data-id="@venda.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                         <i class='bx bx-history'></i>

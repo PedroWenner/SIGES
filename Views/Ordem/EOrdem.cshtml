@@ -9,6 +9,12 @@
     decimal totalServicos = Model.Servicos.Sum(i => i.SubTotal ?? 0);
     decimal valorTotalOs = Model.Os?.ValorDesconto > 0 ? Model.Os.ValorDesconto : totalProdutos + totalServicos;
     string disabled = Model.Os?.Faturado == 1 ? "disabled" : "";
+    string tooltipDisabled = string.Empty;
+
+    if (!string.IsNullOrEmpty(disabled))
+    {
+        tooltipDisabled = "data-bs-toggle=\"tooltip\" data-bs-placement=\"top\" data-bs-title=\"Item desabilitado. Ordem de serviço faturada.\"";
+    }
     var opcoesStatus = JsonSerializer.Deserialize<List<string>>(ConfiguracaoHelper.ObterValor("os_status_list")) ?? new List<string>();
 
     if (!opcoesStatus.Any())
@@ -331,12 +337,12 @@
                                                 <input id="valor-total-os" type="text" placeholder="0,00" readonly value="@((totalProdutos + totalServicos).ToString("N2"))" />
                                             </div>
 
-                                            <div class="col-lg-2 col-md-2">
+                                            <div class="col-lg-2 col-md-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="desconto" class="form-label">Desconto</label>
                                                 <input id="desconto" type="text" name="Desconto" placeholder="0,00" class="money" onchange="calcularDesconto(); return false;" required @disabled />
                                             </div>
 
-                                            <div class="col-lg-2 col-md-1">
+                                            <div class="col-lg-2 col-md-1" @Html.Raw(tooltipDisabled)>
                                                 <label for="tipo-desconto" class="form-label">Tipo desc.</label>
                                                 <select id="tipo-desconto" name="TipoDesconto" onchange="calcularDesconto(); return false;" @disabled>
                                                     <option value="real">R$</option>
@@ -344,12 +350,12 @@
                                                 </select>
                                             </div>
 
-                                            <div class="col-lg-2 col-md-2">
+                                            <div class="col-lg-2 col-md-2" @Html.Raw(tooltipDisabled)>
                                                 <label for="valor-desconto" class="form-label">Total com desconto</label>
                                                 <input id="valor-desconto" type="text" name="ValorDesconto" placeholder="0,00" class="money" required @disabled />
                                             </div>
 
-                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end" @Html.Raw(tooltipDisabled)>
                                                 <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Aplicar</span>
@@ -373,20 +379,20 @@
                                         <input type="hidden" name="OsId" value="@Model.Os?.Id" />
 
                                         <div class="row g-3">
-                                            <div class="col-lg-5 col-md-6">
+                                            <div class="col-lg-5 col-md-6" @Html.Raw(tooltipDisabled)>
                                                 <label for="produto" class="form-label">Produto</label>
                                                 <input id="produto" type="text" placeholder="Digite o nome do produto" @disabled />
                                                 <input id="produto-id" type="hidden" name="ProdutosId" />
                                             </div>
 
-                                            <div class="col-lg-2 col-md-3">
+                                            <div class="col-lg-2 col-md-3" @Html.Raw(tooltipDisabled)>
                                                 <label for="produto-preco" class="form-label">Preço</label>
                                                 <input id="produto-preco" type="text" name="Preco" class="money" placeholder="Preço" @disabled />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="produto-quantidade" class="form-label">Quantidade</label>
-                                                <div class="custom-counter">
+                                                <div class="custom-counter" @Html.Raw(tooltipDisabled)>
                                                     <input id="produto-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
                                                         <button id="btn-decrement-produto" type="button" onclick="decrement('btn-decrement-produto', 'produto-quantidade');" @disabled>–</button>
@@ -395,7 +401,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end" @Html.Raw(tooltipDisabled)>
                                                 <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Adicionar</span>
@@ -435,9 +441,11 @@
                                                     <td style="width: 10%" class="text-center">
                                                         @if (Model.Os?.Status != "cancelado")
                                                         {
-                                                            <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto" @disabled>
-                                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                                            </a>
+                                                            <span @Html.Raw(tooltipDisabled)>
+                                                                <a data-id="@p.Id" role="button" style="margin-right: 1%" class="btn-remover btn-nwe4 text-decoration-none" title="Excluir produto" @disabled>
+                                                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                                                </a>
+                                                            </span>
                                                         }
                                                     </td>
                                                 </tr>
@@ -475,20 +483,20 @@
                                         <input type="hidden" name="OsId" value="@Model.Os?.Id" />
 
                                         <div class="row g-3">
-                                            <div class="col-lg-5 col-md-6">
+                                            <div class="col-lg-5 col-md-6" @Html.Raw(tooltipDisabled)>
                                                 <label for="servico" class="form-label">Serviço</label>
                                                 <input id="servico" type="text" placeholder="Digite o nome do serviço" @disabled />
                                                 <input id="servico-id" type="hidden" name="ServicosId" />
                                             </div>
 
-                                            <div class="col-lg-2 col-md-3">
+                                            <div class="col-lg-2 col-md-3" @Html.Raw(tooltipDisabled)>
                                                 <label for="servico-preco" class="form-label">Preço</label>
                                                 <input id="servico-preco" type="text" name="Preco" class="money" placeholder="Preço" readonly @disabled />
                                             </div>
 
                                             <div class="col-lg-2 col-md-3">
                                                 <label for="servico-quantidade" class="form-label">Quantidade</label>
-                                                <div class="custom-counter">
+                                                <div class="custom-counter" @Html.Raw(tooltipDisabled)>
                                                     <input id="servico-quantidade" type="text" name="Quantidade" onkeypress="return somenteNumeros(this)" @disabled />
                                                     <div class="counter-buttons">
                                                         <button id="btn-decrement-servico" type="button" onclick="decrement('btn-decrement-servico', 'servico-quantidade');" @disabled>–</button>
@@ -497,7 +505,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                                            <div class="col-lg-3 col-md-12 d-flex align-items-end" @Html.Raw(tooltipDisabled)>
                                                 <button type="submit" class="button btn btn-mini btn-success" style="margin-bottom: 0px!important;" @disabled>
                                                     <span class="button__icon"><i class='bx bx-plus'></i></span>
                                                     <span class="button__text2">Adicionar</span>
@@ -537,9 +545,11 @@
                                                     <td style="width: 10%" class="text-center">
                                                         @if (Model.Os?.Status != "cancelado")
                                                         {
-                                                            <a data-id="@s.Id" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço" @disabled>
-                                                                <i class="bx bx-trash-alt bx-xs"></i>
-                                                            </a>
+                                                            <span @Html.Raw(tooltipDisabled)>
+                                                                <a data-id="@s.Id" role="button" style="margin-right: 1%" class="btn-remover-servico btn-nwe4 text-decoration-none" title="Excluir serviço" @disabled>
+                                                                    <i class="bx bx-trash-alt bx-xs"></i>
+                                                                </a>
+                                                            </span>
                                                         }
                                                     </td>
                                                 </tr>
