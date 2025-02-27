@@ -92,7 +92,11 @@
 
                             <tr>
                                 <td>@venda.Id</td>
-                                <td>@venda.Cliente.Nome</td>
+                                <td>
+                                    <a asp-controller="Cliente" asp-action="Visualizar" asp-route-id="@venda?.ClienteId">
+                                        @venda?.Cliente?.Nome
+                                    </a>
+                                </td>
                                 <td>@venda.DataVenda.ToShortDateString()</td>
                                 <td>
                                     @if (venda.GarantiaDias != null && venda.GarantiaDias > 0)

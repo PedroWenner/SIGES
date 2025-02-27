@@ -10,5 +10,7 @@ namespace SIGES.Interfaces
         Task Atualizar(ClienteModel cliente);
         Task Excluir(int id);
         Task<bool> DocumentoExiste(string documento);
+        IEnumerable<OsModel?> GetOs(int id);
+        IEnumerable<VendaModel?> GetVendas(int id);
     }
 }

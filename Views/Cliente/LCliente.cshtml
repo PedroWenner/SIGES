@@ -63,6 +63,12 @@
                                         <a href="#" data-entidade="ClienteModel" data-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe7 btn-exibir-log text-decoration-none" title="Exibir histórico">
                                             <i class='bx bx-history'></i>
                                         </a>
+                                        @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "vCliente"))
+                                        {
+                                            <a asp-controller="Cliente" asp-action="Visualizar" asp-route-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none" title="Visualizar cliente">
+                                                <i class="bx bx-show"></i>
+                                            </a>
+                                        }
                                         @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "eCliente"))
                                         {
                                             <a asp-controller="Cliente" asp-action="Editar" asp-route-id="@cliente.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none" title="Editar cliente">

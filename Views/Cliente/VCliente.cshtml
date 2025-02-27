@@ -1,0 +1,295 @@
+﻿@using SIGES.ViewModel
+@model ClienteViewModel
+
+@{
+    ViewData["Titulo"] = "Visualizar cliente";
+    string tipoCliente = (Model.Cliente.Fornecedor == 0 ? "Cliente" : "Fornecedor");
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-theme-gray text-white d-flex align-items-center">
+            <h5 class="mb-0">Visualizar cliente</h5>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs mt-3" id="myTabCliente" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dados-tab-pane">Dados do cliente</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#os-tab-pane">Ordens de serviço</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#vendas-tab-pane">Vendas</button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="dados-tab-pane" tabindex="0">
+                    <br /><br />
+                    <!-- Accordion -->
+                    <div class="accordion accordion-flush" id="dadosAccordion">
+                        <!-- Dados -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header p-1" id="headingDados">
+                                <button class="accordion-button bg-theme-gray text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDados" aria-expanded="true" aria-controls="collapseDados">
+                                    <i class="bx bx-user me-2"></i> Dados pessoais
+                                </button>
+                            </h2>
+                            <div id="collapseDados" class="accordion-collapse collapse show" aria-labelledby="headingDados" data-bs-parent="#dadosAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Nome</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Nome
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Documento</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Documento
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Data de cadastro</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.DataCadastro.ToString("dd/MM/yyyy")
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Tipo do cliente</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @tipoCliente
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 class="accordion-header p-1" id="headingContato">
+                                <button class="accordion-button bg-theme-gray text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContato" aria-expanded="true" aria-controls="collapseContato">
+                                    <i class="bx bx-phone me-2"></i> Contatos
+                                </button>
+                            </h2>
+                            <div id="collapseContato" class="accordion-collapse collapse" aria-labelledby="headingContato" data-bs-parent="#dadosAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Contato</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Contato
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Telefone</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Telefone
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Celular</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Celular
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>E-mail</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Email
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 class="accordion-header p-1" id="headingEndereco">
+                                <button class="accordion-button bg-theme-gray text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEndereco" aria-expanded="true" aria-controls="collapseEndereco">
+                                    <i class="bx bx-map-alt me-2"></i> Endereço
+                                </button>
+                            </h2>
+                            <div id="collapseEndereco" class="accordion-collapse collapse" aria-labelledby="headingEndereco" data-bs-parent="#dadosAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Rua</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Rua
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Número</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.NumeroRua
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Complemento</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Complemento
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Bairro</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Bairro
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>Cidade</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Cidade - @Model.Cliente.Estado
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-end">
+                                                        <b>CEP</b>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        @Model.Cliente.Cep
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="os-tab-pane" tabindex="1">
+                    <br /><br />
+                    <div class="table-responsive">
+                        <table>
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th style="width: 5%">Nº OS</th>
+                                    <th style="width: 10%">Data inicial</th>
+                                    <th style="width: 10%">Data final</th>
+                                    <th style="width: 30%">Descrição</th>
+                                    <th style="width: 30%">Defeito</th>
+                                    <th style="width: 15%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.OrdensServicos == null || Model.OrdensServicos.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="6">
+                                            Nenhuma ordem de serviço cadastrada
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var os in Model.OrdensServicos)
+                                    {
+                                        <tr>
+                                            <td>@os.Id</td>
+                                            <td>@os.DataInicial?.ToString("dd/MM/yyyy")</td>
+                                            <td>@os.DataFinal?.ToString("dd/MM/yyyy")</td>
+                                            <td>@Html.Raw(os.DescricaoProduto)</td>
+                                            <td>@Html.Raw(os.Defeito)</td>
+                                            <td>
+                                                <a asp-controller="Ordem" asp-action="Visualizar" asp-route-id="@os.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none">
+                                                    <i class="bx bx-show"></i>
+                                                </a>
+                                                <a asp-controller="Ordem" asp-action="Editar" asp-route-id="@os.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none">
+                                                    <i class="bx bx-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="vendas-tab-pane" tabindex="2">
+                    <br /><br />
+                    <div class="table-responsive">
+                        <table>
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th class="text-left" >Nº venda</th>
+                                    <th class="text-left" >Data</th>
+                                    <th class="text-left" >Faturado</th>
+                                    <th class="text-left" >Total</th>
+                                    <th class="text-left" ></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Vendas == null || Model.Vendas.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="4">
+                                            Nenhuma venda cadastrada
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var v in Model.Vendas)
+                                    {
+                                        string faturado = v.Faturado == 1 ? "Sim" : "Não";
+                                        <tr>
+                                            <td>@v.Id</td>
+                                            <td>@v.DataVenda.ToString("dd/MM/yyyy")</td>
+                                            <td>@faturado</td>
+                                            <td>R$ @v.ValorDesconto?.ToString("n2")</td>
+                                            <td>
+                                                <a asp-controller="Venda" asp-action="Visualizar" asp-route-id="@v.Id" style="margin-right: 1%" class="btn-nwe text-decoration-none">
+                                                    <i class="bx bx-show"></i>
+                                                </a>
+                                                <a asp-controller="Venda" asp-action="Editar" asp-route-id="@v.Id" style="margin-right: 1%" class="btn-nwe3 text-decoration-none">
+                                                    <i class="bx bx-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -55,6 +55,9 @@ namespace SIGES.Models
 
         public string? Estado { get; set; }
 
+        [Column("data_cadastro")]
+        public DateTime DataCadastro { get; set; } = DateTime.Now;
+
         [IgnoreLog]
         [ValidateNever]
         public ICollection<OsModel> Ordens { get; set; } = new List<OsModel>();

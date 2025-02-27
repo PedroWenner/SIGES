@@ -51,5 +51,21 @@ namespace SIGES.Repositorios
         {
             return await _context.Clientes.AnyAsync(u => u.Documento == documento);
         }
+
+        public IEnumerable<OsModel?> GetOs(int id)
+        {
+            return _context.Os
+                .Include(s => s.Clientes)
+                .Where(s => s.ClientesId == id)
+                .ToList();
+        }
+
+        public IEnumerable<VendaModel?> GetVendas(int id)
+        {
+            return _context.Vendas
+                .Include(s => s.Cliente)
+                .Where(s => s.ClienteId == id)
+                .ToList();
+        }
     }
 }

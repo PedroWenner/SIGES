@@ -149,6 +149,10 @@ namespace SIGES.Migrations
                     b.Property<string>("Contato")
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("data_cadastro");
+
                     b.Property<string>("Documento")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
@@ -1032,7 +1036,7 @@ namespace SIGES.Migrations
                             Master = "S",
                             Nome = "Admin",
                             PermissaoId = 1,
-                            Senha = "$2a$11$hQQH6xJApptoZhbqUUzH7u8eFNjz3ta7NEFLxQMVvOrtvQBSKekNS",
+                            Senha = "$2a$11$fkZmc1rMzzJ5ZJTf1fVtiuQE/iZj2DvbQhcWa2iUA5vWUjbN7xG3m",
                             Situacao = 1
                         });
                 });

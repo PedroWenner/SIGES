@@ -110,7 +110,11 @@
 
                                 <tr>
                                     <td>@os?.Id</td>
-                                    <td>@os?.Clientes?.Nome</td>
+                                    <td>
+                                        <a asp-controller="Cliente" asp-action="Visualizar" asp-route-id="@os?.ClientesId">
+                                            @os?.Clientes?.Nome
+                                        </a>
+                                    </td>
                                     <td>@os?.Usuarios?.Nome</td>
                                     <td>@os?.DataInicial?.ToString("dd/MM/yyyy")</td>
                                     <td>@os?.DataFinal?.ToString("dd/MM/yyyy")</td>

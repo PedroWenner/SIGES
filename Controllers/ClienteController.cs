@@ -167,5 +167,29 @@ namespace SIGES.Controllers
 
             return Json(clientes);
         }
+
+        [HttpGet("visualizar/{id}")]
+        public async Task<IActionResult> Visualizar(int id)
+        {
+            var cliente = await _clienteRepositorio.ObterPorId(id);
+
+            if (cliente == null)
+            {
+                TempData["Error"] = "Cliente não encontrado.";
+                return RedirectToAction("Index");
+            }
+
+            var os = _clienteRepositorio.GetOs(cliente.Id);
+            var vendas = _clienteRepositorio.GetVendas(cliente.Id);
+
+            var viewModel = new ClienteViewModel
+            {
+                Cliente = cliente,
+                OrdensServicos = os.ToList(),
+                Vendas = vendas.ToList()
+            };
+
+            return View("VCliente", viewModel);
+        }
     }
 }
