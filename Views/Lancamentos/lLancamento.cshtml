@@ -1,5 +1,268 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using SIGES.Helpers
+@using SIGES.ViewModel
+@model LancamentoViewModel
+
 @{
+    ViewData["Titulo"] = "Lancamentos";
 }
+
+<div class="new122">
+    <div class="widget-title">
+        <h5>
+            Lançamentos Financeiros
+        </h5>
+    </div>
+    <div class="col-md-12" style="margin-left: 0">
+        <div class="col-md-2">
+            @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aLancamento"))
+            {
+                <a role="button" class="button btn btn-success w-100">
+                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                    <span class="button__text2">Receita/Despesa</span>
+                </a>
+            }
+        </div>
+    </div>
+    <div class="col-md-12" style="margin-left: 0">
+        <form id="form_filtros">
+            <div class="row">
+                <div class="col-md-2 mt-2">
+                    <label for="periodo" class="form-label">Período</label>
+                    <select id="periodo" name="Periodo">
+                        <option value="dia">Dia</option>
+                        <option value="semana">Semana</option>
+                        <option value="mesAnterior">Mês Anterior</option>
+                        <option value="mes">Mês</option>
+                        <option value="mesPosterior">Mês Posterior</option>
+                        <option value="ano">Ano</option>
+                        <option value="personalizado">Personalizado</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mt-2">
+                    <label for="vencimento_de" class="form-label">Vencimento (de)</label>
+                    <input type="text" id="vencimento_de" name="VencimentoDe" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                </div>
+                <div class="col-md-2 mt-2">
+                    <label for="vencimento_ate" class="form-label">Vencimento (até)</label>
+                    <input type="text" id="vencimento_ate" name="VencimentoAte" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                </div>
+                <div class="col-md-2 mt-2">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select id="tipo" name="Tipo">
+                        <option value="todos">Todos</option>
+                        <option value="receita">Receita</option>
+                        <option value="despesa">Despesa</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mt-2">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="Status">
+                        <option value="99">Todos (pendente e pago)</option>
+                        <option value="0">Pendente</option>
+                        <option value="1">Pago</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mt-2">
+                    <label for="cliente" class="form-label">Cliente/Fornecedor</label>
+                    <input type="text" id="cliente" name="cliente" autocomplete="off" />
+                    <input type="hidden" id="cliente_id" name="ClienteId" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 text-end mt-2">
+                    <button id="btn_filtrar" role="button" class="button btn btn-primary w-100">
+                        <span class="button__icon"><i class="bx bx-filter-alt"></i></span>
+                        <span class="button__text2">Filtrar</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12" style="margin-left: 0">
+        <table>
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>Tipo</th>
+                    <th>Cliente / Fornecedor</th>
+                    <th>Descrição</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Observações</th>
+                    <th>Forma de pagamento</th>
+                    <th>Valor (+)</th>
+                    <th>Desconto (-)</th>
+                    <th>Valor total (=)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="text-end text-success"><b>Total receitas: </b></td>
+                    <td colspan="6" class="text-left text-success"><b>R$ </b></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-end text-danger"><b>Total despesas: </b></td>
+                    <td colspan="6" class="text-left text-danger"><b>R$ </b></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-end"><b>Saldo: </b></td>
+                    <td colspan="6" class="text-left"><b>R$ </b></td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left"><b>Estatísticas Gerais do Financeiro: </b></td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left text-success">Total Receitas (Pagas):</td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left text-danger">Total Despesas (Pagas): </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left"><b>Total Receitas (-) Despesas = Saldo Líquido: </b></td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total Receitas (+) Despesas: </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total Receitas Pendentes: </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total Despesas Pendentes: </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total de Receitas Pendentes (-) Despesas Pendentes: </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left"><b>Total de Receitas Pendentes (+) Despesas Pendentes: </b></td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pagos: </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pendentes: </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left"><b>Total de descontos aplicados (pagos + pendentes): </b></td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total de Receitas sem descontos aplicados (pagos + pendentes): </td>
+                </tr>
+                <tr>
+                    <td colspan="12" class="text-left">Total de Despesas sem descontos aplicados (pagos + pendentes): </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#cliente").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/clientes/ListarClientes",
+                    type: "GET",
+                    data: { term: request.term },
+                    success: function (data) {
+                        if (data.length === 0) {
+                            response([{
+                                nome: "Adicionar cliente",
+                                value: "add",
+                                adicionar: true
+                            }]);
+                        } else {
+                            response(data);
+                        }
+                    }
+                });
+            },
+            minLength: 2,
+            focus: function (event, ui) {
+                if (!ui.item.adicionar) {
+                    $("#cliente").val(ui.item.nome);
+                }
+
+                return false;
+            },
+            select: function (event, ui) {
+                if (ui.item.adicionar) {
+                    window.location.href = "/clientes/adicionar";
+                } else {
+                    $("#cliente").val(ui.item.nome);
+                    $("#cliente_id").val(ui.item.value);
+                }
+
+                return false;
+            }
+        }).autocomplete("instance")._renderItem = function (ul, item) {
+            if (item.adicionar) {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-add">➕ ${item.nome}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            } else {
+                return $("<li>")
+                    .append(
+                        `<div class="ui-menu-item-wrapper">
+                            <span class="autocomplete-title">${item.nome}</span>
+                            <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
+                        </div>`
+                    )
+                    .appendTo(ul);
+            }
+        };
+    });
+
+    $('#btn_filtrar').on('click', function () {
+        var formData = {
+            Periodo: $('#periodo').val(),
+            VencimentoDe: formatarDataParaAPI($('#vencimento_de').val()),
+            VencimentoAte: formatarDataParaAPI($('#vencimento_ate').val()),
+            Tipo: $('#tipo').val(),
+            Status: $('#status').val(),
+            ClienteId: $('#cliente_id').val() || null
+        };
+
+        console.log(formData);
+
+        $('#btn_filtrar').prop('disabled', true);
+        $.ajax({
+            url: '/lancamentos/filtrar',
+            type: 'POST',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function (response) {
+                if (response.success) {
+                    $('#resultado').html(response.data);
+                } else {
+                    alert('Ocorreu um erro ao filtrar os dados.');
+                }
+            },
+            error: function (xhr, status, error) {
+                alert('Ocorreu um erro ao enviar os dados.');
+            },
+            complete: function () {
+                $('#btn_filtrar').prop('disabled', false);
+            }
+        });
+    });
+
+    function formatarDataParaAPI(data) {
+        if (data === '')
+            return null;
+
+        var partes = data.split('/');
+        var dia = partes[0];
+        var mes = partes[1];
+        var ano = partes[2];
+
+        return `${ano}-${mes}-${dia}`;
+    }
+</script>
