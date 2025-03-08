@@ -9,5 +9,7 @@ namespace SIGES.Interfaces
         Task<LancamentoModel?> ObterPorId(int id);
         Task Atualizar(LancamentoModel lancamento);
         Task Excluir(int id);
+
+        Task<IEnumerable<LancamentoModel>> GetVendasOs();
     }
 }

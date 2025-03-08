@@ -47,5 +47,32 @@ namespace SIGES.Repositorios
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<LancamentoModel>> GetVendasOs()
+        {
+            var query = from l in _context.Lancamentos
+                        join v in _context.Vendas on l.VendasId equals v.Id into vendaGroup
+                        from v in vendaGroup.DefaultIfEmpty()
+                        join o in _context.Os on l.OsId equals o.Id into osGroup
+                        from o in osGroup.DefaultIfEmpty()
+                        join c in _context.Clientes on l.ClientesId equals c.Id
+                        select new LancamentoModel
+                        {
+                            Id = l.Id,
+                            Tipo = l.Tipo,
+                            ClientesId = l.ClientesId,
+                            Descricao = l.Descricao,
+                            DataVencimento = l.DataVencimento,
+                            Baixado = l.Baixado,
+                            Observacoes = l.Observacoes,
+                            FormaPgto = l.FormaPgto,
+                            Valor = l.Valor,
+                            Desconto = l.Desconto,
+                            ValorDesconto = l.ValorDesconto,
+                            Clientes = c
+                        };
+
+            return await query.ToListAsync();
+        }
     }
 }

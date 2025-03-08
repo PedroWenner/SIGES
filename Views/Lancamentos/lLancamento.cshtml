@@ -9,15 +9,16 @@
 <div class="new122">
     <div class="widget-title">
         <h5>
-            Lançamentos Financeiros
+            Lançamentos financeiros
         </h5>
     </div>
     <div class="col-md-12" style="margin-left: 0">
         <div class="col-md-2">
             @if (PermissaoHelper.TemPermissao(ViewContext.HttpContext, "aLancamento"))
             {
-                <a role="button" class="button btn btn-success w-100">
-                    <span class="button__icon"><i class='bx bx-plus-circle'></i></span>
+                <a href="#modal_adicionar_despesa" role="button" data-bs-target="#modal_adicionar_despesa"
+                    data-bs-toggle="modal" class="button btn btn-success w-100">
+                    <span class="button__icon"><i class="bx bx-plus-circle"></i></span>
                     <span class="button__text2">Receita/Despesa</span>
                 </a>
             }
@@ -79,87 +80,105 @@
         </form>
     </div>
     <div class="col-md-12" style="margin-left: 0">
-        <table>
-            <thead class="table-secondary">
-                <tr>
-                    <th>#</th>
-                    <th>Tipo</th>
-                    <th>Cliente / Fornecedor</th>
-                    <th>Descrição</th>
-                    <th>Vencimento</th>
-                    <th>Status</th>
-                    <th>Observações</th>
-                    <th>Forma de pagamento</th>
-                    <th>Valor (+)</th>
-                    <th>Desconto (-)</th>
-                    <th>Valor total (=)</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="6" class="text-end text-success"><b>Total receitas: </b></td>
-                    <td colspan="6" class="text-left text-success"><b>R$ </b></td>
-                </tr>
-                <tr>
-                    <td colspan="6" class="text-end text-danger"><b>Total despesas: </b></td>
-                    <td colspan="6" class="text-left text-danger"><b>R$ </b></td>
-                </tr>
-                <tr>
-                    <td colspan="6" class="text-end"><b>Saldo: </b></td>
-                    <td colspan="6" class="text-left"><b>R$ </b></td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left"><b>Estatísticas Gerais do Financeiro: </b></td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left text-success">Total Receitas (Pagas):</td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left text-danger">Total Despesas (Pagas): </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left"><b>Total Receitas (-) Despesas = Saldo Líquido: </b></td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total Receitas (+) Despesas: </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total Receitas Pendentes: </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total Despesas Pendentes: </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total de Receitas Pendentes (-) Despesas Pendentes: </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left"><b>Total de Receitas Pendentes (+) Despesas Pendentes: </b></td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pagos: </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pendentes: </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left"><b>Total de descontos aplicados (pagos + pendentes): </b></td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total de Receitas sem descontos aplicados (pagos + pendentes): </td>
-                </tr>
-                <tr>
-                    <td colspan="12" class="text-left">Total de Despesas sem descontos aplicados (pagos + pendentes): </td>
-                </tr>
-            </tfoot>
-        </table>
+        <div class="table-responsive">
+            <table id="tabela_lancamentos">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>#</th>
+                        <th>Tipo</th>
+                        <th>Cliente / Fornecedor</th>
+                        <th>Descrição</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+                        <th>Observações</th>
+                        <th>Forma de pagamento</th>
+                        <th>Valor (+)</th>
+                        <th>Desconto (-)</th>
+                        <th>Valor total (=)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="12">Nenhum lançamento encontrado</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6" class="text-end text-success"><b>Total receitas: </b></td>
+                        <td colspan="6" class="text-left text-success"><b>R$ 0,00</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="text-end text-danger"><b>Total despesas: </b></td>
+                        <td colspan="6" class="text-left text-danger"><b>R$ 0,00</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="text-end"><b>Saldo: </b></td>
+                        <td colspan="6" class="text-left"><b>R$ 0,00</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">
+                            <b>Estatísticas Gerais do Financeiro</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left text-success">
+                            Total Receitas (Pagas): R$ 0,00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left text-danger">
+                            Total Despesas (Pagas): R$ 0,00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">
+                            <b>Total Receitas (-) Despesas: R$ 0,00</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">
+                            Total Receitas Pendentes: R$ 0,00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">
+                            Total Despesas Pendentes: R$ 0,00
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">
+                            <b>Total de Receitas Pendentes (-) Despesas Pendentes: R$ 0,00</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pagos: R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pendentes: R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left"><b>Total de descontos aplicados (pagos + pendentes): R$ 0,00</b></td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">Total de Receitas sem descontos aplicados (pagos + pendentes): R$ 0,00</td>
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="text-left">Total de Despesas sem descontos aplicados (pagos + pendentes): R$ 0,00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 </div>
 
+@await Html.PartialAsync("~/Views/Lancamentos/_modalAdicionarDespesa.cshtml")
+
 <script>
+    $(document).ready(function () {
+        $(".money").mask("#.##0,00", {reverse: true});
+    });
+
     $(function () {
         $("#cliente").autocomplete({
             source: function (request, response) {
@@ -184,6 +203,7 @@
             focus: function (event, ui) {
                 if (!ui.item.adicionar) {
                     $("#cliente").val(ui.item.nome);
+                    $("#cliente_add_despesa").val(ui.item.nome);
                 }
 
                 return false;
@@ -193,7 +213,9 @@
                     window.location.href = "/clientes/adicionar";
                 } else {
                     $("#cliente").val(ui.item.nome);
+                    $("#cliente_add_despesa").val(ui.item.nome);
                     $("#cliente_id").val(ui.item.value);
+                    $("#cliente_id_add_despesa").val(ui.item.value);
                 }
 
                 return false;
@@ -218,6 +240,13 @@
                     .appendTo(ul);
             }
         };
+
+        // Adiciona o evento input para limpar o cliente_id quando o campo cliente estiver vazio
+        $("#cliente").on("input", function () {
+            if ($(this).val().trim() === "") {
+                $("#cliente_id").val("");
+            }
+        });
     });
 
     $('#btn_filtrar').on('click', function () {
@@ -230,8 +259,6 @@
             ClienteId: $('#cliente_id').val() || null
         };
 
-        console.log(formData);
-
         $('#btn_filtrar').prop('disabled', true);
         $.ajax({
             url: '/lancamentos/filtrar',
@@ -240,7 +267,112 @@
             contentType: 'application/json',
             success: function (response) {
                 if (response.success) {
-                    $('#resultado').html(response.data);
+                    let tbody = $("#tabela_lancamentos tbody");
+                    tbody.empty();
+
+                    if (response.lancamentos && Array.isArray(response.lancamentos) && response.lancamentos.length > 0) {
+                        response.lancamentos.forEach(l => {
+                            tbody.append(`
+                                <tr>
+                                    <td>${l.id}</td>
+                                    <td>${l.tipo}</td>
+                                    <td>${l.cliente}</td>
+                                    <td>${l.descricao}</td>
+                                    <td>${l.vencimento}</td>
+                                    <td>${l.status}</td>
+                                    <td>${l.observacoes}</td>
+                                    <td>${l.formaPgto}</td>
+                                    <td>${l.valor}</td>
+                                    <td>${l.desconto}</td>
+                                    <td>${l.valorTotal}</td>
+                                    <td>
+                                        <a href="#modal-editar" data-id="${l.id}" role="button" data-bs-target="#modal-editar"
+                                            data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe3 text-decoration-none"
+                                            title="Editar">
+                                            <i class="bx bx-edit"></i>
+                                        </a>
+                                        <a href="#modal-excluir" data-id="${l.id}" role="button" data-bs-target="#modal-excluir"
+                                            data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none"
+                                            title="Excluir lançamento">
+                                            <i class="bx bx-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    } else {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="12" class="text-left">Nenhum lançamento encontrado.</td>
+                            </tr>
+                        `);
+                    }
+
+                    // Atualiza os totais na tabela
+                    $("#tabela_lancamentos tfoot").html(`
+                        <tr>
+                            <td colspan="6" class="text-end text-success"><b>Total receitas: </b></td>
+                            <td colspan="6" class="text-left text-success"><b>R$ ${response.totalReceitas}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="text-end text-danger"><b>Total despesas: </b></td>
+                            <td colspan="6" class="text-left text-danger"><b>R$ ${response.totalDespesas}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="text-end"><b>Saldo: </b></td>
+                            <td colspan="6" class="text-left"><b>R$ ${response.totalLiquido}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">
+                                <b>Estatísticas Gerais do Financeiro</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left text-success">
+                                Total Receitas (Pagas): R$ ${response.totalReceitasPago}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left text-danger">
+                                Total Despesas (Pagas): R$ ${response.totalDespesasPago}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">
+                                <b>Total Receitas (-) Despesas: R$ ${response.totalLiquidoPago}</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">
+                                Total Receitas Pendentes: R$ ${response.totalReceitasPendentes}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">
+                                Total Despesas Pendentes: R$ ${response.totalDespesasPendentes}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">
+                                <b>Total de Receitas Pendentes (-) Despesas Pendentes: R$ ${response.totalLiquidoPendentes}</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pagos: R$ ${response.totalDescontosPago}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">Total de Descontos aplicados á lançamentos Pendentes: R$ ${response.totalDescontosPendentes}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left"><b>Total de descontos aplicados (pagos + pendentes): R$ ${response.totalLiquidoDescontos}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">Total de Receitas sem descontos aplicados (pagos + pendentes): R$ ${response.totalReceitaDescontos}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" class="text-left">Total de Despesas sem descontos aplicados (pagos + pendentes): R$ ${response.totalDespesasDescontos}</td>
+                        </tr>
+                    `);
                 } else {
                     alert('Ocorreu um erro ao filtrar os dados.');
                 }
