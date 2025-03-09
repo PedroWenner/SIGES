@@ -1,5 +1,127 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<style>
+    .ui-widget-content {
+        z-index: 99999 !important;
+    }
+</style>
+
+<!-- Modal log -->
+<div id="modal_editar_despesa" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Atualizar receita/despesa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_editar_despesa">
+                    <div class="row">
+                        <div class="col-md-3 mt-2">
+                            <label for="tipo" class="form-label">Tipo</label>
+                            <select id="tipo" name="Tipo">
+                                <option value="receita">Receita</option>
+                                <option value="despesa">Despesa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-9 mt-2">
+                            <label for="descricao" class="form-label">Descrição/Referência</label>
+                            <input type="text" id="descricao" name="Descricao" autocomplete="off" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <label for="cliente_add_despesa" class="form-label">Cliente/Fornecedor</label>
+                            <input type="text" id="cliente_add_despesa" name="cliente" autocomplete="off" required />
+                            <input type="hidden" id="cliente_id_add_despesa" name="ClienteId" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <label for="observacoes" class="form-label">Observações</label>
+                            <textarea id="observacoes" name="Observacoes"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mt-2">
+                            <label for="valor" class="form-label">Valor</label>
+                            <input type="text" id="valor" name="Valor" class="money" autocomplete="off" required />
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <label for="desconto" class="form-label">Desconto</label>
+                            <input type="text" id="desconto" name="Desconto" class="money" autocomplete="off" />
+                        </div>
+                        <div class="col-md-2 mt-2 d-flex align-content-end flex-wrap">
+                            <button id="btn_aplicar_desconto_add_despesa" class="btn btn-sm btn-secondary w-100" role="button" type="button">
+                                Aplicar
+                            </button>
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <label for="valor_desconto" class="form-label">
+                                Val. desc.
+                                <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo">
+                                    <i class="fas fa-info-circle"></i>
+                                </span>
+                            </label>
+                            <input type="text" id="valor_desconto" name="ValorDesconto" autocomplete="off" readonly />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mt-2">
+                            <label for="data_vencimento" class="form-label">Data vencimento</label>
+                            <input type="text" id="data_vencimento" name="DataVencimento" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <label for="qtd_parcelas" class="form-label">Qtd. parcelas</label>
+                            <select id="qtd_parcelas" name="QtdParcelas">
+                                <option value="avista">Pagamento á vista</option>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@(i)">@(i)x</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3 mt-2 d-flex align-content-end flex-wrap">
+                            <div class="form-check form-switch">
+                                <label class="form-check-label" for="baixado">
+                                    Recebido?
+                                </label>
+                                <input class="form-check-input" type="checkbox" role="switch" name="Baixado" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mt-2">
+                            <label for="data_recebimento" class="form-label">Data recebimento</label>
+                            <input type="text" id="data_recebimento" name="DataPagamento" class="datetime" autocomplete="off" />
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <label for="forma_pgto" class="form-label">Qtd. parcelas</label>
+                            <select id="forma_pgto" name="FormaPgto">
+                                <option value="dinheiro">Dinheiro</option>
+                                <option value="pix">Pix</option>
+                                <option value="boleto">Boleto</option>
+                                <option value="Cartão de Crédito" selected="">Cartão de Crédito</option>
+                                <option value="Cartão de Débito">Cartão de Débito</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Cheque Pré-datado">Cheque Pré-datado</option>
+                                <option value="Depósito">Depósito</option>
+                                <option value="Transferência DOC">Transferência DOC</option>
+                                <option value="Transferência TED">Transferência TED</option>
+                                <option value="Promissória">Promissória</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="display:flex;justify-content: center">
+                <button class="button btn btn-warning" data-bs-dismiss="modal">
+                    <span class="button__icon"><i class="bx bx-x"></i></span>
+                    <span class="button__text2">Cancelar</span>
+                </button>
+                <button type="submit" class="button btn btn-success">
+                    <span class="button__icon"><i class="bx bx-save"></i></span>
+                    <span class="button__text2">Atualizar registro</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

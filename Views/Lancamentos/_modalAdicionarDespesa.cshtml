@@ -69,45 +69,75 @@
                             <label for="data_vencimento" class="form-label">Data vencimento</label>
                             <input type="text" id="data_vencimento" name="DataVencimento" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
                         </div>
-                        <div class="col-md-3 mt-2">
-                            <label for="qtd_parcelas" class="form-label">Qtd. parcelas</label>
-                            <select id="qtd_parcelas" name="QtdParcelas">
-                                <option value="avista">Pagamento á vista</option>
-                                @for (int i = 1; i <= 12; i++)
-                                {
-                                    <option value="@(i)">@(i)x</option>
-                                }
-                            </select>
-                        </div>
                         <div class="col-md-3 mt-2 d-flex align-content-end flex-wrap">
                             <div class="form-check form-switch">
                                 <label class="form-check-label" for="baixado">
                                     Recebido?
                                 </label>
-                                <input class="form-check-input" type="checkbox" role="switch" name="Baixado" value="0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="baixado" name="Baixado" value="0">
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3 mt-2">
-                            <label for="data_recebimento" class="form-label">Data recebimento</label>
-                            <input type="text" id="data_recebimento" name="DataPagamento" class="datetime" autocomplete="off" />
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <label for="forma_pgto" class="form-label">Qtd. parcelas</label>
-                            <select id="forma_pgto" name="FormaPgto">
-                                <option value="dinheiro">Dinheiro</option>
-                                <option value="pix">Pix</option>
-                                <option value="boleto">Boleto</option>
-                                <option value="Cartão de Crédito" selected="">Cartão de Crédito</option>
-                                <option value="Cartão de Débito">Cartão de Débito</option>
-                                <option value="Cheque">Cheque</option>
-                                <option value="Cheque Pré-datado">Cheque Pré-datado</option>
-                                <option value="Depósito">Depósito</option>
-                                <option value="Transferência DOC">Transferência DOC</option>
-                                <option value="Transferência TED">Transferência TED</option>
-                                <option value="Promissória">Promissória</option>
-                            </select>
+                        <div id="divRecebimento" class="d-none">
+                            <div class="row">
+                                <div id="div_data_recebimento" class="col-md-3 mt-2">
+                                    <label for="data_recebimento" class="form-label">Data recebimento</label>
+                                    <input type="text" id="data_recebimento" name="DataPagamento" class="datetime" autocomplete="off" />
+                                </div>
+                                <div class="col-md-3 mt-2">
+                                    <label for="forma_pgto" class="form-label">Forma pgto.</label>
+                                    <select id="forma_pgto" name="FormaPgto">
+                                        <option value="Dinheiro" selected="">Dinheiro</option>
+                                        <option value="Pix">Pix</option>
+                                        <option value="Boleto">Boleto</option>
+                                        <option value="Cartão de crédito">Cartão de Crédito</option>
+                                        <option value="Cartão de débito">Cartão de Débito</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Cheque pré-datado">Cheque Pré-datado</option>
+                                        <option value="Depósito">Depósito</option>
+                                        <option value="Transferência DOC">Transferência DOC</option>
+                                        <option value="Transferência TED">Transferência TED</option>
+                                        <option value="Promissória">Promissória</option>
+                                    </select>
+                                </div>
+                                <div id="div_qtd_parcelas" class="col-md-3 mt-2 d-none">
+                                    <label for="qtd_parcelas" class="form-label">Qtd. parcelas</label>
+                                    <select id="qtd_parcelas" name="QtdParcelas">
+                                        <option value="avista">Pagamento á vista</option>
+                                        @for (int i = 2; i <= 12; i++)
+                                        {
+                                            <option value="@(i)">@(i)x</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="div_entrada" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-3 mt-2">
+                                            <label for="valor_entrada" class="form-label">Entrada</label>
+                                            <input type="text" id="valor_entrada" name="ValorEntrada" class="money" autocomplete="off" />
+                                        </div>
+                                        <div class="col-md-3 mt-2">
+                                            <label for="data_entrada" class="form-label">Data da entrada</label>
+                                            <input type="text" id="data_entrada" name="DataEntrada" class="datetime" autocomplete="off" required value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                        </div>
+                                        <div class="col-md-3 mt-2">
+                                            <label for="data_base_pgto" class="form-label">Data base de pgto.</label>
+                                            <input type="text" id="data_base_pgto" name="DataBasePgto" class="datetime" autocomplete="off" required />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 mt-2">
+                                            <div class="text-center text-danger" style="background:#f5f5f5;border-radius:4px;margin: 0;border:1px solid #ddd;">
+                                                <input id="valorparcelas" type="hidden" name="ValorParcelas" readonly />
+                                                <label id="string_parc" style="font-weight: bolder;" class="p-2 ">Hello</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -127,70 +157,102 @@
 </div>
 
 <script>
-    $(function () {
-        $("#cliente_add_despesa").autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: "/clientes/ListarClientes",
-                    type: "GET",
-                    data: { term: request.term },
-                    success: function (data) {
-                        if (data.length === 0) {
-                            response([{
-                                nome: "Adicionar cliente",
-                                value: "add",
-                                adicionar: true
-                            }]);
-                        } else {
-                            response(data);
-                        }
-                    }
-                });
-            },
-            minLength: 2,
-            focus: function (event, ui) {
-                if (!ui.item.adicionar) {
-                    $("#cliente_add_despesa").val(ui.item.nome);
-                }
-
-                return false;
-            },
-            select: function (event, ui) {
-                if (ui.item.adicionar) {
-                    window.location.href = "/clientes/adicionar";
-                } else {
-                    $("#cliente_add_despesa").val(ui.item.nome);
-                    $("#cliente_id_add_despesa").val(ui.item.value);
-                }
-
-                return false;
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            if (item.adicionar) {
-                return $("<li>")
-                    .append(
-                        `<div class="ui-menu-item-wrapper" style="z-index: 999;">
-                            <span class="autocomplete-add">➕ ${item.nome}</span>
-                        </div>`
-                    )
-                    .appendTo(ul);
-            } else {
-                return $("<li>")
-                    .append(
-                        `<div class="ui-menu-item-wrapper" style="z-index: 999;">
-                            <span class="autocomplete-title">${item.nome}</span>
-                            <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
-                        </div>`
-                    )
-                    .appendTo(ul);
-            }
-        };
-
-        // Adiciona o evento input para limpar o cliente_id quando o campo cliente estiver vazio
-        $("#cliente").on("input", function () {
-            if ($(this).val().trim() === "") {
-                $("#cliente_id").val("");
-            }
-        });
+    $('#baixado').click(function(event) {
+        var flag = $(this).is(':checked');
+        if (flag == true) {
+            $('#divRecebimento').removeClass("d-none");
+        } else {
+            $('#divRecebimento').addClass("d-none");
+        }
     });
+
+    $(document).ready(function () {
+        function toggleDivQtdParcelas() {
+            const formaPgto = $("#forma_pgto").val();
+            const divQtdParcelas = $("#div_qtd_parcelas");
+
+            // Se a forma de pagamento for "Cartão de Crédito", mostra a div
+            if (formaPgto === "Cartão de crédito") {
+                divQtdParcelas.removeClass("d-none");
+            } else {
+                divQtdParcelas.addClass("d-none");
+            }
+        }
+
+        function toggleDivEntrada() {
+            const qtdParcelas = $("#qtd_parcelas").val();
+            const divEntrada = $("#div_entrada");
+            const divDataRecebimento = $("#div_data_recebimento");
+
+            // Se a forma de pagamento for "Cartão de Crédito", mostra a div
+            if (qtdParcelas === "avista") {
+                divEntrada.addClass("d-none");
+                divDataRecebimento.removeClass("d-none");
+                valorParcelas();
+            } else {
+                divEntrada.removeClass("d-none");
+                divDataRecebimento.addClass("d-none");
+                valorParcelas();
+            }
+        }
+
+        // Executa a função ao carregar a página (para garantir o estado inicial correto)
+        toggleDivQtdParcelas();
+        toggleDivEntrada();
+        valorParcelas();
+
+        $("#forma_pgto").on("change", toggleDivQtdParcelas);
+        $("#qtd_parcelas").on("change", toggleDivEntrada);
+    });
+
+    $('#valor').change(function(event) {
+        valorParcelas();
+    });
+
+    $('#desconto').change(function(event) {
+        valorParcelas();
+    });
+
+    $('#qtd_parcelas').change(function(event) {
+        valorParcelas();
+    });
+
+    $('#valor_entrada').change(function(event){
+        valorParcelas();
+        var entrada = $("#valor_entrada").val();
+        if (entrada > 0) {
+            $('#data_entrada').css("color", "#444444");
+        } else {
+            $('#data_entrada').css("color", "#eeeeee");
+        }
+    });
+
+    function valorParcelas(){
+        var valorParc = $("#valor").val().replace('.', '').replace(',', '.') || 0;
+        var desconto = $("#desconto").val().replace('.', '').replace(',', '.') || 0;
+        var qtdparc = $("#qtd_parcelas").val();
+
+        valorParc = valorParc - desconto;
+        var entrada = $("#valor_entrada").val().replace('.', '').replace(',', '.') || 0;
+
+        var result = (valorParc - entrada) / qtdparc;
+
+        if (qtdparc > 1) {
+            if (entrada > 0) {
+                $("#string_parc").text('R$ '+entrada+' de entrada mais '+qtdparc+' parcelas de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+            } else {
+                $("#string_parc").text(qtdparc+' parcelas de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+            }
+        } else {
+            if (entrada > 0) {
+                $("#string_parc").text('R$ '+entrada+' de entrada mais '+qtdparc+' parcela de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+            } else {
+                $("#string_parc").text(qtdparc+' parcela de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+            }
+        }
+    }
 </script>

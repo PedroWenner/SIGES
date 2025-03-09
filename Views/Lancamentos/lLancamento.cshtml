@@ -173,6 +173,7 @@
 </div>
 
 @await Html.PartialAsync("~/Views/Lancamentos/_modalAdicionarDespesa.cshtml")
+@await Html.PartialAsync("~/Views/Lancamentos/_modalEditarDespesa.cshtml")
 
 <script>
     $(document).ready(function () {
@@ -180,10 +181,27 @@
     });
 
     $(function () {
-        $("#cliente").autocomplete({
+        setupAutocomplete(
+            "cliente_add_despesa",
+            "cliente_id_add_despesa",
+            "/clientes/ListarClientes",
+            "/clientes/adicionar"
+        );
+
+        // Configuração para o campo "cliente_outro_formulario"
+        setupAutocomplete(
+            "cliente",
+            "cliente_id",
+            "/clientes/ListarClientes",
+            "/clientes/adicionar"
+        );
+    });
+
+    function setupAutocomplete(inputId, hiddenId, url, addUrl) {
+        $(`#${inputId}`).autocomplete({
             source: function (request, response) {
                 $.ajax({
-                    url: "/clientes/ListarClientes",
+                    url: url,
                     type: "GET",
                     data: { term: request.term },
                     success: function (data) {
@@ -202,29 +220,24 @@
             minLength: 2,
             focus: function (event, ui) {
                 if (!ui.item.adicionar) {
-                    $("#cliente").val(ui.item.nome);
-                    $("#cliente_add_despesa").val(ui.item.nome);
+                    $(`#${inputId}`).val(ui.item.nome);
                 }
-
                 return false;
             },
             select: function (event, ui) {
                 if (ui.item.adicionar) {
-                    window.location.href = "/clientes/adicionar";
+                    window.location.href = addUrl;
                 } else {
-                    $("#cliente").val(ui.item.nome);
-                    $("#cliente_add_despesa").val(ui.item.nome);
-                    $("#cliente_id").val(ui.item.value);
-                    $("#cliente_id_add_despesa").val(ui.item.value);
+                    $(`#${inputId}`).val(ui.item.nome);
+                    $(`#${hiddenId}`).val(ui.item.value);
                 }
-
                 return false;
             }
         }).autocomplete("instance")._renderItem = function (ul, item) {
             if (item.adicionar) {
                 return $("<li>")
                     .append(
-                        `<div class="ui-menu-item-wrapper">
+                        `<div class="ui-menu-item-wrapper" style="z-index: 999;">
                             <span class="autocomplete-add">➕ ${item.nome}</span>
                         </div>`
                     )
@@ -232,7 +245,7 @@
             } else {
                 return $("<li>")
                     .append(
-                        `<div class="ui-menu-item-wrapper">
+                        `<div class="ui-menu-item-wrapper" style="z-index: 999;">
                             <span class="autocomplete-title">${item.nome}</span>
                             <span class="autocomplete-details">Celular: ${item.celular} | Documento: ${item.documento}</span>
                         </div>`
@@ -241,13 +254,13 @@
             }
         };
 
-        // Adiciona o evento input para limpar o cliente_id quando o campo cliente estiver vazio
-        $("#cliente").on("input", function () {
+        // Adiciona o evento input para limpar o campo oculto quando o campo de entrada estiver vazio
+        $(`#${inputId}`).on("input", function () {
             if ($(this).val().trim() === "") {
-                $("#cliente_id").val("");
+                $(`#${hiddenId}`).val("");
             }
         });
-    });
+    }
 
     $('#btn_filtrar').on('click', function () {
         var formData = {
@@ -286,12 +299,12 @@
                                     <td>${l.desconto}</td>
                                     <td>${l.valorTotal}</td>
                                     <td>
-                                        <a href="#modal-editar" data-id="${l.id}" role="button" data-bs-target="#modal-editar"
+                                        <a href="#modal_editar_despesa" data-id="${l.id}" role="button" data-bs-target="#modal_editar_despesa"
                                             data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe3 text-decoration-none"
                                             title="Editar">
                                             <i class="bx bx-edit"></i>
                                         </a>
-                                        <a href="#modal-excluir" data-id="${l.id}" role="button" data-bs-target="#modal-excluir"
+                                        <a href="#modal_excluir_despesa" data-id="${l.id}" role="button" data-bs-target="#modal_excluir_despesa"
                                             data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none"
                                             title="Excluir lançamento">
                                             <i class="bx bx-trash-alt"></i>
