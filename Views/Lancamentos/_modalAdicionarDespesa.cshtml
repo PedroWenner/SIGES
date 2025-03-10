@@ -8,7 +8,7 @@
 <div id="modal_adicionar_despesa" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-theme-gray text-white">
                 <h1 class="modal-title fs-5">Adicionar receita/despesa</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -147,10 +147,17 @@
                     <span class="button__icon"><i class="bx bx-x"></i></span>
                     <span class="button__text2">Cancelar</span>
                 </button>
-                <button type="submit" class="button btn btn-success">
+                <button type="submit" class="button btn btn-success" id="btn_add_despesa">
                     <span class="button__icon"><i class="bx bx-save"></i></span>
                     <span class="button__text2">Adicionar registro</span>
                 </button>
+            </div>
+            <!-- Spinner de carregamento -->
+            <div id="loading_spinner" style="text-align: center; padding: 20px;" class="d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p>Adicionando receita/despesa, aguarde...</p>
             </div>
         </div>
     </div>
@@ -209,7 +216,12 @@
         valorParcelas();
     });
 
-    $('#desconto').change(function(event) {
+    $('#btn_aplicar_desconto_add_despesa').click(function(event) {
+        var valorParc = $("#valor").val().replace('.', '').replace(',', '.') || 0;
+        var desconto = $("#desconto").val().replace('.', '').replace(',', '.') || 0;
+        valorParc = valorParc - desconto;
+        $("#valor_desconto").val(valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
         valorParcelas();
     });
 
@@ -255,4 +267,85 @@
             }
         }
     }
+
+    $(document).ready(function () {
+        $('#form_adicionar_despesa').validate({
+            rules: {
+                'Descricao': { required: true },
+                'cliente': { required: true },
+                'Valor': { required: true },
+                'DataVencimento': { required: true },
+            },
+            messages: {
+                'Descricao': { required: 'Campo requerido.' },
+                'cliente': { required: 'Campo requerido.' },
+                'Valor': { required: 'Campo requerido.' },
+                'DataVencimento': { required: 'Campo requerido.' },
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            },
+            submitHandler: function(form) {
+                var dados = $(form).serialize();
+                $('#btn_add_despesa').addClass('disabled').text('Aguarde...');
+                $("#valor_desconto").removeClass('readonly');
+                $("#loading_spinner").removeClass('d-none');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/lancamentos/adicionar-lancamento",
+                    data: dados,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.success) {
+                            setTimeout(function () {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: 'Receita/Despesa adicionado',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }, 1500);
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'Erro',
+                                text: data.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+
+                        $('#btn_add_despesa').removeClass('disabled').text('Adicionar');
+                        $("#valor_desconto").addClass('readonly');
+                        $("#loading-spinner").addClass('d-none');
+                    },
+                    error: function () {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Erro no servidor!',
+                            text: 'Não foi possível adicionar a despesa. Tente novamente.',
+                            showConfirmButton: true,
+                            timer: 4000
+
+                        });
+
+                        $('#btn_add_despesa').removeClass('disabled').text('Adicionar');
+                        $("#valor_desconto").addClass('readonly');
+                        $("#loading-spinner").addClass('d-none');
+                    }
+                });
+            }
+        });
+    });
 </script>

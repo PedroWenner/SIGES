@@ -107,6 +107,18 @@ namespace SIGES.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [Permissao("aLancamento", "Você não tem permissão para adicionar lancamentos")]
+        [HttpPost("adicionar-lancamento")]
+        public async Task<IActionResult> AdicionarLancamento([FromBody] LancamentoModelRequest lancamento)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Formulário incompleto!" });
+            }
+
+            return Json(new { success = false, message = "Erro ao consultar SQL!" });
+        }
     }
 
     public class FiltroModel
@@ -117,5 +129,25 @@ namespace SIGES.Controllers
         public string? Tipo { get; set; }
         public int? Status { get; set; }
         public int? ClienteId { get; set; }
+    }
+
+    public class LancamentoModelRequest
+    {
+        public int? Id { get; set; }
+        public string Tipo { get; set; }
+        public string Descricao { get; set; }
+        public int ClienteId { get; set; }
+        public string? Observacoes { get; set; }
+        public decimal Valor { get; set; }
+        public decimal? Desconto { get; set; }
+        public decimal? ValorDesconto { get; set; }
+        public DateTime DataVencimento { get; set; } = DateTime.Now;
+        public DateTime? DataPagamento { get; set; }
+        public string? FormaPgto { get; set; }
+        public string? QtdParcelas { get; set; }
+        public decimal? ValorEntrada { get; set; }
+        public DateTime? DataEntrada { get; set; }
+        public DateTime? DataBasePgto { get; set; }
+        public decimal? ValorParcelas { get; set; }
     }
 }
