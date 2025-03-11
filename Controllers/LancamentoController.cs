@@ -142,6 +142,7 @@ namespace SIGES.Controllers
         public decimal? Desconto { get; set; }
         public decimal? ValorDesconto { get; set; }
         public DateTime DataVencimento { get; set; } = DateTime.Now;
+        public bool Baixado { get; set; } = false;
         public DateTime? DataPagamento { get; set; }
         public string? FormaPgto { get; set; }
         public string? QtdParcelas { get; set; }

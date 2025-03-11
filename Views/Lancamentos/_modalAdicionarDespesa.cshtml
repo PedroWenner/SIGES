@@ -12,8 +12,8 @@
                 <h1 class="modal-title fs-5">Adicionar receita/despesa</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="form_adicionar_despesa">
+            <form id="form_adicionar_despesa" method="post">
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-3 mt-2">
                             <label for="tipo" class="form-label">Tipo</label>
@@ -140,29 +140,30 @@
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-warning" data-bs-dismiss="modal">
-                    <span class="button__icon"><i class="bx bx-x"></i></span>
-                    <span class="button__text2">Cancelar</span>
-                </button>
-                <button type="submit" class="button btn btn-success" id="btn_add_despesa">
-                    <span class="button__icon"><i class="bx bx-save"></i></span>
-                    <span class="button__text2">Adicionar registro</span>
-                </button>
-            </div>
-            <!-- Spinner de carregamento -->
-            <div id="loading_spinner" style="text-align: center; padding: 20px;" class="d-none">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Carregando...</span>
                 </div>
-                <p>Adicionando receita/despesa, aguarde...</p>
-            </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button class="button btn btn-warning" data-bs-dismiss="modal">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-success" id="btn_add_despesa">
+                        <span class="button__icon"><i class="bx bx-save"></i></span>
+                        <span class="button__text2" id="span_add_despesa">Adicionar registro</span>
+                    </button>
+                </div>
+                <!-- Spinner de carregamento -->
+                <div id="loading_spinner" style="text-align: center; padding: 20px;" class="d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p>Adicionando receita/despesa, aguarde...</p>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
+<script src="~/js/jquery.validate.js"></script>
 <script>
     $('#baixado').click(function(event) {
         var flag = $(this).is(':checked');
@@ -293,16 +294,34 @@
                 $(element).attr("placeholder", "");
             },
             submitHandler: function(form) {
-                var dados = $(form).serialize();
-                $('#btn_add_despesa').addClass('disabled').text('Aguarde...');
+                var formData = {
+                    Tipo: $('#tipo').val(),
+                    Descricao: $('#descricao').val(),
+                    ClienteId: $('#cliente_id_add_despesa').val() || null,
+                    Observacoes: $('#observacoes').val() || null,
+                    Valor: $('#valor').val().replace('.', '').replace(',', '.'),
+                    Desconto: $('#desconto').val().replace('.', '').replace(',', '.') || null,
+                    DataVencimento: formatarDataParaAPI($('#data_vencimento').val()),
+                    Baixado: $("#baixado").is(":checked"),  
+                    DataPagamento: formatarDataParaAPI($('#data_recebimento').val()) || null,
+                    FormaPgto: $('#forma_pgto').val(),
+                    QtdParcelas: $('#qtd_parcelas').val(),
+                    ValorEntrada: $('#valor_entrada').val().replace('.', '').replace(',', '.') || null,
+                    DataEntrada: formatarDataParaAPI($('#data_entrada').val()) || null,
+                    DataBasePgto: formatarDataParaAPI($('#data_base_pgto').val()) || null,
+                    ValorParcelas: null//$('#valorparcelas').val().replace('.', '').replace(',', '.') || null
+                };
+
+                $('#btn_add_despesa').addClass('disabled');
+                $('#span_add_despesa').text('Aguarde...');
                 $("#valor_desconto").removeClass('readonly');
                 $("#loading_spinner").removeClass('d-none');
 
                 $.ajax({
-                    type: "POST",
                     url: "/lancamentos/adicionar-lancamento",
-                    data: dados,
-                    dataType: 'json',
+                    type: 'POST',
+                    data: JSON.stringify(formData),
+                    contentType: 'application/json',
                     success: function (data) {
                         if (data.success) {
                             setTimeout(function () {
@@ -325,9 +344,10 @@
                             });
                         }
 
-                        $('#btn_add_despesa').removeClass('disabled').text('Adicionar');
+                        $('#btn_add_despesa').removeClass('disabled');
+                        $('#span_add_despesa').text('Adicionar');
                         $("#valor_desconto").addClass('readonly');
-                        $("#loading-spinner").addClass('d-none');
+                        $("#loading_spinner").addClass('d-none');
                     },
                     error: function () {
                         Swal.fire({
@@ -348,4 +368,5 @@
             }
         });
     });
+
 </script>
