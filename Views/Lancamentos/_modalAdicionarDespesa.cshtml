@@ -16,15 +16,15 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-3 mt-2">
-                            <label for="tipo" class="form-label">Tipo</label>
-                            <select id="tipo" name="Tipo">
+                            <label for="tipo_add_despesa" class="form-label">Tipo</label>
+                            <select id="tipo_add_despesa" name="Tipo">
                                 <option value="receita">Receita</option>
                                 <option value="despesa">Despesa</option>
                             </select>
                         </div>
                         <div class="col-md-9 mt-2">
-                            <label for="descricao" class="form-label">Descrição/Referência</label>
-                            <input type="text" id="descricao" name="Descricao" autocomplete="off" required />
+                            <label for="descricao_add_despesa" class="form-label">Descrição/Referência</label>
+                            <input type="text" id="descricao_add_despesa" name="Descricao" autocomplete="off" required />
                         </div>
                     </div>
                     <div class="row">
@@ -36,18 +36,18 @@
                     </div>
                     <div class="row">
                         <div class="col-md-12 mt-2">
-                            <label for="observacoes" class="form-label">Observações</label>
-                            <textarea id="observacoes" name="Observacoes"></textarea>
+                            <label for="observacoes_add_despesa" class="form-label">Observações</label>
+                            <textarea id="observacoes_add_despesa" name="Observacoes"></textarea>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3 mt-2">
-                            <label for="valor" class="form-label">Valor</label>
-                            <input type="text" id="valor" name="Valor" class="money" autocomplete="off" required />
+                            <label for="valor_add_despesa" class="form-label">Valor</label>
+                            <input type="text" id="valor_add_despesa" name="Valor" class="money" autocomplete="off" required />
                         </div>
                         <div class="col-md-3 mt-2">
-                            <label for="desconto" class="form-label">Desconto</label>
-                            <input type="text" id="desconto" name="Desconto" class="money" autocomplete="off" />
+                            <label for="desconto_add_despesa" class="form-label">Desconto</label>
+                            <input type="text" id="desconto_add_despesa" name="Desconto" class="money" autocomplete="off" />
                         </div>
                         <div class="col-md-2 mt-2 d-flex align-content-end flex-wrap">
                             <button id="btn_aplicar_desconto_add_despesa" class="btn btn-sm btn-secondary w-100" role="button" type="button">
@@ -55,26 +55,26 @@
                             </button>
                         </div>
                         <div class="col-md-3 mt-2">
-                            <label for="valor_desconto" class="form-label">
+                            <label for="valor_desconto_add_despesa" class="form-label">
                                 Val. desc.
                                 <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo">
                                     <i class="fas fa-info-circle"></i>
                                 </span>
                             </label>
-                            <input type="text" id="valor_desconto" name="ValorDesconto" autocomplete="off" readonly />
+                            <input type="text" id="valor_desconto_add_despesa" name="ValorDesconto" autocomplete="off" readonly />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3 mt-2">
-                            <label for="data_vencimento" class="form-label">Data vencimento</label>
-                            <input type="text" id="data_vencimento" name="DataVencimento" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
+                            <label for="data_vencimento_add_despesa" class="form-label">Data vencimento</label>
+                            <input type="text" id="data_vencimento_add_despesa" name="DataVencimento" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
                         </div>
                         <div class="col-md-3 mt-2 d-flex align-content-end flex-wrap">
                             <div class="form-check form-switch">
                                 <label class="form-check-label" for="baixado">
                                     Recebido?
                                 </label>
-                                <input class="form-check-input" type="checkbox" role="switch" id="baixado" name="Baixado" value="0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="baixado_add_despesa" name="Baixado" value="0">
                             </div>
                         </div>
                     </div>
@@ -82,12 +82,12 @@
                         <div id="divRecebimento" class="d-none">
                             <div class="row">
                                 <div id="div_data_recebimento" class="col-md-3 mt-2">
-                                    <label for="data_recebimento" class="form-label">Data recebimento</label>
-                                    <input type="text" id="data_recebimento" name="DataPagamento" class="datetime" autocomplete="off" />
+                                    <label for="data_recebimento_add_despesa" class="form-label">Data recebimento</label>
+                                    <input type="text" id="data_recebimento_add_despesa" name="DataPagamento" class="datetime" autocomplete="off" />
                                 </div>
                                 <div class="col-md-3 mt-2">
-                                    <label for="forma_pgto" class="form-label">Forma pgto.</label>
-                                    <select id="forma_pgto" name="FormaPgto">
+                                    <label for="forma_pgto_add_despesa" class="form-label">Forma pgto.</label>
+                                    <select id="forma_pgto_add_despesa" name="FormaPgto">
                                         <option value="Dinheiro" selected="">Dinheiro</option>
                                         <option value="Pix">Pix</option>
                                         <option value="Boleto">Boleto</option>
@@ -102,8 +102,8 @@
                                     </select>
                                 </div>
                                 <div id="div_qtd_parcelas" class="col-md-3 mt-2 d-none">
-                                    <label for="qtd_parcelas" class="form-label">Qtd. parcelas</label>
-                                    <select id="qtd_parcelas" name="QtdParcelas">
+                                    <label for="qtd_parcelas_add_despesa" class="form-label">Qtd. parcelas</label>
+                                    <select id="qtd_parcelas_add_despesa" name="QtdParcelas">
                                         <option value="avista">Pagamento á vista</option>
                                         @for (int i = 2; i <= 12; i++)
                                         {
@@ -116,22 +116,22 @@
                                 <div id="div_entrada" class="d-none">
                                     <div class="row">
                                         <div class="col-md-3 mt-2">
-                                            <label for="valor_entrada" class="form-label">Entrada</label>
-                                            <input type="text" id="valor_entrada" name="ValorEntrada" class="money" autocomplete="off" />
+                                            <label for="valor_entrada_add_despesa" class="form-label">Entrada</label>
+                                            <input type="text" id="valor_entrada_add_despesa" name="ValorEntrada" class="money" autocomplete="off" />
                                         </div>
                                         <div class="col-md-3 mt-2">
-                                            <label for="data_entrada" class="form-label">Data da entrada</label>
-                                            <input type="text" id="data_entrada" name="DataEntrada" class="datetime" autocomplete="off" required value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                            <label for="data_entrada_add_despesa" class="form-label">Data da entrada</label>
+                                            <input type="text" id="data_entrada_add_despesa" name="DataEntrada" class="datetime" autocomplete="off" required value="@DateTime.Now.ToString("dd/MM/yyyy")" />
                                         </div>
                                         <div class="col-md-3 mt-2">
-                                            <label for="data_base_pgto" class="form-label">Data base de pgto.</label>
-                                            <input type="text" id="data_base_pgto" name="DataBasePgto" class="datetime" autocomplete="off" required />
+                                            <label for="data_base_pgto_add_despesa" class="form-label">Data base de pgto.</label>
+                                            <input type="text" id="data_base_pgto_add_despesa" name="DataBasePgto" class="datetime" autocomplete="off" required />
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 mt-2">
                                             <div class="text-center text-danger" style="background:#f5f5f5;border-radius:4px;margin: 0;border:1px solid #ddd;">
-                                                <input id="valorparcelas" type="hidden" name="ValorParcelas" readonly />
+                                                <input id="valorparcelas_add_despesa" type="hidden" name="ValorParcelas" readonly />
                                                 <label id="string_parc" style="font-weight: bolder;" class="p-2 ">Hello</label>
                                             </div>
                                         </div>
@@ -152,7 +152,7 @@
                     </button>
                 </div>
                 <!-- Spinner de carregamento -->
-                <div id="loading_spinner" style="text-align: center; padding: 20px;" class="d-none">
+                <div id="loading_spinner_add_despesa" style="text-align: center; padding: 20px;" class="d-none">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Carregando...</span>
                     </div>
@@ -176,7 +176,7 @@
 
     $(document).ready(function () {
         function toggleDivQtdParcelas() {
-            const formaPgto = $("#forma_pgto").val();
+            const formaPgto = $("#forma_pgto_add_despesa").val();
             const divQtdParcelas = $("#div_qtd_parcelas");
 
             // Se a forma de pagamento for "Cartão de Crédito", mostra a div
@@ -188,7 +188,7 @@
         }
 
         function toggleDivEntrada() {
-            const qtdParcelas = $("#qtd_parcelas").val();
+            const qtdParcelas = $("#qtd_parcelas_add_despesa").val();
             const divEntrada = $("#div_entrada");
             const divDataRecebimento = $("#div_data_recebimento");
 
@@ -209,8 +209,8 @@
         toggleDivEntrada();
         valorParcelas();
 
-        $("#forma_pgto").on("change", toggleDivQtdParcelas);
-        $("#qtd_parcelas").on("change", toggleDivEntrada);
+        $("#forma_pgto_add_despesa").on("change", toggleDivQtdParcelas);
+        $("#qtd_parcelas_add_despesa").on("change", toggleDivEntrada);
     });
 
     $('#valor').change(function(event) {
@@ -218,10 +218,18 @@
     });
 
     $('#btn_aplicar_desconto_add_despesa').click(function(event) {
-        var valorParc = $("#valor").val().replace('.', '').replace(',', '.') || 0;
-        var desconto = $("#desconto").val().replace('.', '').replace(',', '.') || 0;
+        var valorParc = $("#valor_add_despesa").val().replace('.', '').replace(',', '.') || 0;
+        var desconto = $("#desconto_add_despesa").val().replace('.', '').replace(',', '.') || 0;
+
+        if (desconto > valorParc) {
+            alert('Desconto não pode ser maior que valor da receita/despesa.');
+            $("#desconto_add_despesa").val('');
+            $("#desconto_add_despesa").focus();
+            return;
+        }
+
         valorParc = valorParc - desconto;
-        $("#valor_desconto").val(valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $("#valor_desconto_add_despesa").val(valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
         valorParcelas();
     });
@@ -232,7 +240,7 @@
 
     $('#valor_entrada').change(function(event){
         valorParcelas();
-        var entrada = $("#valor_entrada").val();
+        var entrada = $("#valor_entrada_add_despesa").val();
         if (entrada > 0) {
             $('#data_entrada').css("color", "#444444");
         } else {
@@ -241,30 +249,30 @@
     });
 
     function valorParcelas(){
-        var valorParc = $("#valor").val().replace('.', '').replace(',', '.') || 0;
-        var desconto = $("#desconto").val().replace('.', '').replace(',', '.') || 0;
-        var qtdparc = $("#qtd_parcelas").val();
+        var valorParc = $("#valor_add_despesa").val().replace('.', '').replace(',', '.') || 0;
+        var desconto = $("#desconto_add_despesa").val().replace('.', '').replace(',', '.') || 0;
+        var qtdparc = $("#qtd_parcelas_add_despesa").val();
 
         valorParc = valorParc - desconto;
-        var entrada = $("#valor_entrada").val().replace('.', '').replace(',', '.') || 0;
+        var entrada = $("#valor_entrada_add_despesa").val().replace('.', '').replace(',', '.') || 0;
 
         var result = (valorParc - entrada) / qtdparc;
 
         if (qtdparc > 1) {
             if (entrada > 0) {
                 $("#string_parc").text('R$ '+entrada+' de entrada mais '+qtdparc+' parcelas de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
             } else {
                 $("#string_parc").text(qtdparc+' parcelas de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
             }
         } else {
             if (entrada > 0) {
                 $("#string_parc").text('R$ '+entrada+' de entrada mais '+qtdparc+' parcela de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
             } else {
                 $("#string_parc").text(qtdparc+' parcela de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
             }
         }
     }
@@ -295,27 +303,29 @@
             },
             submitHandler: function(form) {
                 var formData = {
-                    Tipo: $('#tipo').val(),
-                    Descricao: $('#descricao').val(),
+                    Tipo: $('#tipo_add_despesa').val(),
+                    Descricao: $('#descricao_add_despesa').val(),
                     ClienteId: $('#cliente_id_add_despesa').val() || null,
-                    Observacoes: $('#observacoes').val() || null,
-                    Valor: $('#valor').val().replace('.', '').replace(',', '.'),
-                    Desconto: $('#desconto').val().replace('.', '').replace(',', '.') || null,
-                    DataVencimento: formatarDataParaAPI($('#data_vencimento').val()),
-                    Baixado: $("#baixado").is(":checked"),  
-                    DataPagamento: formatarDataParaAPI($('#data_recebimento').val()) || null,
-                    FormaPgto: $('#forma_pgto').val(),
-                    QtdParcelas: $('#qtd_parcelas').val(),
-                    ValorEntrada: $('#valor_entrada').val().replace('.', '').replace(',', '.') || null,
-                    DataEntrada: formatarDataParaAPI($('#data_entrada').val()) || null,
-                    DataBasePgto: formatarDataParaAPI($('#data_base_pgto').val()) || null,
+                    Observacoes: $('#observacoes_add_despesa').val() || null,
+                    Valor: $('#valor_add_despesa').val().replace('.', '').replace(',', '.'),
+                    Desconto: $('#desconto_add_despesa').val().replace('.', '').replace(',', '.') || null,
+                    DataVencimento: formatarDataParaAPI($('#data_vencimento_add_despesa').val()),
+                    Baixado: $("#baixado_add_despesa").is(":checked"),
+                    DataPagamento: formatarDataParaAPI($('#data_recebimento_add_despesa').val()) || null,
+                    FormaPgto: $('#forma_pgto_add_despesa').val(),
+                    QtdParcelas: $('#qtd_parcelas_add_despesa').val(),
+                    ValorEntrada: $('#valor_entrada_add_despesa').val().replace('.', '').replace(',', '.') || null,
+                    DataEntrada: formatarDataParaAPI($('#data_entrada_add_despesa').val()) || null,
+                    DataBasePgto: formatarDataParaAPI($('#data_base_pgto_add_despesa').val()) || null,
                     ValorParcelas: null//$('#valorparcelas').val().replace('.', '').replace(',', '.') || null
                 };
 
+                console.log(JSON.stringify(formData));
+
                 $('#btn_add_despesa').addClass('disabled');
                 $('#span_add_despesa').text('Aguarde...');
-                $("#valor_desconto").removeClass('readonly');
-                $("#loading_spinner").removeClass('d-none');
+                $("#valor_desconto_add_despesa").removeClass('readonly');
+                $("#loading_spinner_add_despesa").removeClass('d-none');
 
                 $.ajax({
                     url: "/lancamentos/adicionar-lancamento",
@@ -325,29 +335,38 @@
                     success: function (data) {
                         if (data.success) {
                             setTimeout(function () {
+                                $('#modal_adicionar_despesa').modal('hide');
+
                                 Swal.fire({
                                     icon: "success",
                                     title: "Sucesso",
                                     text: 'Receita/Despesa adicionado',
                                     timer: 2000,
                                     showConfirmButton: false
+                                }).then(() => {
+                                    $('#form_adicionar_despesa')[0].reset();
                                 });
                             }, 1500);
                         } else {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'error',
-                                title: 'Erro',
-                                text: data.message,
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
+                            $('#modal_adicionar_despesa').modal('hide');
+                            setTimeout(function () {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Erro',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    $('#modal_adicionar_despesa').modal('show');
+                                });
+                            }, 500);
                         }
 
                         $('#btn_add_despesa').removeClass('disabled');
                         $('#span_add_despesa').text('Adicionar');
-                        $("#valor_desconto").addClass('readonly');
-                        $("#loading_spinner").addClass('d-none');
+                        $("#valor_desconto_add_despesa").addClass('readonly');
+                        $("#loading_spinner_add_despesa").addClass('d-none');
                     },
                     error: function () {
                         Swal.fire({
@@ -357,12 +376,11 @@
                             text: 'Não foi possível adicionar a despesa. Tente novamente.',
                             showConfirmButton: true,
                             timer: 4000
-
                         });
 
                         $('#btn_add_despesa').removeClass('disabled').text('Adicionar');
-                        $("#valor_desconto").addClass('readonly');
-                        $("#loading-spinner").addClass('d-none');
+                        $("#valor_desconto_add_despesa").addClass('readonly');
+                        $("#loading-spinner_add_despesa").addClass('d-none');
                     }
                 });
             }

@@ -117,7 +117,38 @@ namespace SIGES.Controllers
                 return Json(new { success = false, message = "Formulário incompleto!" });
             }
 
-            return Json(new { success = false, message = "Erro ao consultar SQL!" });
+            decimal desconto = lancamento.Desconto ?? 0;
+
+            if (desconto > lancamento.Valor)
+            {
+                return Json(new { success = false, message = "Desconto não pode ser maior que valor da receita/despesa." });
+            }
+
+            decimal valordesconto = lancamento.Valor - desconto;
+            int baixado = lancamento.Baixado ? 1 : 0;
+            DateTime? datarecebimento = (baixado == 0 ? null : lancamento.DataPagamento);
+            string? formapgto = (baixado == 0 ? null : lancamento.FormaPgto);
+            int usuarioId = int.TryParse(HttpContext.Session.GetString("UserId"), out usuarioId) ? usuarioId : 0;
+
+            LancamentoModel l = new LancamentoModel
+            {
+                Tipo = lancamento.Tipo,
+                Descricao = lancamento.Descricao,
+                ClientesId = lancamento.ClienteId,
+                Observacoes = lancamento.Observacoes,
+                Valor = lancamento.Valor,
+                Desconto = desconto,
+                ValorDesconto = valordesconto,
+                DataVencimento = lancamento.DataVencimento,
+                Baixado = baixado,
+                DataPagamento = datarecebimento,
+                FormaPgto = formapgto,
+                UsuariosId = usuarioId
+            };
+
+            await _lancamentoRepositorio.Adicionar(l);
+
+            return Json(new { success = true, message = "Sucesso!" });
         }
     }
 
