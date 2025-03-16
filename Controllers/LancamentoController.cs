@@ -94,7 +94,8 @@ namespace SIGES.Controllers
                             observacoes = i.Observacoes ?? "",
                             valor = i.Valor.ToString("n2"),
                             desconto = i.Desconto.ToString("n2"),
-                            valorTotal = i.ValorDesconto.ToString("n2")
+                            valorTotal = i.ValorDesconto.ToString("n2"),
+                            baixado = i.Baixado.ToString()
                         })
                     });
 
@@ -240,6 +241,37 @@ namespace SIGES.Controllers
             }
 
             return Json(new { success = true, message = "Sucesso!" });
+        }
+
+        [Permissao("eLancamento", "Você não tem permissão para editar lançamentos")]
+        [HttpGet("obter-lancamento/{id}")]
+        public async Task<IActionResult> ObterLancamento(int id)
+        {
+            var lancamento = await _lancamentoRepositorio.GetLancamento(id);
+
+            if (lancamento == null)
+            {
+                return Json(new { success = false, message = "Lançamento não encontrado." });
+            }
+
+            var lancamentoResponse = new
+            {
+                lancamento.Id,
+                lancamento.Tipo,
+                lancamento.Descricao,
+                Cliente = lancamento.Clientes?.Nome,
+                lancamento.ClientesId,
+                lancamento.Observacoes,
+                lancamento.Valor,
+                lancamento.Desconto,
+                lancamento.ValorDesconto,
+                DataVencimento = lancamento.DataVencimento.ToString("dd/MM/yyyy"),
+                lancamento.Baixado,
+                DataPagamento = lancamento.DataPagamento?.ToString("dd/MM/yyyy"),
+                lancamento.FormaPgto,
+            };
+
+            return Json(new { success = true, lancamento = lancamentoResponse });
         }
     }
 

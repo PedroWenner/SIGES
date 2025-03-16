@@ -177,6 +177,47 @@
 
 <script>
     $(document).ready(function () {
+        // Usar delegação de eventos para elementos gerados dinamicamente
+        $(document).on('click', '.editar-despesa', function (e) {
+            e.preventDefault();
+
+            var lancamentoId = $(this).data('id'); // Obtém o ID do lançamento
+
+            // Faz uma requisição AJAX para buscar os dados do lançamento
+            $.ajax({
+                url: `/lancamentos/obter-lancamento/${lancamentoId}`,
+                type: 'GET',
+                success: function (data) {
+                    if (data.success) {
+                        // Preenche os campos do modal com os dados do lançamento
+                        $('#modal_editar_despesa input[name="Id"]').val(data.lancamento.id);
+                        $('#tipo_edit_despesa').val(data.lancamento.tipo);
+                        $('#descricao_edit_despesa').val(data.lancamento.descricao);
+                        $('#cliente_edit_despesa').val(data.lancamento.cliente);
+                        $('#cliente_id_edit_despesa').val(data.lancamento.clienteId);
+                        $('#observacoes_edit_despesa').val(data.lancamento.observacoes);
+                        $('#valor_edit_despesa').val(data.lancamento.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                        $('#desconto_edit_despesa').val(data.lancamento.desconto.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                        $('#valor_desconto_edit_despesa').val(data.lancamento.valorDesconto.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                        $('#data_vencimento_edit_despesa').val(data.lancamento.dataVencimento);
+                        $('#baixado_edit_despesa').prop('checked', data.lancamento.baixado);
+                        $('#data_recebimento_edit_despesa').val(data.lancamento.dataPagamento);
+                        $('#forma_pgto_edit_despesa').val(data.lancamento.formaPgto);
+
+                        // Exibe o modal
+                        $('#modal_editar_despesa').modal('show');
+                    } else {
+                        alert('Erro ao carregar os dados do lançamento.');
+                    }
+                },
+                error: function () {
+                    alert('Erro ao buscar os dados do lançamento.');
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
         $(".money").mask("#.##0,00", {reverse: true});
     });
 
@@ -285,6 +326,13 @@
 
                     if (response.lancamentos && Array.isArray(response.lancamentos) && response.lancamentos.length > 0) {
                         response.lancamentos.forEach(l => {
+                            const botaoEditar = l.baixado == 0
+                                ? `<a href="#modal_editar_despesa" data-id="${l.id}" role="button" data-bs-target="#modal_editar_despesa"
+                                     data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe3 text-decoration-none editar-despesa">
+                                     <i class="bx bx-edit"></i>
+                                   </a>`
+                                : '';
+
                             tbody.append(`
                                 <tr>
                                     <td>${l.id}</td>
@@ -299,14 +347,9 @@
                                     <td>${l.desconto}</td>
                                     <td>${l.valorTotal}</td>
                                     <td>
-                                        <a href="#modal_editar_despesa" data-id="${l.id}" role="button" data-bs-target="#modal_editar_despesa"
-                                            data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe3 text-decoration-none"
-                                            title="Editar">
-                                            <i class="bx bx-edit"></i>
-                                        </a>
+                                        ${botaoEditar}
                                         <a href="#modal_excluir_despesa" data-id="${l.id}" role="button" data-bs-target="#modal_excluir_despesa"
-                                            data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none"
-                                            title="Excluir lançamento">
+                                            data-bs-toggle="modal" style="margin-right: 1%" class="btn-nwe4 text-decoration-none">
                                             <i class="bx bx-trash-alt"></i>
                                         </a>
                                     </td>
@@ -410,4 +453,5 @@
 
         return `${ano}-${mes}-${dia}`;
     }
+    
 </script>

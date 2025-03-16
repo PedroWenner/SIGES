@@ -12,116 +12,395 @@
                 <h1 class="modal-title fs-5">Atualizar receita/despesa</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="form_editar_despesa">
+            <form id="form_editar_despesa">
+                <input type="hidden" name="Id" />
+                <div class="modal-body">
                     <div class="row">
                         <div class="col-md-3 mt-2">
-                            <label for="tipo" class="form-label">Tipo</label>
-                            <select id="tipo" name="Tipo">
+                            <label for="tipo_edit_despesa" class="form-label">Tipo</label>
+                            <select id="tipo_edit_despesa" name="Tipo" disabled="disabled">
                                 <option value="receita">Receita</option>
                                 <option value="despesa">Despesa</option>
                             </select>
                         </div>
                         <div class="col-md-9 mt-2">
-                            <label for="descricao" class="form-label">Descrição/Referência</label>
-                            <input type="text" id="descricao" name="Descricao" autocomplete="off" required />
+                            <label for="descricao_edit_despesa" class="form-label">Descrição/Referência</label>
+                            <input type="text" id="descricao_edit_despesa" name="Descricao" autocomplete="off" disabled="disabled" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mt-2">
-                            <label for="cliente_add_despesa" class="form-label">Cliente/Fornecedor</label>
-                            <input type="text" id="cliente_add_despesa" name="cliente" autocomplete="off" required />
-                            <input type="hidden" id="cliente_id_add_despesa" name="ClienteId" />
+                            <label for="cliente_edit_despesa" class="form-label">Cliente/Fornecedor</label>
+                            <input type="text" id="cliente_edit_despesa" name="cliente" autocomplete="off" disabled="disabled" />
+                            <input type="hidden" id="cliente_id_edit_despesa" name="ClienteId" />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mt-2">
-                            <label for="observacoes" class="form-label">Observações</label>
-                            <textarea id="observacoes" name="Observacoes"></textarea>
+                            <label for="observacoes_edit_despesa" class="form-label">Observações</label>
+                            <textarea id="observacoes_edit_despesa" name="Observacoes"></textarea>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3 mt-2">
-                            <label for="valor" class="form-label">Valor</label>
-                            <input type="text" id="valor" name="Valor" class="money" autocomplete="off" required />
+                            <label for="valor_edit_despesa" class="form-label">Valor</label>
+                            <input type="text" id="valor_edit_despesa" name="Valor" class="money" autocomplete="off" disabled="disabled" />
                         </div>
                         <div class="col-md-3 mt-2">
-                            <label for="desconto" class="form-label">Desconto</label>
-                            <input type="text" id="desconto" name="Desconto" class="money" autocomplete="off" />
+                            <label for="desconto_edit_despesa" class="form-label">Desconto</label>
+                            <input type="text" id="desconto_edit_despesa" name="Desconto" class="money" autocomplete="off" disabled="disabled" />
                         </div>
                         <div class="col-md-2 mt-2 d-flex align-content-end flex-wrap">
-                            <button id="btn_aplicar_desconto_add_despesa" class="btn btn-sm btn-secondary w-100" role="button" type="button">
+                            <button id="btn_aplicar_desconto_edit_despesa" class="btn btn-sm btn-secondary w-100" role="button" type="button" disabled="disabled">
                                 Aplicar
                             </button>
                         </div>
                         <div class="col-md-3 mt-2">
-                            <label for="valor_desconto" class="form-label">
+                            <label for="valor_desconto_edit_despesa" class="form-label">
                                 Val. desc.
                                 <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Não altere esta campo, caso clicar nele e sair e ficar vázio, terá que recarregar á pagina e inserir de novo">
                                     <i class="fas fa-info-circle"></i>
                                 </span>
                             </label>
-                            <input type="text" id="valor_desconto" name="ValorDesconto" autocomplete="off" readonly />
+                            <input type="text" id="valor_desconto_edit_despesa" name="ValorDesconto" autocomplete="off" readonly />
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-3 mt-2">
-                            <label for="data_vencimento" class="form-label">Data vencimento</label>
-                            <input type="text" id="data_vencimento" name="DataVencimento" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" required />
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <label for="qtd_parcelas" class="form-label">Qtd. parcelas</label>
-                            <select id="qtd_parcelas" name="QtdParcelas">
-                                <option value="avista">Pagamento á vista</option>
-                                @for (int i = 1; i <= 12; i++)
-                                {
-                                    <option value="@(i)">@(i)x</option>
-                                }
-                            </select>
+                            <label for="data_vencimento_edit_despesa" class="form-label">Data vencimento</label>
+                            <input type="text" id="data_vencimento_edit_despesa" name="DataVencimento" class="datetime" autocomplete="off" value="@DateTime.Now.ToString("dd/MM/yyyy")" disabled="disabled" />
                         </div>
                         <div class="col-md-3 mt-2 d-flex align-content-end flex-wrap">
                             <div class="form-check form-switch">
-                                <label class="form-check-label" for="baixado">
+                                <label class="form-check-label" for="baixado_edit_despesa">
                                     Recebido?
                                 </label>
-                                <input class="form-check-input" type="checkbox" role="switch" name="Baixado" value="0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="baixado_edit_despesa" name="Baixado" value="0">
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3 mt-2">
-                            <label for="data_recebimento" class="form-label">Data recebimento</label>
-                            <input type="text" id="data_recebimento" name="DataPagamento" class="datetime" autocomplete="off" />
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <label for="forma_pgto" class="form-label">Qtd. parcelas</label>
-                            <select id="forma_pgto" name="FormaPgto">
-                                <option value="dinheiro">Dinheiro</option>
-                                <option value="pix">Pix</option>
-                                <option value="boleto">Boleto</option>
-                                <option value="Cartão de Crédito" selected="">Cartão de Crédito</option>
-                                <option value="Cartão de Débito">Cartão de Débito</option>
-                                <option value="Cheque">Cheque</option>
-                                <option value="Cheque Pré-datado">Cheque Pré-datado</option>
-                                <option value="Depósito">Depósito</option>
-                                <option value="Transferência DOC">Transferência DOC</option>
-                                <option value="Transferência TED">Transferência TED</option>
-                                <option value="Promissória">Promissória</option>
-                            </select>
+                        <div id="divRecebimento_edit_despesa" class="d-none">
+                            <div class="row">
+                                <div id="div_data_recebimento" class="col-md-3 mt-2">
+                                    <label for="data_recebimento_edit_despesa" class="form-label">Data recebimento</label>
+                                    <input type="text" id="data_recebimento_edit_despesa" name="DataPagamento" class="datetime" autocomplete="off" />
+                                </div>
+                                <div class="col-md-3 mt-2">
+                                    <label for="forma_pgto_edit_despesa" class="form-label">Forma pgto.</label>
+                                    <select id="forma_pgto_edit_despesa" name="FormaPgto">
+                                        <option value="Dinheiro" selected="">Dinheiro</option>
+                                        <option value="Pix">Pix</option>
+                                        <option value="Boleto">Boleto</option>
+                                        <option value="Cartão de crédito">Cartão de Crédito</option>
+                                        <option value="Cartão de débito">Cartão de Débito</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Cheque pré-datado">Cheque Pré-datado</option>
+                                        <option value="Depósito">Depósito</option>
+                                        <option value="Transferência DOC">Transferência DOC</option>
+                                        <option value="Transferência TED">Transferência TED</option>
+                                        <option value="Promissória">Promissória</option>
+                                    </select>
+                                </div>
+                                <div id="div_qtd_parcelas" class="col-md-3 mt-2 d-none">
+                                    <label for="qtd_parcelas_edit_despesa" class="form-label">Qtd. parcelas</label>
+                                    <select id="qtd_parcelas_edit_despesa" name="QtdParcelas">
+                                        <option value="avista">Pagamento á vista</option>
+                                        @for (int i = 2; i <= 12; i++)
+                                        {
+                                            <option value="@(i)">@(i)x</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div id="div_entrada" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-3 mt-2">
+                                            <label for="valor_entrada_edit_despesa" class="form-label">Entrada</label>
+                                            <input type="text" id="valor_entrada_edit_despesa" name="ValorEntrada" class="money" autocomplete="off" />
+                                        </div>
+                                        <div class="col-md-3 mt-2">
+                                            <label for="data_entrada_edit_despesa" class="form-label">Data da entrada</label>
+                                            <input type="text" id="data_entrada_edit_despesa" name="DataEntrada" class="datetime" autocomplete="off" required value="@DateTime.Now.ToString("dd/MM/yyyy")" />
+                                        </div>
+                                        <div class="col-md-3 mt-2">
+                                            <label for="data_base_pgto_edit_despesa" class="form-label">Data base de pgto.</label>
+                                            <input type="text" id="data_base_pgto_edit_despesa" name="DataBasePgto" class="datetime" autocomplete="off" required />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 mt-2">
+                                            <div class="text-center text-danger" style="background:#f5f5f5;border-radius:4px;margin: 0;border:1px solid #ddd;">
+                                                <input id="valorparcelas_edit_despesa" type="hidden" name="ValorParcelas" readonly />
+                                                <label id="string_parc" style="font-weight: bolder;" class="p-2"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer" style="display:flex;justify-content: center">
-                <button class="button btn btn-warning" data-bs-dismiss="modal">
-                    <span class="button__icon"><i class="bx bx-x"></i></span>
-                    <span class="button__text2">Cancelar</span>
-                </button>
-                <button type="submit" class="button btn btn-success">
-                    <span class="button__icon"><i class="bx bx-save"></i></span>
-                    <span class="button__text2">Atualizar registro</span>
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer" style="display:flex;justify-content: center">
+                    <button class="button btn btn-warning" data-bs-dismiss="modal">
+                        <span class="button__icon"><i class="bx bx-x"></i></span>
+                        <span class="button__text2">Cancelar</span>
+                    </button>
+                    <button type="submit" class="button btn btn-success" id="btn_edit_despesa">
+                        <span class="button__icon"><i class="bx bx-save"></i></span>
+                        <span class="button__text2" id="span_edit_despesa">Atualizar registro</span>
+                    </button>
+                </div>
+                <!-- Spinner de carregamento -->
+                <div id="loading_spinner_edit_despesa" style="text-align: center; padding: 20px;" class="d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p>Adicionando receita/despesa, aguarde...</p>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script src="~/js/jquery.validate.js"></script>
+<script>
+    $('#baixado_edit_despesa').click(function(event) {
+        var flag = $(this).is(':checked');
+
+        if (flag == true) {
+            $('#divRecebimento_edit_despesa').removeClass("d-none");
+            $('#data_recebimento_edit_despesa').attr('required', '');
+        } else {
+            $('#divRecebimento_edit_despesa').addClass("d-none");
+            $('#data_recebimento_edit_despesa').removeAttr('required');
+        }
+    });
+
+    $(document).ready(function () {
+        function toggleDivQtdParcelas() {
+            const formaPgto = $("#forma_pgto_edit_despesa").val();
+            const divQtdParcelas = $("#div_qtd_parcelas");
+
+            // Se a forma de pagamento for "Cartão de Crédito", mostra a div
+            if (formaPgto === "Cartão de crédito") {
+                divQtdParcelas.removeClass("d-none");
+            } else {
+                divQtdParcelas.addClass("d-none");
+            }
+        }
+
+        function toggleDivEntrada() {
+            const qtdParcelas = $("#qtd_parcelas_edit_despesa").val();
+            const divEntrada = $("#div_entrada");
+            const divDataRecebimento = $("#div_data_recebimento");
+
+            // Se a forma de pagamento for "Cartão de Crédito", mostra a div
+            if (qtdParcelas === "avista") {
+                divEntrada.addClass("d-none");
+                divDataRecebimento.removeClass("d-none");
+                $('#data_recebimento_edit_despesa').attr('required', '');
+                valorParcelas();
+            } else {
+                divEntrada.removeClass("d-none");
+                divDataRecebimento.addClass("d-none");
+                $('#data_recebimento_edit_despesa').removeAttr('required');
+                valorParcelas();
+            }
+        }
+
+        // Executa a função ao carregar a página (para garantir o estado inicial correto)
+        toggleDivQtdParcelas();
+        toggleDivEntrada();
+        valorParcelas();
+
+        $("#forma_pgto_edit_despesa").on("change", toggleDivQtdParcelas);
+        $("#qtd_parcelas_edit_despesa").on("change", toggleDivEntrada);
+    });
+
+    $('#valor_edit_despesa').change(function(event) {
+        valorParcelas();
+    });
+
+    $('#btn_aplicar_desconto_edit_despesa').click(function(event) {
+        var valorParc = $("#valor_edit_despesa").val().replace('.', '').replace(',', '.') || 0;
+        var desconto = $("#desconto_edit_despesa").val().replace('.', '').replace(',', '.') || 0;
+
+        if (desconto > valorParc) {
+            alert('Desconto não pode ser maior que valor da receita/despesa.');
+            $("#desconto_edit_despesa").val('');
+            $("#desconto_edit_despesa").focus();
+            return;
+        }
+
+        valorParc = valorParc - desconto;
+        $("#valor_desconto_edit_despesa").val(valorParc.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+        valorParcelas();
+    });
+
+    $('#qtd_parcelas_edit_despesa').change(function(event) {
+        valorParcelas();
+    });
+
+    $('#valor_entrada_edit_despesa').change(function(event){
+        valorParcelas();
+        var entrada = $("#valor_entrada_edit_despesa").val();
+        if (entrada > 0) {
+            $('#data_entrada').css("color", "#444444");
+        } else {
+            $('#data_entrada').css("color", "#eeeeee");
+        }
+    });
+
+    function valorParcelas(){
+        var valorParc = $("#valor_edit_despesa").val().replace('.', '').replace(',', '.') || 0;
+        var desconto = $("#desconto_edit_despesa").val().replace('.', '').replace(',', '.') || 0;
+        var qtdparc = $("#qtd_parcelas_edit_despesa").val();
+
+        valorParc = valorParc - desconto;
+        var entrada = $("#valor_entrada_edit_despesa").val().replace('.', '').replace(',', '.') || 0;
+
+        var result = (valorParc - entrada) / qtdparc;
+
+        if (qtdparc > 1) {
+            if (entrada > 0) {
+                $("#string_parc").text('R$ ' + entrada.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' de entrada mais ' + qtdparc + ' parcelas de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_edit_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            } else {
+                $("#string_parc").text(qtdparc + ' parcelas de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_edit_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            }
+        } else {
+            if (entrada > 0) {
+                $("#string_parc").text('R$ ' + entrada.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' de entrada mais ' + qtdparc + ' parcela de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_edit_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            } else {
+                $("#string_parc").text(qtdparc + ' parcela de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_edit_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        $('#form_adicionar_despesa').validate({
+            rules: {
+                'Descricao': { required: true },
+                'cliente': { required: true },
+                'Valor': { required: true },
+                'DataVencimento': { required: true },
+            },
+            messages: {
+                'Descricao': { required: 'Campo requerido.' },
+                'cliente': { required: 'Campo requerido.' },
+                'Valor': { required: 'Campo requerido.' },
+                'DataVencimento': { required: 'Campo requerido.' },
+            },
+            errorPlacement: function (error, element) {
+                element.attr("placeholder", error.text());
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).addClass("is-invalid").removeClass("is-valid");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).removeClass("is-invalid").addClass("is-valid");
+                $(element).attr("placeholder", "");
+            },
+            submitHandler: function(form) {
+                var valorparcela = $('#valorparcelas_edit_despesa').val().replace('.', '').replace(',', '.');
+
+                if (isNaN(valorparcela)) {
+                    valorparcela = null;
+                }
+
+                console.log(valorparcela);
+                var formData = {
+                    Tipo: $('#tipo_edit_despesa').val(),
+                    Descricao: $('#descricao_edit_despesa').val(),
+                    ClienteId: $('#cliente_id_edit_despesa').val() || null,
+                    Observacoes: $('#observacoes_edit_despesa').val() || null,
+                    Valor: $('#valor_edit_despesa').val().replace('.', '').replace(',', '.'),
+                    Desconto: $('#desconto_edit_despesa').val().replace('.', '').replace(',', '.') || null,
+                    DataVencimento: formatarDataParaAPI($('#data_vencimento_edit_despesa').val()),
+                    Baixado: $("#baixado_edit_despesa").is(":checked"),
+                    DataPagamento: formatarDataParaAPI($('#data_recebimento_edit_despesa').val()) || null,
+                    FormaPgto: $('#forma_pgto_edit_despesa').val(),
+                    QtdParcelas: $('#qtd_parcelas_edit_despesa').val(),
+                    ValorEntrada: $('#valor_entrada_edit_despesa').val().replace('.', '').replace(',', '.') || null,
+                    DataEntrada: formatarDataParaAPI($('#data_entrada_edit_despesa').val()) || null,
+                    DataBasePgto: formatarDataParaAPI($('#data_base_pgto_edit_despesa').val()) || null,
+                    ValorParcelas: valorparcela
+                };
+
+                console.log(JSON.stringify(formData));
+
+                $('#btn_edit_despesa').addClass('disabled');
+                $('#span_edit_despesa').text('Aguarde...');
+                $("#valor_desconto_edit_despesa").removeClass('readonly');
+                $("#loading_spinner_edit_despesa").removeClass('d-none');
+
+                $.ajax({
+                    url: "/lancamentos/adicionar-lancamento",
+                    type: 'POST',
+                    data: JSON.stringify(formData),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.success) {
+                            setTimeout(function () {
+                                $('#modal_adicionar_despesa').modal('hide');
+
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Sucesso",
+                                    text: 'Receita/Despesa adicionado',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    $('#btn_edit_despesa').removeClass('disabled');
+                                    $('#span_edit_despesa').text('Adicionar');
+                                    $("#valor_desconto_edit_despesa").addClass('readonly');
+                                    $("#loading_spinner_edit_despesa").addClass('d-none');
+                                    $('#form_adicionar_despesa')[0].reset();
+                                });
+                            }, 1500);
+                        } else {
+                            $('#modal_adicionar_despesa').modal('hide');
+                            setTimeout(function () {
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'error',
+                                    title: 'Erro',
+                                    text: data.message,
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    $('#btn_edit_despesa').removeClass('disabled');
+                                    $('#span_edit_despesa').text('Adicionar');
+                                    $("#valor_desconto_edit_despesa").addClass('readonly');
+                                    $("#loading_spinner_edit_despesa").addClass('d-none');
+                                    $('#modal_adicionar_despesa').modal('show');
+                                });
+                            }, 500);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Erro no servidor!',
+                            text: 'Não foi possível adicionar a despesa. Tente novamente.',
+                            showConfirmButton: true,
+                            timer: 4000
+                        });
+
+                        $('#btn_edit_despesa').removeClass('disabled').text('Adicionar');
+                        $("#valor_desconto_edit_despesa").addClass('readonly');
+                        $("#loading-spinner_edit_despesa").addClass('d-none');
+                    }
+                });
+            }
+        });
+    });
+
+</script>
