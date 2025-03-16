@@ -130,23 +130,114 @@ namespace SIGES.Controllers
             string? formapgto = (baixado == 0 ? null : lancamento.FormaPgto);
             int usuarioId = int.TryParse(HttpContext.Session.GetString("UserId"), out usuarioId) ? usuarioId : 0;
 
-            LancamentoModel l = new LancamentoModel
-            {
-                Tipo = lancamento.Tipo,
-                Descricao = lancamento.Descricao,
-                ClientesId = lancamento.ClienteId,
-                Observacoes = lancamento.Observacoes,
-                Valor = lancamento.Valor,
-                Desconto = desconto,
-                ValorDesconto = valordesconto,
-                DataVencimento = lancamento.DataVencimento,
-                Baixado = baixado,
-                DataPagamento = datarecebimento,
-                FormaPgto = formapgto,
-                UsuariosId = usuarioId
-            };
+            int qtdParcelas = 0;
+            decimal valorparcelas = 0;
+            DateTime? dataEntrada;
+            DateTime? dataBasePgto;
 
-            await _lancamentoRepositorio.Adicionar(l);
+            if (baixado == 1)
+            {
+                if (formapgto == "Cartão de crédito")
+                {
+                    if (lancamento.QtdParcelas != "avista")
+                    {
+                        qtdParcelas = int.TryParse(lancamento.QtdParcelas, out qtdParcelas) ? qtdParcelas : 0;
+                        datarecebimento = lancamento.DataEntrada;
+
+                        if (qtdParcelas > 0)
+                        {
+                            desconto = desconto / qtdParcelas;
+                        }
+                    }
+
+                    valorparcelas = lancamento.ValorEntrada ?? lancamento.ValorParcelas ?? 0;
+                    valordesconto = (lancamento.ValorEntrada ?? lancamento.ValorParcelas ?? 0) - desconto;
+                    dataEntrada = lancamento.DataEntrada;
+                    dataBasePgto = lancamento.DataBasePgto;
+                }
+            }
+
+            LancamentoModel l = new LancamentoModel();
+
+            if (baixado == 0)
+            {
+                l = new LancamentoModel
+                {
+                    Tipo = lancamento.Tipo,
+                    Descricao = lancamento.Descricao,
+                    ClientesId = lancamento.ClienteId,
+                    Observacoes = lancamento.Observacoes,
+                    Valor = lancamento.Valor,
+                    Desconto = desconto,
+                    ValorDesconto = valordesconto,
+                    DataVencimento = lancamento.DataVencimento,
+                    Baixado = baixado,
+                    DataPagamento = datarecebimento,
+                    FormaPgto = formapgto,
+                    UsuariosId = usuarioId
+                };
+
+                await _lancamentoRepositorio.Adicionar(l);
+            }
+            else
+            {
+                if (formapgto == "Cartão de crédito")
+                {
+                    if (lancamento.QtdParcelas != "avista")
+                    {
+                        if (qtdParcelas > 0)
+                        {
+                            for (int i = 0; i <= qtdParcelas; i++)
+                            {
+                                if (i > 0)
+                                {
+                                    valorparcelas = lancamento.ValorParcelas ?? 0;
+                                    valordesconto = (lancamento.ValorParcelas ?? 0) - desconto;
+                                    datarecebimento = lancamento.DataBasePgto?.AddMonths(i);
+                                }
+
+                                l = new LancamentoModel
+                                {
+                                    Tipo = lancamento.Tipo,
+                                    Descricao = lancamento.Descricao,
+                                    ClientesId = lancamento.ClienteId,
+                                    Observacoes = lancamento.Observacoes,
+                                    Valor = valorparcelas,
+                                    Desconto = desconto,
+                                    ValorDesconto = valordesconto,
+                                    DataVencimento = datarecebimento ?? DateTime.Now,
+                                    Baixado = baixado,
+                                    DataPagamento = datarecebimento,
+                                    FormaPgto = formapgto,
+                                    UsuariosId = usuarioId
+                                };
+
+                                await _lancamentoRepositorio.Adicionar(l);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    l = new LancamentoModel
+                    {
+                        Tipo = lancamento.Tipo,
+                        Descricao = lancamento.Descricao,
+                        ClientesId = lancamento.ClienteId,
+                        Observacoes = lancamento.Observacoes,
+                        Valor = lancamento.Valor,
+                        Desconto = desconto,
+                        ValorDesconto = valordesconto,
+                        DataVencimento = lancamento.DataVencimento,
+                        Baixado = baixado,
+                        DataPagamento = datarecebimento,
+                        FormaPgto = formapgto,
+                        UsuariosId = usuarioId
+                    };
+
+                    await _lancamentoRepositorio.Adicionar(l);
+                }
+            }
 
             return Json(new { success = true, message = "Sucesso!" });
         }

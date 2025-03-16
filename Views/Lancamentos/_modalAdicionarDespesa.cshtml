@@ -165,12 +165,15 @@
 
 <script src="~/js/jquery.validate.js"></script>
 <script>
-    $('#baixado').click(function(event) {
+    $('#baixado_add_despesa').click(function(event) {
         var flag = $(this).is(':checked');
+        
         if (flag == true) {
             $('#divRecebimento').removeClass("d-none");
+            $('#data_recebimento_add_despesa').attr('required', '');
         } else {
             $('#divRecebimento').addClass("d-none");
+            $('#data_recebimento_add_despesa').removeAttr('required');
         }
     });
 
@@ -196,10 +199,12 @@
             if (qtdParcelas === "avista") {
                 divEntrada.addClass("d-none");
                 divDataRecebimento.removeClass("d-none");
+                $('#data_recebimento_add_despesa').attr('required', '');
                 valorParcelas();
             } else {
                 divEntrada.removeClass("d-none");
                 divDataRecebimento.addClass("d-none");
+                $('#data_recebimento_add_despesa').removeAttr('required');
                 valorParcelas();
             }
         }
@@ -213,7 +218,7 @@
         $("#qtd_parcelas_add_despesa").on("change", toggleDivEntrada);
     });
 
-    $('#valor').change(function(event) {
+    $('#valor_add_despesa').change(function(event) {
         valorParcelas();
     });
 
@@ -234,11 +239,11 @@
         valorParcelas();
     });
 
-    $('#qtd_parcelas').change(function(event) {
+    $('#qtd_parcelas_add_despesa').change(function(event) {
         valorParcelas();
     });
 
-    $('#valor_entrada').change(function(event){
+    $('#valor_entrada_add_despesa').change(function(event){
         valorParcelas();
         var entrada = $("#valor_entrada_add_despesa").val();
         if (entrada > 0) {
@@ -260,19 +265,19 @@
 
         if (qtdparc > 1) {
             if (entrada > 0) {
-                $("#string_parc").text('R$ '+entrada+' de entrada mais '+qtdparc+' parcelas de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#string_parc").text('R$ ' + entrada.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' de entrada mais ' + qtdparc + ' parcelas de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_add_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             } else {
-                $("#string_parc").text(qtdparc+' parcelas de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#string_parc").text(qtdparc + ' parcelas de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_add_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
         } else {
             if (entrada > 0) {
-                $("#string_parc").text('R$ '+entrada+' de entrada mais '+qtdparc+' parcela de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#string_parc").text('R$ ' + entrada.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' de entrada mais ' + qtdparc + ' parcela de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_add_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             } else {
-                $("#string_parc").text(qtdparc+' parcela de R$ '+parseFloat(Math.round(result * 100) / 100).toFixed(2));
-                $("#valorparcelas_add_despesa").val(parseFloat(Math.round(result * 100) / 100).toFixed(2));
+                $("#string_parc").text(qtdparc + ' parcela de R$ ' + result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $("#valorparcelas_add_despesa").val(result.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
             }
         }
     }
@@ -302,6 +307,13 @@
                 $(element).attr("placeholder", "");
             },
             submitHandler: function(form) {
+                var valorparcela = $('#valorparcelas_add_despesa').val().replace('.', '').replace(',', '.');
+
+                if (isNaN(valorparcela)) {
+                    valorparcela = null;
+                }
+
+                console.log(valorparcela);
                 var formData = {
                     Tipo: $('#tipo_add_despesa').val(),
                     Descricao: $('#descricao_add_despesa').val(),
@@ -317,7 +329,7 @@
                     ValorEntrada: $('#valor_entrada_add_despesa').val().replace('.', '').replace(',', '.') || null,
                     DataEntrada: formatarDataParaAPI($('#data_entrada_add_despesa').val()) || null,
                     DataBasePgto: formatarDataParaAPI($('#data_base_pgto_add_despesa').val()) || null,
-                    ValorParcelas: null//$('#valorparcelas').val().replace('.', '').replace(',', '.') || null
+                    ValorParcelas: valorparcela
                 };
 
                 console.log(JSON.stringify(formData));
@@ -344,6 +356,10 @@
                                     timer: 2000,
                                     showConfirmButton: false
                                 }).then(() => {
+                                    $('#btn_add_despesa').removeClass('disabled');
+                                    $('#span_add_despesa').text('Adicionar');
+                                    $("#valor_desconto_add_despesa").addClass('readonly');
+                                    $("#loading_spinner_add_despesa").addClass('d-none');
                                     $('#form_adicionar_despesa')[0].reset();
                                 });
                             }, 1500);
@@ -358,15 +374,14 @@
                                     timer: 2000,
                                     showConfirmButton: false
                                 }).then(() => {
+                                    $('#btn_add_despesa').removeClass('disabled');
+                                    $('#span_add_despesa').text('Adicionar');
+                                    $("#valor_desconto_add_despesa").addClass('readonly');
+                                    $("#loading_spinner_add_despesa").addClass('d-none');
                                     $('#modal_adicionar_despesa').modal('show');
                                 });
                             }, 500);
                         }
-
-                        $('#btn_add_despesa').removeClass('disabled');
-                        $('#span_add_despesa').text('Adicionar');
-                        $("#valor_desconto_add_despesa").addClass('readonly');
-                        $("#loading_spinner_add_despesa").addClass('d-none');
                     },
                     error: function () {
                         Swal.fire({
