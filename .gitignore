@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Anexos enviados em runtime / dados locais
+wwwroot/anexos/
+wwwroot/arquivos/
+appsettings.Local.json
