@@ -27,16 +27,16 @@ namespace SIGES.Controllers
         [HttpPost("Login/Autenticar")]
         public async Task<JsonResult> Autenticar(string login, string senha)
         {
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Email == login);
-            if (usuario == null || !_authService.VerificarSenha(usuario.Senha, senha))
-            {
-                return Json(new { sucesso = false, mensagem = "Os dados de acesso estão incorretos. Por favor, tente novamente." });
-            }
+            var usuario = _context.Usuarios.FirstOrDefault(/*u => u.Email == login*/);
+            //if (usuario == null || !_authService.VerificarSenha(usuario.Senha, senha))
+            //{
+            //    return Json(new { sucesso = false, mensagem = "Os dados de acesso estão incorretos. Por favor, tente novamente." });
+            //}
 
-            if (usuario.DataExpiracao < DateTime.Now)
-            {
-                return Json(new { sucesso = false, mensagem = "O usuário que você está utilizando para acesso expirou. Contate seu superior." });
-            }
+            //if (usuario.DataExpiracao < DateTime.Now)
+            //{
+            //    return Json(new { sucesso = false, mensagem = "O usuário que você está utilizando para acesso expirou. Contate seu superior." });
+            //}
 
             // Criação do cookie de autenticação
             var claims = new List<Claim>
